@@ -89,11 +89,14 @@ add_subdirectory("$ENV{CommonLibSSEPath_NG}" CommonLibSSE EXCLUDE_FROM_ALL)
 
 find_package(xbyak REQUIRED CONFIG)
 
+find_package(imgui REQUIRED)
+
 target_link_libraries(
 	"${PROJECT_NAME}"
 	PRIVATE
 		CommonLibSSE::CommonLibSSE
 		xbyak::xbyak
+		imgui::imgui
 )
 
 target_precompile_headers(

@@ -12,50 +12,47 @@ Metadata of an item.
 class WheelItem // base class
 {
 	public:
-	virtual void activate(int aux);
-	void render();
+	// the callee is responsible for openening a new wheel menu.
+	void Render();
+	private:
+	virtual void Activate(int aux);
+
 }
 
 //example of another class
-class WheelItemWeapon
+class WheelItemWeapon : WheelItem
 {
 	public:
-	void activate(int aux) override
+	void Render() override;
+	private:
+	void Activate(int aux) override
 	{
 		player->equipWeapon(this->_weapon);
 	}
-	private:
 	Weapon _weapon;
 }
-class WheelItemSubMenu
+class WheelItemSubMenu : WheelItem
 {
 	public:
-	void activate(int aux) override
+	void Activate(int aux) override
 	{
-		
+
 	}
+	void Render() override;
 }
 ```
 
 ```cpp
-class WheelData
+class Wheel
 {
-	class WheelSerializer;
-
 	std::vector<WheelItem> _items;
 }
 
 ```
-
-`WheelRender`: gets data from `WheelData`, render them
-- UI(oof), animations...
-- Sound(low priority)
-- make callbacks to Data on user interactions(deleting items)
-
 To-dos:
 
 - MVP: 
-	- [ ] data structure for wheelData
+	- [ ] data structure
 		- [ ] design
 		- [ ] temporary test data structure
 	- [ ] minimally working renderer
