@@ -1,5 +1,7 @@
 #include "Input.h"
 #include "Renderer.h"
+#include "Hooks.h"
+#include "Wheeler.h"
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
@@ -8,7 +10,13 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
 		break;
+
+	case SKSE::MessagingInterface::kSaveGame:
+		Wheeler::GetInstance()->FlushWheelItems();
+		break;
 	case SKSE::MessagingInterface::kPostLoadGame:
+	case SKSE::MessagingInterface::kNewGame:
+		Wheeler::GetInstance()->LoadWheelItems();
 		break;
 	}
 }
@@ -16,6 +24,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 void onSKSEInit()
 {
 	Renderer::Install();
+	Hooks::Install();
 }
 
 namespace

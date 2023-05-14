@@ -10,12 +10,12 @@
 namespace PieMenu
 {
 	/* Declaration */
-	bool BeginPiePopup(const char* pName, int iMouseButton = 0);
-	void EndPiePopup();
+	bool BeginPieMenu(const char* pName, int iMouseButton = 0);
+	void EndPieMenu();
 
 	bool PieMenuItem(const char* pName, bool bEnabled = true);
-	bool BeginPieMenu(const char* pName, bool bEnabled = true);
-	void EndPieMenu();
+	bool BeginSubMenu(const char* pName, bool bEnabled = true);
+	void EndSubMenu();
 }
 
 

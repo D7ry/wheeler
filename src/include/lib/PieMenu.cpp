@@ -71,7 +71,7 @@ namespace PieMenu
 		--s_oPieMenuContext.m_iCurrentIndex;
 	}
 
-	bool BeginPiePopup(const char* pName, int iMouseButton)
+	bool BeginPieMenu(const char* pName, int iMouseButton)
 	{
 		if (IsPopupOpen(pName)) {
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
@@ -104,7 +104,7 @@ namespace PieMenu
 		return false;
 	}
 
-	void EndPiePopup()
+	void EndPieMenu()
 	{
 		EndPieMenuEx();
 
@@ -263,7 +263,7 @@ namespace PieMenu
 		ImGui::PopStyleVar(2);
 	}
 
-	bool BeginPieMenu(const char* pName, bool bEnabled)
+	bool BeginSubMenu(const char* pName, bool bEnabled)
 	{
 		IM_ASSERT(s_oPieMenuContext.m_iCurrentIndex >= 0 && s_oPieMenuContext.m_iCurrentIndex < PieMenuContext::c_iMaxPieItemCount);
 
@@ -297,7 +297,7 @@ namespace PieMenu
 		return false;
 	}
 
-	void EndPieMenu()
+	void EndSubMenu()
 	{
 		IM_ASSERT(s_oPieMenuContext.m_iCurrentIndex >= 0 && s_oPieMenuContext.m_iCurrentIndex < PieMenuContext::c_iMaxPieItemCount);
 		--s_oPieMenuContext.m_iCurrentIndex;

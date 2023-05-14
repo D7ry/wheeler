@@ -20,8 +20,15 @@ public:
 	/// </summary>
 	void LoadWheelItems();
 
+	/// <summary>
+	/// Flush all current items into a save.
+	/// This should be called on game save. This is guaranteed to be called in the same save that's
+	/// loaded before, so to ensure ACID.
+	/// </summary>
+	void FlushWheelItems();
+
 private:
-	std::vector<WheelItem> _items;
+	std::vector<WheelItem*> _items;
 
 	/// <summary>
 	/// Check if wheel items are valid(existing in player inventory).

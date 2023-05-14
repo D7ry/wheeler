@@ -1,0 +1,6 @@
+namespace Hooks
+{
+	void Install()
+	{
+	}
+}
