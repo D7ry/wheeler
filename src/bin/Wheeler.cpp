@@ -5,6 +5,7 @@
 #include "Serializer.h"
 
 #include "Input.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "imgui_internal.h"
 #include "imgui.h"
@@ -55,6 +56,7 @@ void Wheeler::Draw()
 			controlMap->ignoreKeyboardMouse = true;
 		}
 		ImGui::OpenPopup(_wheelWindowID);
+		this->_activeItem = -1; // reset active item on reopen
 	}
 
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
@@ -66,7 +68,7 @@ void Wheeler::Draw()
 
 		drawList->PushClipRectFullScreen();
 		drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 32);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
-		drawList->PathStroke(ImColor(1.0f, 1.0f, 1.0f, 0.3f), true, RADIUS_MAX - RADIUS_MIN);
+		drawList->PathStroke(WheelerStyling::BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
 		// draws the pie menu
 		int numItems = _items.size();
 		
@@ -74,8 +76,9 @@ void Wheeler::Draw()
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		for (int item_n = 0; item_n < numItems; item_n++) {
 			// fancy math begin
-			const ImVec2 drag_delta = ImVec2(ImGui::GetIO().MousePos.x - wheelCenter.x, ImGui::GetIO().MousePos.y - wheelCenter.y);
-			const float drag_dist2 = drag_delta.x * drag_delta.x + drag_delta.y * drag_delta.y;
+			//const ImVec2 drag_delta = ImVec2(ImGui::GetIO().MousePos.x - wheelCenter.x, ImGui::GetIO().MousePos.y - wheelCenter.y);
+			const ImVec2 drag_delta = ImGui::GetIO().MouseDelta;
+			//const float drag_dist2 = drag_delta.x * drag_delta.x + drag_delta.y * drag_delta.y;
 
 			const float item_arc_span = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
 
@@ -96,23 +99,23 @@ void Wheeler::Draw()
 				item_outer_ang_max -= IM_PI * 2;
 			}
 
-			float drag_angle = atan2f(drag_delta.y, drag_delta.x);
+			// update hovered item
+			// TODO: this is too sensitive
+			if (drag_delta.x != 0 && drag_delta.y != 0) {
 
-			bool hovered = false;
-			if (drag_dist2 >= RADIUS_MIN * RADIUS_MIN) {
+				float drag_angle = atan2f(drag_delta.y, drag_delta.x);
+
 				if (drag_angle >= item_inner_ang_min) {  // Normal case
 					if (drag_angle < item_inner_ang_max) {
-						hovered = true;
+						this->_activeItem = item_n;
 					}
-				} 
-				else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
-					hovered = true;
+				} else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
+					this->_activeItem = item_n;
 				}
+
 			}
+			bool hovered = this->_activeItem == item_n;
 
-
-			// Calculate the starting angle adjustment for odd number of items
-			//float start_angle_adjustment = (numItems % 2 != 0) ? -item_arc_span / 2.0f : 0.0f;
 
 			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
 			float t2 = RADIUS_MIN + t1;
@@ -126,15 +129,33 @@ void Wheeler::Draw()
 			
 			WheelItem* item = _items[item_n];
 
-			// debug
-			//ImGui::GetWindowDrawList()->AddCircleFilled(itemCenter, 5, ImGui::GetColorU32(ImGuiCol_Button), 9);
+			int arc_segments = (int)(32 * item_arc_span / (2 * IM_PI)) + 1;
 
-			int arc_segments = (int)(128 * item_arc_span / (2 * IM_PI)) + 1;
-			drawList->PathArcTo(wheelCenter, RADIUS_MAX - ITEM_INNER_SPACING, item_outer_ang_min, item_outer_ang_max, arc_segments);
+			ImU32 iColor = hovered ? WheelerStyling::ActiveColor : WheelerStyling::InactiveColor;
+			const float fAngleStepInner = (item_inner_ang_max - item_inner_ang_min) / arc_segments;
+			const float fAngleStepOuter = (item_outer_ang_max - item_outer_ang_min) / arc_segments;
 			
-			drawList->PathArcTo(wheelCenter, RADIUS_MIN + ITEM_INNER_SPACING, item_inner_ang_max, item_inner_ang_min, arc_segments);
+			const ImVec2& vTexUvWhitePixel = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
+			// draw an arc for the current item
+			drawList->PrimReserve(arc_segments * 6, (arc_segments + 1) * 2);
+			for (int iSeg = 0; iSeg <= arc_segments; ++iSeg) {
+				float fCosInner = cosf(item_inner_ang_min + fAngleStepInner * iSeg);
+				float fSinInner = sinf(item_inner_ang_min + fAngleStepInner * iSeg);
+				float fCosOuter = cosf(item_outer_ang_min + fAngleStepOuter * iSeg);
+				float fSinOuter = sinf(item_outer_ang_min + fAngleStepOuter * iSeg);
 
-			drawList->PathFillConvex(hovered ? ImColor(100, 100, 150, 100) : ImColor(70, 70, 70, 100));
+				if (iSeg < arc_segments) {
+					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 0);
+					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
+					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
+					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 3);
+					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
+					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
+				}
+
+				drawList->PrimWriteVtx(ImVec2(wheelCenter.x + fCosInner * (RADIUS_MIN + ITEM_INNER_SPACING), wheelCenter.y + fSinInner * (RADIUS_MIN + ITEM_INNER_SPACING)), vTexUvWhitePixel, iColor);
+				drawList->PrimWriteVtx(ImVec2(wheelCenter.x + fCosOuter * (RADIUS_MAX - ITEM_INNER_SPACING), wheelCenter.y + fSinOuter * (RADIUS_MAX - ITEM_INNER_SPACING)), vTexUvWhitePixel, iColor);
+			}
 			// fancy math end
 			if (hovered) {
 				for (uint32_t keyID : Input::GetSingleton()->GetPressedKeys()) {
@@ -154,6 +175,7 @@ void Wheeler::LoadWheelItems()
 {
 	std::vector<WheelItem*> cpy = this->_items;
 	this->_items.clear();
+	this->_activeItem = -1;
 	INFO("Loading wheel items...");
 	TestData::LoadTestItems(this->_items);
 	//Serializer::LoadData(_items); 

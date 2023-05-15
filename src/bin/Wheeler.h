@@ -43,12 +43,18 @@ private:
 	void verifyWheelItems();
 
 	const char* _wheelWindowID = "##Wheeler";
+	int _activeItem = -1; // currently active item, will be highlighted. Gets reset every time wheel reopens.
 };
 
 namespace WheelerStyling
 {
-	inline float RADIUS_MIN = 150.0f;
+	inline float RADIUS_SELECT_MIN = pow(60.f, 2);
+	inline float RADIUS_MIN = 180.0f;
 	inline float RADIUS_MAX = 360.0f;
 	inline int ITEMS_MIN = 1;
-	inline float ITEM_INNER_SPACING = 5.f;
+	inline float ITEM_INNER_SPACING = 7.f;
+
+	inline ImColor BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.3f);
+	inline ImColor ActiveColor = ImColor(27, 198, 250, 125);
+	inline ImColor InactiveColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
 }
