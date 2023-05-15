@@ -47,7 +47,7 @@ private:
 
 namespace WheelerStyling
 {
-	inline float RADIUS_MIN = 120.0f;
+	inline float RADIUS_MIN = 150.0f;
 	inline float RADIUS_MAX = 360.0f;
 	inline int ITEMS_MIN = 1;
 	inline float ITEM_INNER_SPACING = 5.f;

@@ -65,8 +65,8 @@ void Wheeler::Draw()
 		auto drawList = ImGui::GetWindowDrawList();
 
 		drawList->PushClipRectFullScreen();
-		//drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 32);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
-		//drawList->PathStroke(ImColor(1.0f, 1.0f, 1.0f, 0.5f), true, RADIUS_MAX - RADIUS_MIN);
+		drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 32);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
+		drawList->PathStroke(ImColor(1.0f, 1.0f, 1.0f, 0.3f), true, RADIUS_MAX - RADIUS_MIN);
 		// draws the pie menu
 		int numItems = _items.size();
 		
@@ -134,8 +134,7 @@ void Wheeler::Draw()
 			
 			drawList->PathArcTo(wheelCenter, RADIUS_MIN + ITEM_INNER_SPACING, item_inner_ang_max, item_inner_ang_min, arc_segments);
 
-			drawList->PathFillConvex(hovered ? ImColor(100, 100, 150) : hovered ? ImColor(120, 120, 140) :
-                                                                                    ImColor(70, 70, 70));
+			drawList->PathFillConvex(hovered ? ImColor(100, 100, 150, 100) : ImColor(70, 70, 70, 100));
 			// fancy math end
 			if (hovered) {
 				for (uint32_t keyID : Input::GetSingleton()->GetPressedKeys()) {
