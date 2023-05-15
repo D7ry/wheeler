@@ -4,8 +4,9 @@
 #include "Wheeler.h"
 #include "Serializer.h"
 
-#include "include/lib/PieMenu.h"
+#include "Input.h"
 
+#include "imgui_internal.h"
 
 #include "WheelItems/WheelItemWeapon.h"
 namespace TestData
@@ -16,37 +17,97 @@ namespace TestData
 		r_wheelItems.emplace_back(new WheelItemWeapon());
 		r_wheelItems.emplace_back(new WheelItemWeapon());
 		r_wheelItems.emplace_back(new WheelItemWeapon());
+		r_wheelItems.emplace_back(new WheelItemWeapon());
+		r_wheelItems.emplace_back(new WheelItemWeapon());
+		r_wheelItems.emplace_back(new WheelItemWeapon());
 	}
 }
 
 void Wheeler::Draw()
 {
-	ImGui::OpenPopup("Wheeler"); // open pie menu
-	if (PieMenu::BeginPieMenu("Wheeler", 1)) {
-		for (WheelItem* item : this->_items) {
-			// it's callee's job to call PieMenuItem();
-			item->Draw();
+	if (!this->_active) { // queued to close
+		if (ImGui::IsPopupOpen(_wheelWindowID)) {
+			ImGui::BeginPopup(_wheelWindowID);
+			ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+			ImGui::GetIO().MouseDrawCursor = false;
+			auto controlMap = RE::ControlMap::GetSingleton();
+			if (controlMap) {
+				controlMap->ignoreKeyboardMouse = false;
+			}
 		}
-		//PieMenu::PieMenuItem("Test1");
-		//PieMenu::PieMenuItem("Test2");
-		//if (PieMenu::BeginSubMenu("Sub")) {
-		//	if (PieMenu::BeginSubMenu("Sub sub\nmenu")) {
-		//		if (PieMenu::PieMenuItem("SubSub")) {
-		//		}
-		//		if (PieMenu::PieMenuItem("SubSub2")) {
-		//		}
-		//	}
-		//	if (PieMenu::PieMenuItem("TestSub")) {
-		//	}
-		//	if (PieMenu::PieMenuItem("TestSub2")) {
-		//	}
-		//}
-			
-		PieMenu::EndPieMenu();
+		return;
 	}
-	//for (WheelItem& item : this->_items) {
-	//	item.Draw();
-	//}
+	if (!ImGui::IsPopupOpen(_wheelWindowID)) {  // queued to open
+		ImGui::GetIO().MouseDrawCursor = true;
+		auto controlMap = RE::ControlMap::GetSingleton();
+		if (controlMap) {
+			controlMap->ignoreKeyboardMouse = true;
+		}
+		ImGui::OpenPopup(_wheelWindowID);
+	}
+	
+	const ImVec2 center = ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
+
+	ImGui::SetNextWindowPos(center);
+
+	// begin draw
+	if (ImGui::BeginPopup(_wheelWindowID)) {
+		auto drawList = ImGui::GetWindowDrawList();
+		drawList->PushClipRectFullScreen();
+		// draws the pie menu
+		int numItems = _items.size();
+		for (int item_n = 0; item_n < numItems; item_n++) {
+			// fancy math begin
+			const ImVec2 drag_delta = ImVec2(ImGui::GetIO().MousePos.x - center.x, ImGui::GetIO().MousePos.y - center.y);
+			const float drag_dist2 = drag_delta.x * drag_delta.x + drag_delta.y * drag_delta.y;
+
+			const ImGuiStyle& style = ImGui::GetStyle();
+			const float RADIUS_MIN = 80.0f;
+			const float RADIUS_MAX = 160.0f;
+			const float RADIUS_INTERACT_MIN = 20.0f;
+			const int ITEMS_MIN = 6;
+			const float item_arc_span = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
+
+			const float inner_spacing = style.ItemInnerSpacing.x / RADIUS_MIN / 2;
+			const float item_inner_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing);
+			const float item_inner_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing);
+			const float item_outer_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing * (RADIUS_MIN / RADIUS_MAX));
+			const float item_outer_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing * (RADIUS_MIN / RADIUS_MAX));
+
+			float drag_angle = atan2f(drag_delta.y, drag_delta.x);
+			if (drag_angle < -0.5f * item_arc_span)
+				drag_angle += 2.0f * IM_PI;
+
+			bool hovered = false;
+			if (drag_dist2 >= RADIUS_INTERACT_MIN * RADIUS_INTERACT_MIN) {
+				if (drag_angle >= item_inner_ang_min && drag_angle < item_inner_ang_max)
+					hovered = true;
+			}
+
+			WheelItem* item = _items[item_n];
+			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
+			float t2 = RADIUS_MIN + t1;
+			ImVec2 itemCenter = ImVec2(
+				center.x + t2 * cosf(item_arc_span * item_n),
+				center.y + t2 * sinf(item_arc_span * item_n)
+			);
+			// debug
+			ImGui::GetWindowDrawList()->AddCircleFilled(itemCenter, 5, ImGui::GetColorU32(ImGuiCol_Button), 9);
+			// fancy math end
+			if (hovered) {
+				for (uint32_t keyID : Input::GetSingleton()->GetPressedKeys()) {
+					item->Activate(keyID);
+				}
+			}
+			item->Draw(itemCenter, hovered);
+		}
+		drawList->PopClipRect();
+
+		ImGui::EndPopup();
+	}
+
+	
 }
 
 // TODO: swap to real serializer after implementing it
@@ -70,6 +131,16 @@ void Wheeler::FlushWheelItems()
 	INFO("Flushing wheel items...");
 	//Serializer::FlushData(_items);
 	INFO("...wheel items flushed!");
+}
+
+void Wheeler::OpenMenu()
+{
+	this->_active = true;
+}
+
+void Wheeler::CloseMenu()
+{
+	this->_active = false;
 }
 
 void Wheeler::verifyWheelItems()

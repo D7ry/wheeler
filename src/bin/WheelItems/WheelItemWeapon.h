@@ -4,5 +4,5 @@
 class WheelItemWeapon : public WheelItem
 {
 public:
-	void Draw() override;
+	void Draw(ImVec2 a_center, bool a_hovered) override;
 };

@@ -1,66 +1,16 @@
 #pragma once
-#include <d3d11.h>
-
-#include <imgui_impl_dx11.h>
-#include <imgui_impl_win32.h>
-
-#include <dxgi.h>
-
-#include "imgui_internal.h"
+#include <imgui_internal.h>
+class PieMenuItem
+{
+public:
+	virtual void Draw();
+	virtual void Activate(uint32_t keyID);
+};
 namespace PieMenu
 {
-	/* Declaration */
-	bool BeginPieMenu(const char* pName, int iMouseButton = 0);
-	void EndPieMenu();
+	// Return >= 0 on mouse release
+	// Optional int* p_selected display and update a currently selected item
+	int PiePopupSelectMenu(const ImVec2& center, const char* popup_id, const char** items, int items_count, int* p_selected, bool shouldClose);
 
-	bool PieMenuItem(const char* pName, bool bEnabled = true);
-	bool BeginSubMenu(const char* pName, bool bEnabled = true);
-	void EndSubMenu();
+	void DrawPieMenu(const ImVec2& center, const char* popup_id, std::vector<PieMenuItem*>& items, bool shouldClose);
 }
-
-
-
-///* Example */
-//std::string sText;
-//
-//if( ImGui::IsWindowHovered() && ImGui::IsMouseClicked( 1 ) )
-//{
-//  ImGui::OpenPopup( "PieMenu" );
-//}
-//
-//if( BeginPiePopup( "PieMenu", 1 ) )
-//{
-//  if( PieMenuItem( "Test1" ) ) sText = "Test1";
-//  if( PieMenuItem( "Test2" ) )
-//  {
-//    sText = "Test2";
-//    new MyImwWindow3();
-//  }
-//  if( PieMenuItem( "Test3", false ) ) sText = "Test3";
-//  if( BeginPieMenu( "Sub" ) )
-//  {
-//    if( BeginPieMenu( "Sub sub\nmenu" ) )
-//    {
-//      if( PieMenuItem( "SubSub" ) ) sText = "SubSub";
-//      if( PieMenuItem( "SubSub2" ) ) sText = "SubSub2";
-//      EndPieMenu();
-//    }
-//    if( PieMenuItem( "TestSub" ) ) sText = "TestSub";
-//    if( PieMenuItem( "TestSub2" ) ) sText = "TestSub2";
-//    EndPieMenu();
-//  }
-//  if( BeginPieMenu( "Sub2" ) )
-//  {
-//    if( PieMenuItem( "TestSub" ) ) sText = "TestSub";
-//    if( BeginPieMenu( "Sub sub\nmenu" ) )
-//    {
-//      if( PieMenuItem( "SubSub" ) ) sText = "SubSub";
-//      if( PieMenuItem( "SubSub2" ) ) sText = "SubSub2";
-//      EndPieMenu();
-//    }
-//    if( PieMenuItem( "TestSub2" ) ) sText = "TestSub2";
-//    EndPieMenu();
-//  }
-//
-//  EndPiePopup();
-//}

@@ -43,3 +43,5 @@ namespace std
 #define RELOCATION_OFFSET(SE, AE) REL::VariantOffset(SE, AE, 0).offset()
 
 #include "Plugin.h"
+#include <d3d11.h>
+#include <dxgi.h>

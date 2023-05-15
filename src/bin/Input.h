@@ -1,5 +1,6 @@
 #pragma once
 #include "PCH.h"
+#include <unordered_set>
 
 class Input : public RE::BSTEventSink<RE::InputEvent*>
 {
@@ -11,4 +12,9 @@ public:
 	}
 
 	virtual RE::BSEventNotifyControl ProcessEvent(RE::InputEvent* const* a_event, RE::BSTEventSource<RE::InputEvent*>* a_eventSource) override;
+	
+	std::unordered_set<uint32_t>& GetPressedKeys();
+
+private:
+	std::unordered_set<uint32_t> _pressedKeys;
 };

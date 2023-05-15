@@ -8,6 +8,8 @@
 
 #include "Renderer.h"
 
+#include "Wheeler.h"
+
 // enum : uint32_t
 // {
 //     kInvalid        = static_cast<uint32_t>(-1),
@@ -362,6 +364,13 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 			default:
 				continue;
 			}
+
+			if (button->IsDown()) {
+				_pressedKeys.insert(input);
+			}
+			else if (button->IsUp()) {
+				_pressedKeys.erase(input);
+			}
 			
 			uint32_t key = MapVirtualKeyEx(scan_code, MAPVK_VSC_TO_VK_EX, GetKeyboardLayout(0));
 			switch (scan_code) {
@@ -462,10 +471,16 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 				break;
 			case RE::INPUT_DEVICE::kKeyboard:
 				io.AddKeyEvent(ImGui_ImplWin32_VirtualKeyToImGuiKey(key), button->IsPressed());
-				if (button->GetIDCode() == 211) {  // del
+				if (button->GetIDCode() == 79) {  // num 1
 					if (button->IsDown()) {
 						INFO("Toggle pie menu!");
-						Renderer::flip();
+						Wheeler::GetInstance()->OpenMenu();
+					}
+				}
+				if (button->GetIDCode() == 80) {  // num 2
+					if (button->IsDown()) {
+						INFO("Toggle pie menu!");
+						Wheeler::GetInstance()->CloseMenu();
 					}
 				}
 				break;
@@ -480,4 +495,9 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 	}
 
 	return RE::BSEventNotifyControl::kContinue;
+}
+
+std::unordered_set<uint32_t>& Input::GetPressedKeys()
+{
+	return _pressedKeys;
 }

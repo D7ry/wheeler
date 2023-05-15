@@ -40,13 +40,9 @@ private:
 	static inline ID3D11Device* device = nullptr;
 	static inline ID3D11DeviceContext* context = nullptr;
 
-	static inline bool enable = false;
-
 
 public:
 	static bool Install();
-
-	static void flip();
 
 	static float GetResolutionScaleWidth();   // { return ImGui::GetIO().DisplaySize.x / 1920.f; }
 	static float GetResolutionScaleHeight();  //{ return ImGui::GetIO().DisplaySize.y / 1080.f; }

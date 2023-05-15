@@ -27,12 +27,17 @@ public:
 	/// </summary>
 	void FlushWheelItems();
 
+	void OpenMenu();
+	void CloseMenu();
+
 private:
 	std::vector<WheelItem*> _items;
-
+	bool _active = false;
 	/// <summary>
 	/// Check if wheel items are valid(existing in player inventory).
 	/// If not, remove the invalid item and flush the new data.
 	/// </summary>
 	void verifyWheelItems();
+
+	const char* _wheelWindowID = "##Wheeler";
 };

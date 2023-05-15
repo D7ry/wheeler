@@ -1,6 +1,18 @@
 #include "WheelItem.h"
-
-void WheelItem::Draw() 
+#include "include/lib/Drawer.h"
+void WheelItem::Draw(ImVec2 a_center, bool a_hovered)
 {
-	PieMenu::PieMenuItem("one default item(this should not be seen)");
+	Drawer::draw_text(a_center.x, a_center.y, 0, 0, 0, 0, "One Item", 255, 255, 255, 255);
+
+	//Drawer::draw_element(_texture, ImVec2(0, 0), ImVec2(100, 100), 0);
+}
+
+void WheelItem::Activate(uint32_t a_keyID)
+{
+	// do nothing
+}
+
+ID3D11ShaderResourceView* WheelItem::GetTexture()
+{
+	return nullptr;
 }

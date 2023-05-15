@@ -151,15 +151,6 @@ bool Renderer::Install()
 	return true;
 }
 
-void Renderer::flip() 
-{
-	enable = !enable;
-	ImGui::GetIO().MouseDrawCursor = enable;
-	auto controlMap = RE::ControlMap::GetSingleton();
-	if (controlMap) {
-		controlMap->ignoreKeyboardMouse = enable;
-	}
-}
 
 
 float Renderer::GetResolutionScaleWidth()
@@ -186,10 +177,6 @@ void Renderer::draw()
 	// Add UI elements here
 	//ImGui::Text("sizeX: %f, sizeYL %f", screenSizeX, screenSizeY);
 
-	if (enable) {
-		float screenSizeX = ImGui::GetIO().DisplaySize.x;
-		float screenSizeY = ImGui::GetIO().DisplaySize.y;
-		Wheeler::GetInstance()->Draw();
-	}
+	Wheeler::GetInstance()->Draw();
 
 }
