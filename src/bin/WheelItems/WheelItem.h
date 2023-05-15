@@ -4,6 +4,7 @@ class ImVec2;
 class WheelItem
 {
 public:
+	WheelItem(){};
 	WheelItem(Texture::Image tex)
 	{
 		_texture = tex;
@@ -30,6 +31,13 @@ namespace WheelItemStyling
 		const inline float OffsetX = 0;
 		const inline float OffsetY = 10;
 		const inline float Size = 20;
+	}
+
+	namespace Desc
+	{
+		const inline float OffsetX = 0;
+		const inline float OFfsetY = 30;
+		const inline float Size = 15;
 	}
 
 };

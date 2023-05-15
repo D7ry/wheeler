@@ -3,10 +3,10 @@
 
 void WheelItemWeapon::Draw(ImVec2 a_center, bool a_hovered)
 {
-	std::string text = a_hovered ? "Weapon Hovered" : "Weapon Not Hovered";
+	//std::string text = a_hovered ? "Weapon Hovered" : "Weapon Not Hovered";
 	Drawer::draw_text(a_center.x, a_center.y, 
 		WheelItemStyling::Text::OffsetX, WheelItemStyling::Text::OffsetY,
-		text.data(), 255, 255, 255, 255,
+		_weapon->GetName(), 255, 255, 255, 255,
 		WheelItemStyling::Text::Size);
 	Drawer::draw_texture(_texture.texture, 
 		ImVec2(a_center.x, a_center.y),

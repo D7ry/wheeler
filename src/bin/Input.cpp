@@ -454,6 +454,11 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 						Wheeler::GetInstance()->CloseMenu();
 					}
 				}
+				if (button->GetIDCode() == 81) {
+					if (button->IsDown()) {
+						Wheeler::GetInstance()->ToggleEditMode();
+					}
+				}
 				break;
 			case RE::INPUT_DEVICE::kGamepad:
 				// not implemented yet

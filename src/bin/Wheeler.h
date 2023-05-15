@@ -30,7 +30,7 @@ public:
 	void OpenMenu();
 	void CloseMenu();
 
-	bool EditMode();
+	void ToggleEditMode();
 
 private:
 	std::vector<WheelItem*> _items;
@@ -47,9 +47,8 @@ private:
 
 namespace WheelerStyling
 {
-	const inline float RADIUS_MIN = 180.0f;
-	const inline float RADIUS_MAX = 320.0f;
-	const inline float RADIUS_INTERACT_MIN = 60.0f;
-	const inline int ITEMS_MIN = 1;
-	const inline float ITEM_INNER_SPACING = 0.f;
+	inline float RADIUS_MIN = 120.0f;
+	inline float RADIUS_MAX = 360.0f;
+	inline int ITEMS_MIN = 1;
+	inline float ITEM_INNER_SPACING = 5.f;
 }
