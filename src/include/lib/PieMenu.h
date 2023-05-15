@@ -6,6 +6,8 @@ public:
 	virtual void Draw();
 	virtual void Activate(uint32_t keyID);
 };
+
+//unused, but kept as reference
 namespace PieMenu
 {
 	// Return >= 0 on mouse release

@@ -30,9 +30,12 @@ public:
 	void OpenMenu();
 	void CloseMenu();
 
+	bool EditMode();
+
 private:
 	std::vector<WheelItem*> _items;
 	bool _active = false;
+	bool _editMode = false;
 	/// <summary>
 	/// Check if wheel items are valid(existing in player inventory).
 	/// If not, remove the invalid item and flush the new data.
@@ -41,3 +44,12 @@ private:
 
 	const char* _wheelWindowID = "##Wheeler";
 };
+
+namespace WheelerStyling
+{
+	const inline float RADIUS_MIN = 180.0f;
+	const inline float RADIUS_MAX = 320.0f;
+	const inline float RADIUS_INTERACT_MIN = 60.0f;
+	const inline int ITEMS_MIN = 1;
+	const inline float ITEM_INNER_SPACING = 0.f;
+}

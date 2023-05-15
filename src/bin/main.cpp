@@ -2,11 +2,13 @@
 #include "Renderer.h"
 #include "Hooks.h"
 #include "Wheeler.h"
+#include "Texture.h"
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
 		RE::BSInputDeviceManager::GetSingleton()->AddEventSink(Input::GetSingleton());
+		Texture::Init();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
 		break;

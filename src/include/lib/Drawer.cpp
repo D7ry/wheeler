@@ -2,10 +2,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 
-#define NANOSVG_IMPLEMENTATION
-#define NANOSVG_ALL_COLOR_KEYWORDS
-#include "nanosvg.h"
-void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y, float a_offset_extra_x, float a_offset_extra_y, const char* a_text, UINT32 a_alpha, UINT32 a_red, UINT32 a_green, UINT32 a_blue, float a_font_size, bool a_center_text, bool a_deduct_text_x, bool a_deduct_text_y, bool a_add_text_x, bool a_add_text_y)
+void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y, const char* a_text, UINT32 a_alpha, UINT32 a_red, UINT32 a_green, UINT32 a_blue, float a_font_size, bool a_center_text, bool a_deduct_text_x, bool a_deduct_text_y, bool a_add_text_x, bool a_add_text_y)
 {
 	//it should center the text, it kind of does
 	auto text_x = 0.f;
@@ -36,7 +33,7 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 	}
 
 	const auto position =
-		ImVec2(a_x + a_offset_x + a_offset_extra_x + text_x, a_y + a_offset_y + a_offset_extra_y + text_y);
+		ImVec2(a_x + a_offset_x + text_x, a_y + a_offset_y + text_y);
 
 	auto* font = ImGui::GetDefaultFont(); // TODO: add custom font support
 	if (!font) {
@@ -46,8 +43,9 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 	ImGui::GetWindowDrawList()->AddText(font, a_font_size, position, color, a_text, nullptr, 0.0f, nullptr);
 }
 
-void Drawer::draw_element(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, ImVec2 a_size, float a_angle, ImU32 a_color)
+void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, float a_offset_x, float a_offset_y, ImVec2 a_size, float a_angle, ImU32 a_color)
 {
+	a_center = ImVec2(a_center.x + a_offset_x, a_center.y + a_offset_y);
 	const float cos_a = cosf(a_angle);
 	const float sin_a = sinf(a_angle);
 	const ImVec2 pos[4] = { a_center + ImRotate(ImVec2(-a_size.x * 0.5f, -a_size.y * 0.5f), cos_a, sin_a),

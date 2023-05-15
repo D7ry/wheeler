@@ -10,35 +10,6 @@
 
 #include "Wheeler.h"
 
-// enum : uint32_t
-// {
-//     kInvalid        = static_cast<uint32_t>(-1),
-//     kKeyboardOffset = 0,
-//     kMouseOffset    = 256,
-//     kGamepadOffset  = 266,
-//     kMaxOffset      = 282
-// };
-
-// enum
-// {
-//     kGamepadButtonOffset_DPAD_UP = kGamepadOffset, // 266
-//     kGamepadButtonOffset_DPAD_DOWN,
-//     kGamepadButtonOffset_DPAD_LEFT,
-//     kGamepadButtonOffset_DPAD_RIGHT,
-//     kGamepadButtonOffset_START,
-//     kGamepadButtonOffset_BACK,
-//     kGamepadButtonOffset_LEFT_THUMB,
-//     kGamepadButtonOffset_RIGHT_THUMB,
-//     kGamepadButtonOffset_LEFT_SHOULDER,
-//     kGamepadButtonOffset_RIGHT_SHOULDER,
-//     kGamepadButtonOffset_A,
-//     kGamepadButtonOffset_B,
-//     kGamepadButtonOffset_X,
-//     kGamepadButtonOffset_Y,
-//     kGamepadButtonOffset_LT,
-//     kGamepadButtonOffset_RT // 281
-// };
-
 #define IM_VK_KEYPAD_ENTER (VK_RETURN + 256)
 static ImGuiKey ImGui_ImplWin32_VirtualKeyToImGuiKey(WPARAM wParam)
 {
@@ -341,7 +312,7 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 
 	for (auto event = *a_event; event; event = event->next) {
 		if (event->eventType == RE::INPUT_EVENT_TYPE::kChar) {
-			io.AddInputCharacter(static_cast<CharEvent*>(event)->keyCode);
+			//io.AddInputCharacter(static_cast<CharEvent*>(event)->keyCode);
 		} else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
 			const auto button = static_cast<RE::ButtonEvent*>(event);
 			if (!button || (button->IsPressed() && !button->IsDown()))
@@ -462,24 +433,24 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 			switch (button->device.get()) {
 			case RE::INPUT_DEVICE::kMouse:
 				if (scan_code > 7)  // middle scroll
-					io.AddMouseWheelEvent(0, button->Value() * (scan_code == 8 ? 1 : -1));
+				{
+					//io.AddMouseWheelEvent(0, button->Value() * (scan_code == 8 ? 1 : -1));
+				}
 				else {
 					if (scan_code > 5)
 						scan_code = 5;
-					io.AddMouseButtonEvent(scan_code, button->IsPressed());
+					//io.AddMouseButtonEvent(scan_code, button->IsPressed());
 				}
 				break;
 			case RE::INPUT_DEVICE::kKeyboard:
-				io.AddKeyEvent(ImGui_ImplWin32_VirtualKeyToImGuiKey(key), button->IsPressed());
+				//io.AddKeyEvent(ImGui_ImplWin32_VirtualKeyToImGuiKey(key), button->IsPressed());
 				if (button->GetIDCode() == 79) {  // num 1
 					if (button->IsDown()) {
-						INFO("Toggle pie menu!");
 						Wheeler::GetInstance()->OpenMenu();
 					}
 				}
 				if (button->GetIDCode() == 80) {  // num 2
 					if (button->IsDown()) {
-						INFO("Toggle pie menu!");
 						Wheeler::GetInstance()->CloseMenu();
 					}
 				}

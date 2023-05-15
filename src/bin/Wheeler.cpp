@@ -14,17 +14,24 @@ namespace TestData
 	void LoadTestItems(std::vector<WheelItem*>& r_wheelItems)
 	{
 		//r_wheelItems.push_back(WheelItem());
-		r_wheelItems.emplace_back(new WheelItemWeapon());
-		r_wheelItems.emplace_back(new WheelItemWeapon());
-		r_wheelItems.emplace_back(new WheelItemWeapon());
-		r_wheelItems.emplace_back(new WheelItemWeapon());
-		r_wheelItems.emplace_back(new WheelItemWeapon());
-		r_wheelItems.emplace_back(new WheelItemWeapon());
+		auto w1 = new WheelItemWeapon(Texture::GetIconImage(Texture::icon_image_type::dagger));
+		auto w2 = new WheelItemWeapon(Texture::GetIconImage(Texture::icon_image_type::halberd));
+		auto w3 = new WheelItemWeapon(Texture::GetIconImage(Texture::icon_image_type::sword_one_handed));
+		auto w4 = new WheelItemWeapon(Texture::GetIconImage(Texture::icon_image_type::sword_two_handed));
+		auto w5 = new WheelItemWeapon(Texture::GetIconImage(Texture::icon_image_type::bow));
+
+		r_wheelItems.push_back(w1);
+		r_wheelItems.push_back(w2);
+		r_wheelItems.push_back(w3);
+		r_wheelItems.push_back(w4);
+		r_wheelItems.push_back(w5);
 	}
 }
 
 void Wheeler::Draw()
 {
+	using namespace WheelerStyling;
+
 	if (!this->_active) { // queued to close
 		if (ImGui::IsPopupOpen(_wheelWindowID)) {
 			ImGui::BeginPopup(_wheelWindowID);
@@ -46,59 +53,74 @@ void Wheeler::Draw()
 		}
 		ImGui::OpenPopup(_wheelWindowID);
 	}
-	
-	const ImVec2 center = ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
 
-	ImGui::SetNextWindowPos(center);
-
+	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
 	// begin draw
 	if (ImGui::BeginPopup(_wheelWindowID)) {
+		const ImVec2 wheelCenter = ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
+
 		auto drawList = ImGui::GetWindowDrawList();
 		drawList->PushClipRectFullScreen();
 		// draws the pie menu
 		int numItems = _items.size();
+		ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
+		ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		for (int item_n = 0; item_n < numItems; item_n++) {
 			// fancy math begin
-			const ImVec2 drag_delta = ImVec2(ImGui::GetIO().MousePos.x - center.x, ImGui::GetIO().MousePos.y - center.y);
+			const ImVec2 drag_delta = ImVec2(ImGui::GetIO().MousePos.x - wheelCenter.x, ImGui::GetIO().MousePos.y - wheelCenter.y);
 			const float drag_dist2 = drag_delta.x * drag_delta.x + drag_delta.y * drag_delta.y;
 
-			const ImGuiStyle& style = ImGui::GetStyle();
-			const float RADIUS_MIN = 80.0f;
-			const float RADIUS_MAX = 160.0f;
-			const float RADIUS_INTERACT_MIN = 20.0f;
-			const int ITEMS_MIN = 6;
 			const float item_arc_span = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
 
-			const float inner_spacing = style.ItemInnerSpacing.x / RADIUS_MIN / 2;
-			const float item_inner_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing);
-			const float item_inner_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing);
-			const float item_outer_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing * (RADIUS_MIN / RADIUS_MAX));
-			const float item_outer_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing * (RADIUS_MIN / RADIUS_MAX));
+			const float inner_spacing = ITEM_INNER_SPACING / RADIUS_MIN / 2;
+			float item_inner_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing) + IM_PI / 2;
+			float item_inner_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing) + IM_PI / 2;
+
+			if (item_inner_ang_max > IM_PI * 2) {
+				item_inner_ang_min -= IM_PI * 2;
+				item_inner_ang_max -= IM_PI * 2;
+			}
 
 			float drag_angle = atan2f(drag_delta.y, drag_delta.x);
-			if (drag_angle < -0.5f * item_arc_span)
-				drag_angle += 2.0f * IM_PI;
 
 			bool hovered = false;
 			if (drag_dist2 >= RADIUS_INTERACT_MIN * RADIUS_INTERACT_MIN) {
-				if (drag_angle >= item_inner_ang_min && drag_angle < item_inner_ang_max)
+				if (drag_angle >= item_inner_ang_min) {  // Normal case
+					if (drag_angle < item_inner_ang_max) {
+						hovered = true;
+					}
+				} 
+				else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
 					hovered = true;
+				}
 			}
 
-			WheelItem* item = _items[item_n];
+
+			// Calculate the starting angle adjustment for odd number of items
+			//float start_angle_adjustment = (numItems % 2 != 0) ? -item_arc_span / 2.0f : 0.0f;
+
 			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
 			float t2 = RADIUS_MIN + t1;
+			float rad = (item_inner_ang_max - item_inner_ang_min) / 2 + item_inner_ang_min;
+			float t3 = cosf(rad);
+			float t4 = sinf(rad);
 			ImVec2 itemCenter = ImVec2(
-				center.x + t2 * cosf(item_arc_span * item_n),
-				center.y + t2 * sinf(item_arc_span * item_n)
-			);
+				wheelCenter.x + t2 * t3,
+				wheelCenter.y + t2 * t4
+				);
+			
+			WheelItem* item = _items[item_n];
+
 			// debug
 			ImGui::GetWindowDrawList()->AddCircleFilled(itemCenter, 5, ImGui::GetColorU32(ImGuiCol_Button), 9);
+
 			// fancy math end
 			if (hovered) {
 				for (uint32_t keyID : Input::GetSingleton()->GetPressedKeys()) {
 					item->Activate(keyID);
 				}
+			} else {
+				INFO("NOt hovered: min: {}, max: {}, angle: {}", item_inner_ang_min, item_inner_ang_max, drag_angle);
 			}
 			item->Draw(itemCenter, hovered);
 		}
@@ -141,6 +163,11 @@ void Wheeler::OpenMenu()
 void Wheeler::CloseMenu()
 {
 	this->_active = false;
+}
+
+bool Wheeler::EditMode()
+{
+	return this->_editMode;
 }
 
 void Wheeler::verifyWheelItems()

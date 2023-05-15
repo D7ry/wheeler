@@ -12,6 +12,7 @@
 // stole this from MaxSu's detection meter
 
 #include "Wheeler.h"
+#include "Texture.h"
 
 namespace stl
 {
@@ -66,6 +67,7 @@ void Renderer::D3DInitHook::thunk()
 	}
 
 	device = render_data.forwarder;
+	Texture::device_ = device;
 	context = render_data.context;
 
 	INFO("Initializing ImGui...");

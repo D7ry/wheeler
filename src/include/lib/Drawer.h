@@ -9,7 +9,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
-
+// stole from Lama's tiny hud
 
 namespace Drawer
 {
@@ -17,8 +17,6 @@ namespace Drawer
 		float a_y,
 		float a_offset_x,
 		float a_offset_y,
-		float a_offset_extra_x,
-		float a_offset_extra_y,
 		const char* a_text,
 		UINT32 a_alpha,
 		UINT32 a_red,
@@ -30,8 +28,10 @@ namespace Drawer
 		bool a_deduct_text_y = false,
 		bool a_add_text_x = false,
 		bool a_add_text_y = false);
-	void draw_element(ID3D11ShaderResourceView* a_texture,
+	void draw_texture(ID3D11ShaderResourceView* a_texture,
 		ImVec2 a_center,
+		float a_offset_x, 
+		float a_offset_y,
 		ImVec2 a_size,
 		float a_angle,
 		ImU32 a_color = IM_COL32_WHITE);
