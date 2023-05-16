@@ -311,7 +311,11 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 	auto& io = ImGui::GetIO();
 
 	for (auto event = *a_event; event; event = event->next) {
-		if (event->eventType == RE::INPUT_EVENT_TYPE::kChar) {
+		if (event->eventType == RE::INPUT_EVENT_TYPE::kMouseMove) {
+			RE::MouseMoveEvent* mouseMove = static_cast<RE::MouseMoveEvent*>(event);
+			Wheeler::GetInstance()->updateCursorPos(mouseMove->mouseInputX, mouseMove->mouseInputY);
+		}
+		else if (event->eventType == RE::INPUT_EVENT_TYPE::kChar) {
 			//io.AddInputCharacter(static_cast<CharEvent*>(event)->keyCode);
 		} else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
 			const auto button = static_cast<RE::ButtonEvent*>(event);

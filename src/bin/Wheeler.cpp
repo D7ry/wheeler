@@ -58,11 +58,6 @@ void Wheeler::Draw()
 		}
 		ImGui::OpenPopup(_wheelWindowID);
 		this->_activeItem = -1; // reset active item on reopen
-		this->_cursorPos = {0, 0};   // reset cursor position on reopen
-		SetCursorPos(getWheelCenter().x, getWheelCenter().y); // reset global cursor pos
-		this->_cursorPosPrevGlob = { getWheelCenter().x, getWheelCenter().y };  // set it to 0 for delta comp
-	} else { // note we skip update cursor pos here
-		this->updateCursorPos();
 	}
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
@@ -209,14 +204,15 @@ void Wheeler::verifyWheelItems()
 {
 }
 
-inline void Wheeler::updateCursorPos()
+void Wheeler::updateCursorPos(float a_deltaX, float a_deltaY)
 {
-	ImVec2 delta = ImGui::GetIO().MousePos - _cursorPosPrevGlob;
-	ImVec2 newPos = _cursorPos + delta;
+	ImVec2 newPos = _cursorPos + ImVec2{ a_deltaX, a_deltaY };
 	// Calculate the distance from the wheel center to the new cursor position
 	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
 
 	// If the distance exceeds the cursor radius, adjust the cursor position
+	
+	
 	if (distanceFromCenter > Config::Control::Wheel::cursorRadius) {
 		// Calculate the normalized direction vector from the center to the new position
 		ImVec2 direction = newPos / distanceFromCenter;
@@ -224,9 +220,8 @@ inline void Wheeler::updateCursorPos()
 		// Set the cursor position at the edge of the cursor radius
 		newPos = direction * Config::Control::Wheel::cursorRadius;
 	}
-
+	
 	_cursorPos = newPos;
-	_cursorPosPrevGlob = ImGui::GetIO().MousePos;
 }
 
 inline ImVec2 Wheeler::getWheelCenter()

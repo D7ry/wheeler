@@ -32,6 +32,7 @@ public:
 	void CloseMenu();
 
 	void ToggleEditMode();
+	void updateCursorPos(float a_deltaX, float a_deltaY);
 
 private:
 	std::vector<WheelItem*> _items;
@@ -48,12 +49,7 @@ private:
 	// currently active item, will be highlighted. Gets reset every time wheel reopens.
 	int _activeItem = -1; 
 	
-	// the relative cursor within the wheel, independent of the actual mouse cursor
-	ImVec2 _cursorPos = ImVec2(0, 0);
-	// absolute cursor pos.
-	ImVec2 _cursorPosPrevGlob = ImVec2(0, 0);
-	
-	void updateCursorPos();
+	ImVec2 _cursorPos = { 0, 0 };
 
 	ImVec2 getWheelCenter();
 
