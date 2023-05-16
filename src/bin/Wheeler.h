@@ -32,8 +32,9 @@ public:
 	void CloseMenu();
 
 	void ToggleEditMode();
-	void updateCursorPos(float a_deltaX, float a_deltaY);
-
+	void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
+	void UpdateCursorPosGamepad(float a_x, float a_y);
+		
 private:
 	std::vector<WheelItem*> _items;
 	bool _active = false;

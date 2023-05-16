@@ -58,6 +58,7 @@ void Wheeler::Draw()
 		}
 		ImGui::OpenPopup(_wheelWindowID);
 		this->_activeItem = -1; // reset active item on reopen
+		this->_cursorPos = { 0, 0 }; // reset cursor pos
 	}
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
@@ -113,7 +114,7 @@ void Wheeler::Draw()
 			}
 			bool hovered = this->_activeItem == item_n;
 
-
+			// calculate wheel center
 			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
 			float t2 = RADIUS_MIN + t1;
 			float rad = (item_inner_ang_max - item_inner_ang_min) / 2 + item_inner_ang_min;
@@ -124,10 +125,8 @@ void Wheeler::Draw()
 				wheelCenter.y + t2 * t4
 				);
 			
-
 			int arc_segments = (int)(64 * item_arc_span / (2 * IM_PI)) + 1;
 			// fancy math end
-
 			Drawer::draw_arc(wheelCenter,
 				RADIUS_MIN + ITEM_INNER_SPACING,
 				RADIUS_MAX - ITEM_INNER_SPACING,
@@ -204,15 +203,13 @@ void Wheeler::verifyWheelItems()
 {
 }
 
-void Wheeler::updateCursorPos(float a_deltaX, float a_deltaY)
+void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
 {
 	ImVec2 newPos = _cursorPos + ImVec2{ a_deltaX, a_deltaY };
 	// Calculate the distance from the wheel center to the new cursor position
 	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
 
 	// If the distance exceeds the cursor radius, adjust the cursor position
-	
-	
 	if (distanceFromCenter > Config::Control::Wheel::cursorRadius) {
 		// Calculate the normalized direction vector from the center to the new position
 		ImVec2 direction = newPos / distanceFromCenter;
@@ -221,6 +218,22 @@ void Wheeler::updateCursorPos(float a_deltaX, float a_deltaY)
 		newPos = direction * Config::Control::Wheel::cursorRadius;
 	}
 	
+	_cursorPos = newPos;
+}
+
+void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
+{
+	ImVec2 newPos = { a_x,a_y };
+	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
+	// If the distance exceeds the cursor radius, adjust the cursor position
+	if (distanceFromCenter > Config::Control::Wheel::cursorRadius) {
+		// Calculate the normalized direction vector from the center to the new position
+		ImVec2 direction = newPos / distanceFromCenter;
+
+		// Set the cursor position at the edge of the cursor radius
+		newPos = direction * Config::Control::Wheel::cursorRadius;
+	}
+
 	_cursorPos = newPos;
 }
 
