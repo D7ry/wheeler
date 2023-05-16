@@ -35,4 +35,10 @@ namespace Drawer
 		ImVec2 a_size,
 		float a_angle,
 		ImU32 a_color = IM_COL32_WHITE);
+	void draw_arc(
+		ImVec2 center,
+		float radius_min, float radius_max,
+		float inner_ang_min, float inner_ang_max,
+		float outer_ang_min, float outer_ang_max,
+		ImU32 color, uint32_t segments);
 };

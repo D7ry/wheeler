@@ -3,59 +3,23 @@ WIP design of a wheel menu....
 Pipeline:
 
 
-`WheelData`:
-manages items, sends them to renderer, reacts to user changes to data(adding&deleting stuff), flush changes to `WheelSerializer`.
-- `WheelSerializer`: gets saved items, init `WheelItems`(vector of vector of stuff...), flush changes made by `WheelItems`
-- `WheelItem`:
+- `Wheeler`: manages items
+- `Serializer`: gets saved items, init `WheelItems`(vector of vector of stuff...), flush changes made by `Wheeler`
+- `WheelItem`: parent class of all wheel items, contains `Draw()` function called by `Wheeler`
+- `Renderer`: ImGui hook and entry
+- `Texture`: interface for getting ptrs to textures, responsible for reading textures
+- `Config`: all settings, styling etc...
 Metadata of an item.
-```cpp
-class WheelItem // base class
-{
-	public:
-	// the callee is responsible for openening a new wheel menu.
-	void Render();
-	private:
-	virtual void Activate(int aux);
-
-}
-
-//example of another class
-class WheelItemWeapon : WheelItem
-{
-	public:
-	void Render() override;
-	private:
-	void Activate(int aux) override
-	{
-		player->equipWeapon(this->_weapon);
-	}
-	Weapon _weapon;
-}
-class WheelItemSubMenu : WheelItem
-{
-	public:
-	void Activate(int aux) override
-	{
-
-	}
-	void Render() override;
-}
-```
-
-```cpp
-class Wheel
-{
-	std::vector<WheelItem> _items;
-}
 
 ```
 To-dos:
 
-- MVP: 
-	- [ ] data structure
-		- [ ] design
-		- [ ] temporary test data structure
-	- [ ] minimally working renderer
+- [ ]allow users to edit wheel
+- [ ]add config in DMenu
+- [ ]framework texture styling
+Nice-to-haves:
+- [ ]block only used inputs(input hooking)
+- [ ]multi-lingual and custom font
 
 
 References:

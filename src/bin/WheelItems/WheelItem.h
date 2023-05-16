@@ -1,5 +1,6 @@
 #pragma once
 #include "bin/Texture.h"
+#include "bin/Config.h"
 class ImVec2;
 class WheelItem
 {
@@ -10,34 +11,9 @@ public:
 		_texture = tex;
 	}
 	virtual void Draw(ImVec2 a_center, bool a_hovered);
-	virtual void Activate(uint32_t a_keyID);
+	virtual void ReceiveInput(uint32_t a_keyID);
+	virtual bool IsActive();
 
 protected:
 	Texture::Image _texture;
-};
-
-// based on 1920 x 1080 res, need to scale based on resolution
-namespace WheelItemStyling
-{
-	namespace Texture
-	{
-		const inline float OffsetX = 0;
-		const inline float OffsetY = -25;
-		const inline float Scale = .1f;
-	}
-
-	namespace Text
-	{
-		const inline float OffsetX = 0;
-		const inline float OffsetY = 10;
-		const inline float Size = 20;
-	}
-
-	namespace Desc
-	{
-		const inline float OffsetX = 0;
-		const inline float OFfsetY = 30;
-		const inline float Size = 15;
-	}
-
 };

@@ -11,6 +11,7 @@
 #include "imgui.h"
 
 #include "WheelItems/WheelItemWeapon.h"
+#include "include/lib/Drawer.h"
 namespace TestData
 {
 	void LoadTestItems(std::vector<WheelItem*>& r_wheelItems)
@@ -34,14 +35,14 @@ namespace TestData
 
 void Wheeler::Draw()
 {
-	using namespace WheelerStyling;
+	using namespace Config::Styling::Wheel;
 
 	if (!this->_active) { // queued to close
 		if (ImGui::IsPopupOpen(_wheelWindowID)) {
 			ImGui::BeginPopup(_wheelWindowID);
 			ImGui::CloseCurrentPopup();
 			ImGui::EndPopup();
-			ImGui::GetIO().MouseDrawCursor = false;
+			//ImGui::GetIO().MouseDrawCursor = false;
 			auto controlMap = RE::ControlMap::GetSingleton();
 			if (controlMap) {
 				controlMap->ignoreKeyboardMouse = false;
@@ -50,35 +51,37 @@ void Wheeler::Draw()
 		return;
 	}
 	if (!ImGui::IsPopupOpen(_wheelWindowID)) {  // queued to open
-		ImGui::GetIO().MouseDrawCursor = true;
+		//ImGui::GetIO().MouseDrawCursor = true;
 		auto controlMap = RE::ControlMap::GetSingleton();
 		if (controlMap) {
 			controlMap->ignoreKeyboardMouse = true;
 		}
 		ImGui::OpenPopup(_wheelWindowID);
 		this->_activeItem = -1; // reset active item on reopen
+		this->_cursorPos = {0, 0};   // reset cursor position on reopen
+		SetCursorPos(getWheelCenter().x, getWheelCenter().y); // reset global cursor pos
+		this->_cursorPosPrevGlob = { getWheelCenter().x, getWheelCenter().y };  // set it to 0 for delta comp
+	} else { // note we skip update cursor pos here
+		this->updateCursorPos();
 	}
-
+	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
 	// begin draw
 	if (ImGui::BeginPopup(_wheelWindowID)) {
-		const ImVec2 wheelCenter = ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
+		const ImVec2 wheelCenter = getWheelCenter();
 
 		auto drawList = ImGui::GetWindowDrawList();
 
 		drawList->PushClipRectFullScreen();
 		drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 32);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
-		drawList->PathStroke(WheelerStyling::BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
+		drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
 		// draws the pie menu
 		int numItems = _items.size();
-		
+
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		for (int item_n = 0; item_n < numItems; item_n++) {
 			// fancy math begin
-			//const ImVec2 drag_delta = ImVec2(ImGui::GetIO().MousePos.x - wheelCenter.x, ImGui::GetIO().MousePos.y - wheelCenter.y);
-			const ImVec2 drag_delta = ImGui::GetIO().MouseDelta;
-			//const float drag_dist2 = drag_delta.x * drag_delta.x + drag_delta.y * drag_delta.y;
 
 			const float item_arc_span = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
 
@@ -100,10 +103,9 @@ void Wheeler::Draw()
 			}
 
 			// update hovered item
-			// TODO: this is too sensitive
-			if (drag_delta.x != 0 && drag_delta.y != 0) {
+			if (_cursorPos.x != 0 || _cursorPos.y != 0) {
 
-				float drag_angle = atan2f(drag_delta.y, drag_delta.x);
+				float drag_angle = atan2f(_cursorPos.y, _cursorPos.x);
 
 				if (drag_angle >= item_inner_ang_min) {  // Normal case
 					if (drag_angle < item_inner_ang_max) {
@@ -127,39 +129,33 @@ void Wheeler::Draw()
 				wheelCenter.y + t2 * t4
 				);
 			
+
+			int arc_segments = (int)(64 * item_arc_span / (2 * IM_PI)) + 1;
+			// fancy math end
+
+			Drawer::draw_arc(wheelCenter,
+				RADIUS_MIN + ITEM_INNER_SPACING,
+				RADIUS_MAX - ITEM_INNER_SPACING,
+				item_inner_ang_min, item_inner_ang_max,
+				item_outer_ang_min, item_outer_ang_max,
+				hovered ? HoveredColor : UnhoveredColor, arc_segments);
+
+			drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
+
 			WheelItem* item = _items[item_n];
 
-			int arc_segments = (int)(32 * item_arc_span / (2 * IM_PI)) + 1;
-
-			ImU32 iColor = hovered ? WheelerStyling::ActiveColor : WheelerStyling::InactiveColor;
-			const float fAngleStepInner = (item_inner_ang_max - item_inner_ang_min) / arc_segments;
-			const float fAngleStepOuter = (item_outer_ang_max - item_outer_ang_min) / arc_segments;
-			
-			const ImVec2& vTexUvWhitePixel = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
-			// draw an arc for the current item
-			drawList->PrimReserve(arc_segments * 6, (arc_segments + 1) * 2);
-			for (int iSeg = 0; iSeg <= arc_segments; ++iSeg) {
-				float fCosInner = cosf(item_inner_ang_min + fAngleStepInner * iSeg);
-				float fSinInner = sinf(item_inner_ang_min + fAngleStepInner * iSeg);
-				float fCosOuter = cosf(item_outer_ang_min + fAngleStepOuter * iSeg);
-				float fSinOuter = sinf(item_outer_ang_min + fAngleStepOuter * iSeg);
-
-				if (iSeg < arc_segments) {
-					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 0);
-					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
-					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
-					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 3);
-					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
-					drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
-				}
-
-				drawList->PrimWriteVtx(ImVec2(wheelCenter.x + fCosInner * (RADIUS_MIN + ITEM_INNER_SPACING), wheelCenter.y + fSinInner * (RADIUS_MIN + ITEM_INNER_SPACING)), vTexUvWhitePixel, iColor);
-				drawList->PrimWriteVtx(ImVec2(wheelCenter.x + fCosOuter * (RADIUS_MAX - ITEM_INNER_SPACING), wheelCenter.y + fSinOuter * (RADIUS_MAX - ITEM_INNER_SPACING)), vTexUvWhitePixel, iColor);
+			if (item->IsActive() || hovered) {
+				Drawer::draw_arc(wheelCenter,
+					RADIUS_MAX - ITEM_INNER_SPACING,
+					RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
+					item_outer_ang_min, item_outer_ang_max,
+					item_outer_ang_min, item_outer_ang_max,
+					ActiveArcColor, arc_segments);
 			}
-			// fancy math end
+			
 			if (hovered) {
 				for (uint32_t keyID : Input::GetSingleton()->GetPressedKeys()) {
-					item->Activate(keyID);
+					item->ReceiveInput(keyID);
 				}
 			}
 			item->Draw(itemCenter, hovered);
@@ -211,5 +207,30 @@ void Wheeler::ToggleEditMode()
 
 void Wheeler::verifyWheelItems()
 {
+}
+
+inline void Wheeler::updateCursorPos()
+{
+	ImVec2 delta = ImGui::GetIO().MousePos - _cursorPosPrevGlob;
+	ImVec2 newPos = _cursorPos + delta;
+	// Calculate the distance from the wheel center to the new cursor position
+	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
+
+	// If the distance exceeds the cursor radius, adjust the cursor position
+	if (distanceFromCenter > Config::Control::Wheel::cursorRadius) {
+		// Calculate the normalized direction vector from the center to the new position
+		ImVec2 direction = newPos / distanceFromCenter;
+
+		// Set the cursor position at the edge of the cursor radius
+		newPos = direction * Config::Control::Wheel::cursorRadius;
+	}
+
+	_cursorPos = newPos;
+	_cursorPosPrevGlob = ImGui::GetIO().MousePos;
+}
+
+inline ImVec2 Wheeler::getWheelCenter()
+{
+	return ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
 }
 

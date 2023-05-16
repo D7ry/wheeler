@@ -5,14 +5,14 @@ void WheelItemWeapon::Draw(ImVec2 a_center, bool a_hovered)
 {
 	//std::string text = a_hovered ? "Weapon Hovered" : "Weapon Not Hovered";
 	Drawer::draw_text(a_center.x, a_center.y, 
-		WheelItemStyling::Text::OffsetX, WheelItemStyling::Text::OffsetY,
+		Config::Styling::Item::Text::OffsetX, Config::Styling::Item::Text::OffsetY,
 		_weapon->GetName(), 255, 255, 255, 255,
-		WheelItemStyling::Text::Size);
+		Config::Styling::Item::Text::Size);
 	Drawer::draw_texture(_texture.texture, 
 		ImVec2(a_center.x, a_center.y),
-		WheelItemStyling::Texture::OffsetX,
-		WheelItemStyling::Texture::OffsetY,
-		ImVec2(_texture.width * WheelItemStyling::Texture::Scale, _texture.height * WheelItemStyling::Texture::Scale), 
+		Config::Styling::Item::Texture::OffsetX,
+		Config::Styling::Item::Texture::OffsetY,
+		ImVec2(_texture.width * Config::Styling::Item::Texture::Scale, _texture.height * Config::Styling::Item::Texture::Scale), 
 		0);
 	//PieMenu::PieMenuItem("one weapon");
 }

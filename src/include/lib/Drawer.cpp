@@ -59,3 +59,32 @@ void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, 
 	ImGui::GetWindowDrawList()
 		->AddImageQuad(a_texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], a_color);
 }
+
+void Drawer::draw_arc(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 color, uint32_t segments)
+{
+	const float fAngleStepInner = (inner_ang_max - inner_ang_min) / segments;
+	const float fAngleStepOuter = (outer_ang_max - outer_ang_min) / segments;
+
+	const ImVec2& vTexUvWhitePixel = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
+	// draw an arc for the current item
+	auto drawList = ImGui::GetWindowDrawList();
+	drawList->PrimReserve(segments * 6, (segments + 1) * 2);
+	for (int iSeg = 0; iSeg <= segments; ++iSeg) {
+		float fCosInner = cosf(inner_ang_min + fAngleStepInner * iSeg);
+		float fSinInner = sinf(inner_ang_min + fAngleStepInner * iSeg);
+		float fCosOuter = cosf(outer_ang_min + fAngleStepOuter * iSeg);
+		float fSinOuter = sinf(outer_ang_min + fAngleStepOuter * iSeg);
+
+		if (iSeg < segments) {
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 0);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 3);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
+		}
+
+		drawList->PrimWriteVtx(ImVec2(center.x + fCosInner * radius_min, center.y + fSinInner * radius_min), vTexUvWhitePixel, color);
+		drawList->PrimWriteVtx(ImVec2(center.x + fCosOuter * radius_max, center.y + fSinOuter * radius_max), vTexUvWhitePixel, color);
+	}
+}
