@@ -66,7 +66,7 @@ namespace Config
 				namespace Desc
 				{
 					const inline float OffsetX = 0;
-					const inline float OFfsetY = 30;
+					const inline float OffsetY = 30;
 					const inline float Size = 15;
 				}
 			}

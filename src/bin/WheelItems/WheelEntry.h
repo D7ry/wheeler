@@ -10,7 +10,8 @@ public:
 	
 	void DrawHighlight(ImVec2 a_center);
 
-	bool IsActive();
+	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
 	void PrevItem();
 	void NextItem();

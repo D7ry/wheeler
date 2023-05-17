@@ -30,14 +30,15 @@ namespace TestData
 	
 		Wheeler::Wheel* w1 = new Wheeler::Wheel();
 
-		// 1st itemlist in w1, contains 1 item
+		// 1st entry in w1, contains 1 item
 		WheelEntry* l1 = new WheelEntry();
 		l1->_items.push_back(o1);
 
+		// 2nd entry, 1 item
 		WheelEntry* l2 = new WheelEntry();
 		l2->_items.push_back(o2);
 
-		// 2nd itemlist in w1, contains 3 items
+		// 3rd entry in w1, contains 3 items
 		WheelEntry* l3 = new WheelEntry();
 		l3->_items.push_back(o3);
 		l3->_items.push_back(o4);
@@ -58,6 +59,9 @@ namespace TestData
 void Wheeler::Draw()
 {
 	using namespace Config::Styling::Wheel;
+	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
+		return;
+	}
 
 	if (!_active) { // queued to close
 		if (ImGui::IsPopupOpen(_wheelWindowID)) {
@@ -84,6 +88,8 @@ void Wheeler::Draw()
 	}
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
+
+	auto inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
 	// begin draw
 	if (ImGui::BeginPopup(_wheelWindowID)) {
 		const ImVec2 wheelCenter = getWheelCenter();
@@ -100,6 +106,9 @@ void Wheeler::Draw()
 
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
+		float drag_angle = atan2f(_cursorPos.y, _cursorPos.x);
+
+
 		for (int item_n = 0; item_n < numItems; item_n++) {
 			// fancy math begin
 
@@ -124,9 +133,6 @@ void Wheeler::Draw()
 
 			// update hovered item
 			if (_cursorPos.x != 0 || _cursorPos.y != 0) {
-
-				float drag_angle = atan2f(_cursorPos.y, _cursorPos.x);
-
 				if (drag_angle >= item_inner_ang_min) {  // Normal case
 					if (drag_angle < item_inner_ang_max) {
 						_activeItem = item_n;
@@ -134,7 +140,6 @@ void Wheeler::Draw()
 				} else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
 					_activeItem = item_n;
 				}
-
 			}
 			bool hovered = _activeItem == item_n;
 
@@ -158,11 +163,10 @@ void Wheeler::Draw()
 				item_outer_ang_min, item_outer_ang_max,
 				hovered ? HoveredColor : UnhoveredColor, arc_segments);
 
-			drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
 
 			WheelEntry* entry = wheel->entries[item_n];
 
-			if (entry->IsActive() || hovered) {
+			if (entry->IsActive(inv)) {
 				Drawer::draw_arc(wheelCenter,
 					RADIUS_MAX - ITEM_INNER_SPACING,
 					RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
@@ -176,6 +180,8 @@ void Wheeler::Draw()
 			}
 			entry->DrawSlot(itemCenter, hovered);
 		}
+		drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
+
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -215,6 +221,9 @@ void Wheeler::FlushWheelItems()
 
 void Wheeler::OpenMenu()
 {
+	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
+		return;
+	}
 	_active = true;
 }
 
@@ -225,7 +234,7 @@ void Wheeler::CloseMenu()
 
 void Wheeler::ToggleEditMode()
 {
-	_editMode = _editMode;
+	_editMode = !_editMode;
 }
 
 void Wheeler::verifyWheelItems(std::vector<WheelEntry*> a_items)

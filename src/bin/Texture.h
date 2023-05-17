@@ -125,8 +125,8 @@ private:
 					logger::error("failed to load texture {}"sv, entry.path().filename().string().c_str());
 				}
 
-				a_struct[index].width = static_cast<int32_t>(a_struct[index].width * get_resolution_scale_width());
-				a_struct[index].height = static_cast<int32_t>(a_struct[index].height * get_resolution_scale_height());
+				//a_struct[index].width = static_cast<int32_t>(a_struct[index].width * get_resolution_scale_width());
+				//a_struct[index].height = static_cast<int32_t>(a_struct[index].height * get_resolution_scale_height());
 			}
 		}
 	}

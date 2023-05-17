@@ -22,9 +22,20 @@ void WheelEntry::DrawHighlight(ImVec2 a_center)
 	}
 }
 
-bool WheelEntry::IsActive()
+bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	return _items[_selectedItem]->IsActive();
+	if (_selectedItem < 0) {
+		return false;
+	}
+	return _items[_selectedItem]->IsActive(a_inv);
+}
+
+bool WheelEntry::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
+{
+	if (_selectedItem < 0) {
+		return false;
+	}
+	return _items[_selectedItem]->IsAvailable(a_inv);
 }
 
 void WheelEntry::PrevItem()

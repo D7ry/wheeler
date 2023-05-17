@@ -11,7 +11,12 @@ void WheelItem::DrawHighlight(ImVec2 a_center)
 }
 
 
-bool WheelItem::IsActive()
+bool WheelItem::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
+{
+	return false;
+}
+
+bool WheelItem::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	return false;
 }
