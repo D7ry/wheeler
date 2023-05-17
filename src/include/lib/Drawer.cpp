@@ -94,3 +94,37 @@ void Drawer::draw_arc(ImVec2 center, float radius_min, float radius_max, float i
 		drawList->PrimWriteVtx(ImVec2(center.x + fCosOuter * radius_max, center.y + fSinOuter * radius_max), vTexUvWhitePixel, color);
 	}
 }
+
+void Drawer::draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 color_start, ImU32 color_end, uint32_t segments)
+{
+	const float fAngleStepInner = (inner_ang_max - inner_ang_min) / segments;
+	const float fAngleStepOuter = (outer_ang_max - outer_ang_min) / segments;
+
+	const ImVec2& vTexUvWhitePixel = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
+	// draw an arc for the current item
+	auto drawList = ImGui::GetWindowDrawList();
+	drawList->PrimReserve(segments * 6, (segments + 1) * 2);
+	for (int iSeg = 0; iSeg <= segments; ++iSeg) {
+		float fCosInner = cosf(inner_ang_min + fAngleStepInner * iSeg);
+		float fSinInner = sinf(inner_ang_min + fAngleStepInner * iSeg);
+		float fCosOuter = cosf(outer_ang_min + fAngleStepOuter * iSeg);
+		float fSinOuter = sinf(outer_ang_min + fAngleStepOuter * iSeg);
+
+		if (iSeg < segments) {
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 0);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 3);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 2);
+			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
+		}
+
+		// Interpolate between the start and end colors for inner vertex
+		ImU32 colorInner = ImLerp(color_start, color_end, 0);
+		drawList->PrimWriteVtx(ImVec2(center.x + fCosInner * radius_min, center.y + fSinInner * radius_min), vTexUvWhitePixel, colorInner);
+
+		// Interpolate between the start and end colors for outer vertex
+		ImU32 colorOuter = ImLerp(color_start, color_end, 1);
+		drawList->PrimWriteVtx(ImVec2(center.x + fCosOuter * radius_max, center.y + fSinOuter * radius_max), vTexUvWhitePixel, colorOuter);
+	}
+}

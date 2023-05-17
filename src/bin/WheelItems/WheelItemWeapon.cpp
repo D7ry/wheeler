@@ -1,6 +1,6 @@
 #include "WheelItemWeapon.h"
 #include "include/lib/Drawer.h"
-
+#include "bin/Utils.h"
 void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered)
 {
 	Drawer::draw_text(a_center.x, a_center.y, 
@@ -69,6 +69,44 @@ WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon)
 	}
 }
 
+void WheelItemWeapon::ActivateItemLeft()
+{
+	auto pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc || !pc->Is3DLoaded()) {
+		return;
+	}
+	auto inv = pc->GetInventory();
+	if (!this->IsAvailable(inv)) {
+		return;
+	}
+	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->getBoundObject(inv), nullptr, 1, Utils::Slot::GetLeftHandSlot());
+}
+
+void WheelItemWeapon::ActivateItemRight()
+{
+	auto pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc || !pc->Is3DLoaded()) {
+		return;
+	}
+	auto inv = pc->GetInventory();
+	if (!this->IsAvailable(inv)) {
+		return;
+	}
+	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->getBoundObject(inv), nullptr, 1, Utils::Slot::GetRightHandSlot());
+}
+
+RE::TESBoundObject* WheelItemWeapon::getBoundObject(RE::TESObjectREFR::InventoryItemMap& a_inv)
+{
+	for (auto& [item, count] : a_inv) {
+		if (item->GetFormType() == RE::FormType::Weapon) {
+			if (item->GetFormID() == _weapon->GetFormID()) {
+				return item;
+			}
+		}
+	}
+	return nullptr;
+}
+
 bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
@@ -76,12 +114,5 @@ bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 }
 bool WheelItemWeapon::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	for (auto& [item, count] : a_inv) {
-		if (item->GetFormType() == RE::FormType::Weapon) {
-			if (item->GetFormID() == _weapon->GetFormID()) {
-				return true;
-			}
-		}
-	}
-	return false;
+	return this->getBoundObject(a_inv) != nullptr;
 }

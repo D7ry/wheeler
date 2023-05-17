@@ -12,8 +12,8 @@ void Controls::Init()
 			{ 81, &Wheeler::ToggleEditMode }, // numpad 3
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
 			{ 265, &Wheeler::NextItem }, // mouse wheel down
-			{ 256, &Wheeler::ActivateItemLeft}, // mouse left
-			{ 257, &Wheeler::ActivateItemRight} // mouse right
+			{ 256, &Wheeler::ActivateItemRight}, // mouse left
+			{ 257, &Wheeler::ActivateItemLeft} // mouse right
 		}
 		) {
 		BindInput(pair.first, pair.second);

@@ -38,6 +38,22 @@ bool WheelEntry::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	return _items[_selectedItem]->IsAvailable(a_inv);
 }
 
+void WheelEntry::ActivateItemLeft()
+{
+	if (_selectedItem < 0) {
+		return;
+	}
+	_items[_selectedItem]->ActivateItemLeft();
+}
+
+void WheelEntry::ActivateItemRight()
+{
+	if (_selectedItem < 0) {
+		return;
+	}
+	_items[_selectedItem]->ActivateItemRight();
+}
+
 void WheelEntry::PrevItem()
 {
 	_selectedItem--;

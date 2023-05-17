@@ -3,9 +3,11 @@
 #include <PCH.h>
 namespace Utils
 {
-	namespace Player
+	namespace Slot
 	{
-
+		RE::BGSEquipSlot* GetLeftHandSlot();
+		RE::BGSEquipSlot* GetVoiceSlot();
+		RE::BGSEquipSlot* GetRightHandSlot();
 	}
 
 }

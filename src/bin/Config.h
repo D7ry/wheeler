@@ -20,14 +20,19 @@ namespace Config
 			inline float RADIUS_MIN = 220.0f;
 			inline float RADIUS_MAX = 360.0f;
 			inline int ITEMS_MIN = 1;
-			inline float ITEM_INNER_SPACING = 7.f;
+			inline float ITEM_INNER_SPACING = 5.f;
 
 			inline ImColor BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
-			inline ImColor HoveredColor = ImColor(27, 198, 250, 125);
-			inline ImColor UnhoveredColor = ImColor(0.0f, 0.0f, 0.0f, 0.3f);
-			
-			inline ImColor ActiveArcColor = ImColor(28, 191, 255);
-			inline float ActiveArcWidth = 15.f;
+			inline ImColor HoveredColorBegin = ImColor(27, 198, 250, 25);
+			inline ImColor HoveredColorEnd = ImColor(27, 198, 250, 225);
+
+			inline ImColor UnhoveredColorBegin = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
+			inline ImColor UnhoveredColorEnd = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
+
+			inline ImColor ActiveArcColorBegin = ImColor(28, 191, 255);
+			inline ImColor ActiveArcColorEnd = ImColor(28, 191, 255, 255);
+
+			inline float ActiveArcWidth = 10.f;
 
 			inline uint32_t NumWheels = 3;  // # of wheels
 		}

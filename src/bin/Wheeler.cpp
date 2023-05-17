@@ -27,6 +27,8 @@ namespace TestData
 		auto o3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm"));  // ebony sword
 		auto o4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm"));  // steel greatsword
 		auto o5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm"));  // Gauldur Blackbow
+		auto o6 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13998, "Skyrim.esm"));  // Dwarven mace
+		auto o7 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x10c6fb, "Skyrim.esm"));  // Dwarven mace
 	
 		Wheeler::Wheel* w1 = new Wheeler::Wheel();
 
@@ -43,10 +45,19 @@ namespace TestData
 		l3->_items.push_back(o3);
 		l3->_items.push_back(o4);
 		l3->_items.push_back(o5);
+
+		WheelEntry* l4 = new WheelEntry();
+		l4->_items.push_back(o6);
+
+		WheelEntry* l5 = new WheelEntry();
+		l5->_items.push_back(o7);
 		
 		w1->entries.push_back(l1);
 		w1->entries.push_back(l2);
 		w1->entries.push_back(l3);
+		w1->entries.push_back(l4);
+		w1->entries.push_back(l5);
+
 
 		Wheeler::Wheel* w2 = new Wheeler::Wheel();
 		_wheels.push_back(w1);
@@ -97,8 +108,8 @@ void Wheeler::Draw()
 		auto drawList = ImGui::GetWindowDrawList();
 
 		drawList->PushClipRectFullScreen();
-		drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
-		drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
+		//drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
+		//drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
 
 		Wheel* wheel = _wheels[_activeWheel];
 		// draws the pie menu
@@ -156,23 +167,26 @@ void Wheeler::Draw()
 			
 			int arc_segments = (int)(64 * item_arc_span / (2 * IM_PI)) + 1;
 			// fancy math end
-			Drawer::draw_arc(wheelCenter,
+			Drawer::draw_arc_gradient(wheelCenter,
 				RADIUS_MIN + ITEM_INNER_SPACING,
 				RADIUS_MAX - ITEM_INNER_SPACING,
 				item_inner_ang_min, item_inner_ang_max,
 				item_outer_ang_min, item_outer_ang_max,
-				hovered ? HoveredColor : UnhoveredColor, arc_segments);
+				hovered ? HoveredColorBegin : UnhoveredColorBegin,
+				hovered ? HoveredColorEnd : UnhoveredColorEnd,
+				arc_segments);
 
 
 			WheelEntry* entry = wheel->entries[item_n];
 
 			if (entry->IsActive(inv)) {
-				Drawer::draw_arc(wheelCenter,
+				Drawer::draw_arc_gradient(wheelCenter,
 					RADIUS_MAX - ITEM_INNER_SPACING,
 					RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
 					item_outer_ang_min, item_outer_ang_max,
 					item_outer_ang_min, item_outer_ang_max,
-					ActiveArcColor, arc_segments);
+					ActiveArcColorBegin, ActiveArcColorEnd,
+					arc_segments);
 			}
 			
 			if (hovered) {
@@ -310,10 +324,16 @@ void Wheeler::NextItem()
 
 void Wheeler::ActivateItemLeft()
 {
+	if (_active && _activeItem != -1) {
+		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemLeft();
+	}
 }
 
 void Wheeler::ActivateItemRight()
 {
+	if (_active && _activeItem != -1) {
+		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemRight();
+	}
 }
 
 

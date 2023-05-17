@@ -13,6 +13,9 @@ public:
 	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
 	bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
+	void ActivateItemLeft();
+	void ActivateItemRight();
+
 	void PrevItem();
 	void NextItem();
 

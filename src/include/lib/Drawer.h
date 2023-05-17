@@ -41,4 +41,6 @@ namespace Drawer
 		float inner_ang_min, float inner_ang_max,
 		float outer_ang_min, float outer_ang_max,
 		ImU32 color, uint32_t segments);
+	void draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 color_start, ImU32 color_end, uint32_t segments);
+
 };
