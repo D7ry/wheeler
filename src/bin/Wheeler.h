@@ -2,13 +2,13 @@
 #include "Config.h"
 #include "imgui.h"
 class WheelItem;
+class WheelEntry;
 class Wheeler
 {
 public:
 	static void Init()
 	{
-		// initialize wheels
-		_wheels.emplace_back(new Wheel());
+		// insert an empty wheel
 		_wheels.emplace_back(new Wheel());
 	}
 	static void Draw();
@@ -26,29 +26,34 @@ public:
 	/// </summary>
 	static void FlushWheelItems();
 
-	static void OpenMenu();
-	static void CloseMenu();
+
 
 	static void ToggleEditMode();
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
-
+	static void OpenMenu();
+	static void CloseMenu();
 	static void NextWheel();
 	static void PrevWheel();
-	
-private:
+	static void PrevItem();
+	static void NextItem();
+	static void ActivateItemLeft();
+	static void ActivateItemRight();
 	struct Wheel
 	{
-		std::vector<WheelItem*> items;
+		std::vector<WheelEntry*> entries;
 	};
+
+private:
+
 	static inline bool _active = false;
 	static inline bool _editMode = false;
 	/// <summary>
 	/// Check if wheel items are valid(existing in player inventory).
 	/// If not, remove the invalid item and flush the new data.
 	/// </summary>
-	static void verifyWheelItems(std::vector<WheelItem*> a_items);
+	static void verifyWheelItems(std::vector<WheelEntry*> a_items);
 
 	static inline const char* _wheelWindowID = "##Wheeler";
 

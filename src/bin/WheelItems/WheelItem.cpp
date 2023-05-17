@@ -10,10 +10,6 @@ void WheelItem::DrawHighlight(ImVec2 a_center)
 {
 }
 
-void WheelItem::ReceiveInput(uint32_t a_keyID)
-{
-	// do nothing
-}
 
 bool WheelItem::IsActive()
 {

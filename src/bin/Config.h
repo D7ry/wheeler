@@ -31,6 +31,19 @@ namespace Config
 
 			inline uint32_t NumWheels = 3;  // # of wheels
 		}
+
+		namespace Entry
+		{
+			namespace Highlight
+			{
+				namespace Text
+				{
+					const inline float OffsetX = 0;
+					const inline float OffsetY = -130;
+					const inline float Size = 20;
+				}
+			}
+		}
 		
 		namespace Item
 		{

@@ -346,12 +346,9 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 			}
 
 			if (button->IsDown()) {
-				Controls::AddPressedKey(input);
 				Controls::Dispatch(input);
 			}
-			else if (button->IsUp()) {
-				Controls::RemovePressedKey(input);
-			}
+
 			
 			uint32_t key = MapVirtualKeyEx(scan_code, MAPVK_VSC_TO_VK_EX, GetKeyboardLayout(0));
 			switch (scan_code) {

@@ -12,32 +12,45 @@
 #include "WheelItems/WheelItem.h"
 
 #include "WheelItems/WheelItemWeapon.h"
+#include "WheelItems/WheelEntry.h"
 #include "include/lib/Drawer.h"
 #include "Controls.h"
 namespace TestData
 {
-	void LoadTestItems1(std::vector<WheelItem*>& r_wheelItems)
+	void Load(std::vector<Wheeler::Wheel*>& _wheels)
 	{
+		assert(_wheels.empty());
 		auto dh = RE::TESDataHandler::GetSingleton();
+
+		auto o1 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139A4, "Skyrim.esm"));  // glass battle axe
+		auto o2 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B6, "Skyrim.esm"));  // daedric dagger
+		auto o3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm"));  // ebony sword
+		auto o4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm"));  // steel greatsword
+		auto o5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm"));  // Gauldur Blackbow
+	
+		Wheeler::Wheel* w1 = new Wheeler::Wheel();
+
+		// 1st itemlist in w1, contains 1 item
+		WheelEntry* l1 = new WheelEntry();
+		l1->_items.push_back(o1);
+
+		WheelEntry* l2 = new WheelEntry();
+		l2->_items.push_back(o2);
+
+		// 2nd itemlist in w1, contains 3 items
+		WheelEntry* l3 = new WheelEntry();
+		l3->_items.push_back(o3);
+		l3->_items.push_back(o4);
+		l3->_items.push_back(o5);
 		
-		auto w1 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139A4, "Skyrim.esm")); // glass battle axe
-		auto w2 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B6, "Skyrim.esm")); // daedric dagger
-		auto w3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm")); // ebony sword
+		w1->entries.push_back(l1);
+		w1->entries.push_back(l2);
+		w1->entries.push_back(l3);
 
-		r_wheelItems.push_back(w1);
-		r_wheelItems.push_back(w2);
-		r_wheelItems.push_back(w3);
-	}
+		Wheeler::Wheel* w2 = new Wheeler::Wheel();
+		_wheels.push_back(w1);
+		_wheels.push_back(w2);
 
-	void LoadTestItems2(std::vector<WheelItem*>& r_wheelItems)
-	{
-		auto dh = RE::TESDataHandler::GetSingleton();
-
-		auto w4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm")); // steel greatsword
-		auto w5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm")); // Gauldur Blackbow
-
-		r_wheelItems.push_back(w4);
-		r_wheelItems.push_back(w5);
 	}
 	
 }
@@ -83,7 +96,7 @@ void Wheeler::Draw()
 
 		Wheel* wheel = _wheels[_activeWheel];
 		// draws the pie menu
-		int numItems = wheel->items.size();
+		int numItems = wheel->entries.size();
 
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
@@ -147,9 +160,9 @@ void Wheeler::Draw()
 
 			drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
 
-			WheelItem* item = wheel->items[item_n];
+			WheelEntry* entry = wheel->entries[item_n];
 
-			if (item->IsActive() || hovered) {
+			if (entry->IsActive() || hovered) {
 				Drawer::draw_arc(wheelCenter,
 					RADIUS_MAX - ITEM_INNER_SPACING,
 					RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
@@ -159,14 +172,10 @@ void Wheeler::Draw()
 			}
 			
 			if (hovered) {
-				item->DrawHighlight(wheelCenter);
-				for (uint32_t keyID : Controls::GetPressedKeys()) {
-					item->ReceiveInput(keyID);
-				}
+				entry->DrawHighlight(wheelCenter);
 			}
-			item->DrawSlot(itemCenter, hovered);
+			entry->DrawSlot(itemCenter, hovered);
 		}
-		Controls::FlushPressedKeys();
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -179,21 +188,20 @@ void Wheeler::LoadWheelItems()
 	_active = false;
 	_activeItem = -1;
 
-	int i = 0;
+	// clean up old wheels
 	for (Wheel* wheel : _wheels) {
-		for (WheelItem* item : wheel->items) {
-			delete item;  // delete old items
+		for (WheelEntry* e : wheel->entries) {
+			delete e;  // itemList's destructor frees underlying items
 		}
-		wheel->items.clear();
-		
-		if (i == 0) {
-			TestData::LoadTestItems1(wheel->items);
-		} else if (i == 1) {
-			TestData::LoadTestItems2(wheel->items);
-		}
-		//Serializer::LoadData(_items); 
-		verifyWheelItems(wheel->items);
-		i++;
+		delete wheel;
+	}
+	_wheels.clear();
+	
+	//Serializer::LoadData(_items);
+	TestData::Load(_wheels);
+
+	for (Wheel* wheel : _wheels) {
+		//verifyWheelItems(wheel->entries);
 	}
 }
 
@@ -220,7 +228,7 @@ void Wheeler::ToggleEditMode()
 	_editMode = _editMode;
 }
 
-void Wheeler::verifyWheelItems(std::vector<WheelItem*> a_items)
+void Wheeler::verifyWheelItems(std::vector<WheelEntry*> a_items)
 {
 }
 
@@ -258,18 +266,45 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 	_cursorPos = newPos;
 }
 
+
 void Wheeler::NextWheel()
 {
-	_cursorPos = { 0, 0 };
-	_activeItem = -1;
-	_activeWheel = (_activeWheel + 1) % _wheels.size();
+	if (_active) {
+		_cursorPos = { 0, 0 };
+		_activeItem = -1;
+		_activeWheel = (_activeWheel + 1) % _wheels.size();
+	}
 }
 
 void Wheeler::PrevWheel()
 {
-	_cursorPos = { 0, 0 };
-	_activeItem = -1;
-	_activeWheel = (_activeWheel - 1) % _wheels.size();
+	if (_active) {
+		_cursorPos = { 0, 0 };
+		_activeItem = -1;
+		_activeWheel = (_activeWheel - 1) % _wheels.size();
+	}
+}
+
+void Wheeler::PrevItem()
+{
+	if (_active && _activeItem != -1) {
+		_wheels[_activeWheel]->entries[_activeItem]->PrevItem();
+	}
+}
+
+void Wheeler::NextItem()
+{
+	if (_active && _activeItem != -1) {
+		_wheels[_activeWheel]->entries[_activeItem]->NextItem();
+	}
+}
+
+void Wheeler::ActivateItemLeft()
+{
+}
+
+void Wheeler::ActivateItemRight()
+{
 }
 
 
