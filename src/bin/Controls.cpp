@@ -2,7 +2,7 @@
 void Controls::Init()
 {
 	for (const auto pair :
-		std::vector<std::pair<uint32_t, FunctionPtr>>
+		std::vector<std::pair<KeyId, FunctionPtr>>
 		{
 			{ 0x10, &Wheeler::NextWheel },
 			{ 0x12, &Wheeler::PrevWheel },
@@ -14,28 +14,28 @@ void Controls::Init()
 		BindInput(pair.first, pair.second);
 	}
 }
-void Controls::BindInput(uint32_t key, FunctionPtr func)
+void Controls::BindInput(KeyId key, FunctionPtr func)
 {
 	if (_functionKeyMap.contains(func)) {
-		uint32_t oldKey = _functionKeyMap[func];
+		KeyId oldKey = _functionKeyMap[func];
 		_keyFunctionMap.erase(oldKey);
 	}
 	_functionKeyMap[func] = key;
 	_keyFunctionMap[key] = func;
 }
 
-void Controls::Dispatch(uint32_t key)
+void Controls::Dispatch(KeyId key)
 {
 	if (_keyFunctionMap.contains(key)) {
 		FunctionPtr func = _keyFunctionMap[key];
 		func();
 	}
 }
-void Controls::AddPressedKey(uint32_t key)
+void Controls::AddPressedKey(KeyId key)
 {
 	_pressedKeys.insert(key);
 }
-void Controls::RemovePressedKey(uint32_t key)
+void Controls::RemovePressedKey(KeyId key)
 {
 	_pressedKeys.erase(key);
 }

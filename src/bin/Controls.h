@@ -6,12 +6,13 @@
 class Controls
 {
 public:
+	using KeyId = uint32_t;
 	using FunctionPtr = void (*)();
 	static void Init();
-	static void BindInput(uint32_t key, FunctionPtr func);
-	static void Dispatch(uint32_t key);
-	static void AddPressedKey(uint32_t key);
-	static void RemovePressedKey(uint32_t key);
+	static void BindInput(KeyId key, FunctionPtr func);
+	static void Dispatch(KeyId key);
+	static void AddPressedKey(KeyId key);
+	static void RemovePressedKey(KeyId key);
 	static void FlushPressedKeys();
 	static std::unordered_set<uint32_t>& GetPressedKeys();
 

@@ -260,12 +260,14 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 
 void Wheeler::NextWheel()
 {
+	_cursorPos = { 0, 0 };
 	_activeItem = -1;
 	_activeWheel = (_activeWheel + 1) % _wheels.size();
 }
 
 void Wheeler::PrevWheel()
 {
+	_cursorPos = { 0, 0 };
 	_activeItem = -1;
 	_activeWheel = (_activeWheel - 1) % _wheels.size();
 }
