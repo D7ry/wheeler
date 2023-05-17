@@ -1,58 +1,66 @@
 #pragma once
-#include "WheelItems/WheelItem.h"
 #include "Config.h"
+#include "imgui.h"
+class WheelItem;
 class Wheeler
 {
 public:
-	static Wheeler* GetInstance()
+	static void Init()
 	{
-		static Wheeler instance;
-		return &instance;
+		// initialize wheels
+		_wheels.emplace_back(new Wheel());
+		_wheels.emplace_back(new Wheel());
 	}
-	Wheeler()
-	{
-
-	}
-	void Draw();
+	static void Draw();
 	
 	/// <summary>
 	/// Load all items in the wheel customized by the current save through the serializer.
 	/// This should be called on save load / on new game start.
 	/// </summary>
-	void LoadWheelItems();
+	static void LoadWheelItems();
 
 	/// <summary>
 	/// Flush all current items into a save.
 	/// This should be called on game save. This is guaranteed to be called in the same save that's
 	/// loaded before, so to ensure ACID.
 	/// </summary>
-	void FlushWheelItems();
+	static void FlushWheelItems();
 
-	void OpenMenu();
-	void CloseMenu();
+	static void OpenMenu();
+	static void CloseMenu();
 
-	void ToggleEditMode();
-	void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
-	void UpdateCursorPosGamepad(float a_x, float a_y);
-		
+	static void ToggleEditMode();
+	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
+	static void UpdateCursorPosGamepad(float a_x, float a_y);
+
+
+	static void NextWheel();
+	static void PrevWheel();
+	
 private:
-	std::vector<WheelItem*> _items;
-	bool _active = false;
-	bool _editMode = false;
+	struct Wheel
+	{
+		std::vector<WheelItem*> items;
+	};
+	static inline bool _active = false;
+	static inline bool _editMode = false;
 	/// <summary>
 	/// Check if wheel items are valid(existing in player inventory).
 	/// If not, remove the invalid item and flush the new data.
 	/// </summary>
-	void verifyWheelItems();
+	static void verifyWheelItems(std::vector<WheelItem*> a_items);
 
-	const char* _wheelWindowID = "##Wheeler";
+	static inline const char* _wheelWindowID = "##Wheeler";
 
 	// currently active item, will be highlighted. Gets reset every time wheel reopens.
-	int _activeItem = -1; 
+	static inline int _activeItem = -1; 
 	
-	ImVec2 _cursorPos = { 0, 0 };
+	static inline ImVec2 _cursorPos = { 0, 0 };
 
-	ImVec2 getWheelCenter();
+	static ImVec2 getWheelCenter();
+	
+	static inline std::vector<Wheel*> _wheels;
+	static inline int _activeWheel = 0;
 
 };
 

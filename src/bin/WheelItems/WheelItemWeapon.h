@@ -4,7 +4,9 @@
 class WheelItemWeapon : public WheelItem
 {
 public:
-	void Draw(ImVec2 a_center, bool a_hovered) override;
+	void DrawSlot(ImVec2 a_center, bool a_hovered) override;
+	
+	void DrawHighlight(ImVec2 a_center) override;
 	
 	WheelItemWeapon(RE::TESObjectWEAP* a_weapon) 
 	{

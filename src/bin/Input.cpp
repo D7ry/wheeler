@@ -9,7 +9,7 @@
 #include "Renderer.h"
 
 #include "Wheeler.h"
-
+#include "Controls.h"
 #define IM_VK_KEYPAD_ENTER (VK_RETURN + 256)
 static ImGuiKey ImGui_ImplWin32_VirtualKeyToImGuiKey(WPARAM wParam)
 {
@@ -313,7 +313,7 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 	for (auto event = *a_event; event; event = event->next) {
 		if (event->eventType == RE::INPUT_EVENT_TYPE::kMouseMove) {
 			RE::MouseMoveEvent* mouseMove = static_cast<RE::MouseMoveEvent*>(event);
-			Wheeler::GetInstance()->UpdateCursorPosMouse(mouseMove->mouseInputX, mouseMove->mouseInputY);
+			Wheeler::UpdateCursorPosMouse(mouseMove->mouseInputX, mouseMove->mouseInputY);
 		} else if (event->eventType == RE::INPUT_EVENT_TYPE::kThumbstick) {
 			RE::ThumbstickEvent* thumbstick = static_cast<RE::ThumbstickEvent*>(event);
 			//if (thumbstick->IsRight()) {
@@ -346,10 +346,11 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 			}
 
 			if (button->IsDown()) {
-				_pressedKeys.insert(input);
+				Controls::AddPressedKey(input);
+				Controls::Dispatch(input);
 			}
 			else if (button->IsUp()) {
-				_pressedKeys.erase(input);
+				Controls::RemovePressedKey(input);
 			}
 			
 			uint32_t key = MapVirtualKeyEx(scan_code, MAPVK_VSC_TO_VK_EX, GetKeyboardLayout(0));
@@ -453,21 +454,6 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 				break;
 			case RE::INPUT_DEVICE::kKeyboard:
 				//io.AddKeyEvent(ImGui_ImplWin32_VirtualKeyToImGuiKey(key), button->IsPressed());
-				if (button->GetIDCode() == 79) {  // num 1
-					if (button->IsDown()) {
-						Wheeler::GetInstance()->OpenMenu();
-					}
-				}
-				if (button->GetIDCode() == 80) {  // num 2
-					if (button->IsDown()) {
-						Wheeler::GetInstance()->CloseMenu();
-					}
-				}
-				if (button->GetIDCode() == 81) {
-					if (button->IsDown()) {
-						Wheeler::GetInstance()->ToggleEditMode();
-					}
-				}
 				break;
 			case RE::INPUT_DEVICE::kGamepad:
 				// not implemented yet
@@ -482,7 +468,3 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 	return RE::BSEventNotifyControl::kContinue;
 }
 
-std::unordered_set<uint32_t>& Input::GetPressedKeys()
-{
-	return _pressedKeys;
-}

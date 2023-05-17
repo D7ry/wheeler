@@ -9,35 +9,44 @@
 
 #include "imgui_internal.h"
 #include "imgui.h"
+#include "WheelItems/WheelItem.h"
 
 #include "WheelItems/WheelItemWeapon.h"
 #include "include/lib/Drawer.h"
+#include "Controls.h"
 namespace TestData
 {
-	void LoadTestItems(std::vector<WheelItem*>& r_wheelItems)
+	void LoadTestItems1(std::vector<WheelItem*>& r_wheelItems)
 	{
-		//r_wheelItems.push_back(WheelItem());
 		auto dh = RE::TESDataHandler::GetSingleton();
 		
 		auto w1 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139A4, "Skyrim.esm")); // glass battle axe
 		auto w2 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B6, "Skyrim.esm")); // daedric dagger
 		auto w3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm")); // ebony sword
-		auto w4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm")); // steel greatsword
-		auto w5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm")); // Gauldur Blackbow
 
 		r_wheelItems.push_back(w1);
 		r_wheelItems.push_back(w2);
 		r_wheelItems.push_back(w3);
+	}
+
+	void LoadTestItems2(std::vector<WheelItem*>& r_wheelItems)
+	{
+		auto dh = RE::TESDataHandler::GetSingleton();
+
+		auto w4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm")); // steel greatsword
+		auto w5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm")); // Gauldur Blackbow
+
 		r_wheelItems.push_back(w4);
 		r_wheelItems.push_back(w5);
 	}
+	
 }
 
 void Wheeler::Draw()
 {
 	using namespace Config::Styling::Wheel;
 
-	if (!this->_active) { // queued to close
+	if (!_active) { // queued to close
 		if (ImGui::IsPopupOpen(_wheelWindowID)) {
 			ImGui::BeginPopup(_wheelWindowID);
 			ImGui::CloseCurrentPopup();
@@ -57,8 +66,8 @@ void Wheeler::Draw()
 			controlMap->ignoreKeyboardMouse = true;
 		}
 		ImGui::OpenPopup(_wheelWindowID);
-		this->_activeItem = -1; // reset active item on reopen
-		this->_cursorPos = { 0, 0 }; // reset cursor pos
+		_activeItem = -1; // reset active item on reopen
+		_cursorPos = { 0, 0 }; // reset cursor pos
 	}
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
@@ -69,10 +78,12 @@ void Wheeler::Draw()
 		auto drawList = ImGui::GetWindowDrawList();
 
 		drawList->PushClipRectFullScreen();
-		drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 32);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
+		drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
 		drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
+
+		Wheel* wheel = _wheels[_activeWheel];
 		// draws the pie menu
-		int numItems = _items.size();
+		int numItems = wheel->items.size();
 
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
@@ -105,14 +116,14 @@ void Wheeler::Draw()
 
 				if (drag_angle >= item_inner_ang_min) {  // Normal case
 					if (drag_angle < item_inner_ang_max) {
-						this->_activeItem = item_n;
+						_activeItem = item_n;
 					}
 				} else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
-					this->_activeItem = item_n;
+					_activeItem = item_n;
 				}
 
 			}
-			bool hovered = this->_activeItem == item_n;
+			bool hovered = _activeItem == item_n;
 
 			// calculate wheel center
 			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
@@ -136,7 +147,7 @@ void Wheeler::Draw()
 
 			drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
 
-			WheelItem* item = _items[item_n];
+			WheelItem* item = wheel->items[item_n];
 
 			if (item->IsActive() || hovered) {
 				Drawer::draw_arc(wheelCenter,
@@ -148,12 +159,14 @@ void Wheeler::Draw()
 			}
 			
 			if (hovered) {
-				for (uint32_t keyID : Input::GetSingleton()->GetPressedKeys()) {
+				item->DrawHighlight(wheelCenter);
+				for (uint32_t keyID : Controls::GetPressedKeys()) {
 					item->ReceiveInput(keyID);
 				}
 			}
-			item->Draw(itemCenter, hovered);
+			item->DrawSlot(itemCenter, hovered);
 		}
+		Controls::FlushPressedKeys();
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -163,16 +176,24 @@ void Wheeler::Draw()
 // TODO: swap to real serializer after implementing it
 void Wheeler::LoadWheelItems()
 {
-	std::vector<WheelItem*> cpy = this->_items;
-	this->_items.clear();
-	this->_activeItem = -1;
-	INFO("Loading wheel items...");
-	TestData::LoadTestItems(this->_items);
-	//Serializer::LoadData(_items); 
-	INFO("...wheel items loaded!");
-	this->verifyWheelItems(); // chip away invalid items
-	for (WheelItem* item : cpy) {
-		delete item;
+	_active = false;
+	_activeItem = -1;
+
+	int i = 0;
+	for (Wheel* wheel : _wheels) {
+		for (WheelItem* item : wheel->items) {
+			delete item;  // delete old items
+		}
+		wheel->items.clear();
+		
+		if (i == 0) {
+			TestData::LoadTestItems1(wheel->items);
+		} else if (i == 1) {
+			TestData::LoadTestItems2(wheel->items);
+		}
+		//Serializer::LoadData(_items); 
+		verifyWheelItems(wheel->items);
+		i++;
 	}
 }
 
@@ -186,20 +207,20 @@ void Wheeler::FlushWheelItems()
 
 void Wheeler::OpenMenu()
 {
-	this->_active = true;
+	_active = true;
 }
 
 void Wheeler::CloseMenu()
 {
-	this->_active = false;
+	_active = false;
 }
 
 void Wheeler::ToggleEditMode()
 {
-	this->_editMode = !this->_editMode;
+	_editMode = _editMode;
 }
 
-void Wheeler::verifyWheelItems()
+void Wheeler::verifyWheelItems(std::vector<WheelItem*> a_items)
 {
 }
 
@@ -236,6 +257,19 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 
 	_cursorPos = newPos;
 }
+
+void Wheeler::NextWheel()
+{
+	_activeItem = -1;
+	_activeWheel = (_activeWheel + 1) % _wheels.size();
+}
+
+void Wheeler::PrevWheel()
+{
+	_activeItem = -1;
+	_activeWheel = (_activeWheel - 1) % _wheels.size();
+}
+
 
 inline ImVec2 Wheeler::getWheelCenter()
 {

@@ -179,6 +179,6 @@ void Renderer::draw()
 	// Add UI elements here
 	//ImGui::Text("sizeX: %f, sizeYL %f", screenSizeX, screenSizeY);
 
-	Wheeler::GetInstance()->Draw();
+	Wheeler::Draw();
 
 }

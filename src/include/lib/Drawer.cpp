@@ -4,6 +4,11 @@
 
 void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y, const char* a_text, UINT32 a_alpha, UINT32 a_red, UINT32 a_green, UINT32 a_blue, float a_font_size, bool a_center_text, bool a_deduct_text_x, bool a_deduct_text_y, bool a_add_text_x, bool a_add_text_y)
 {
+	auto* font = ImGui::GetDefaultFont();  // TODO: add custom font support
+	if (!font) {
+		font = ImGui::GetDefaultFont();
+	}
+
 	//it should center the text, it kind of does
 	auto text_x = 0.f;
 	auto text_y = 0.f;
@@ -14,7 +19,12 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 
 	const ImU32 color = IM_COL32(a_red, a_green, a_blue, a_alpha);
 
-	const ImVec2 text_size = ImGui::CalcTextSize(a_text);
+	const int defaultFontSize = 13;
+
+	ImVec2 text_size = ImGui::CalcTextSize(a_text);
+	text_size.x *= a_font_size / defaultFontSize;
+	text_size.y *= a_font_size / defaultFontSize;
+	
 	if (a_center_text) {
 		text_x = -text_size.x * 0.5f;
 		text_y = -text_size.y * 0.5f;
@@ -35,10 +45,6 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 	const auto position =
 		ImVec2(a_x + a_offset_x + text_x, a_y + a_offset_y + text_y);
 
-	auto* font = ImGui::GetDefaultFont(); // TODO: add custom font support
-	if (!font) {
-		font = ImGui::GetDefaultFont();
-	}
 
 	ImGui::GetWindowDrawList()->AddText(font, a_font_size, position, color, a_text, nullptr, 0.0f, nullptr);
 }

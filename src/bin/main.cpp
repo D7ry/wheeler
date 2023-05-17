@@ -3,6 +3,7 @@
 #include "Hooks.h"
 #include "Wheeler.h"
 #include "Texture.h"
+#include "Controls.h"
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
@@ -14,11 +15,11 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		break;
 
 	case SKSE::MessagingInterface::kSaveGame:
-		Wheeler::GetInstance()->FlushWheelItems();
+		Wheeler::FlushWheelItems();
 		break;
 	case SKSE::MessagingInterface::kPostLoadGame:
 	case SKSE::MessagingInterface::kNewGame:
-		Wheeler::GetInstance()->LoadWheelItems();
+		Wheeler::LoadWheelItems();
 		break;
 	}
 }
@@ -26,6 +27,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 void onSKSEInit()
 {
 	Renderer::Install();
+	Controls::Init();
+	Wheeler::Init();
 	Hooks::Install();
 }
 

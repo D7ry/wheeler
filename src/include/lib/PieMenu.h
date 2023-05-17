@@ -14,5 +14,4 @@ namespace PieMenu
 	// Optional int* p_selected display and update a currently selected item
 	int PiePopupSelectMenu(const ImVec2& center, const char* popup_id, const char** items, int items_count, int* p_selected, bool shouldClose);
 
-	void DrawPieMenu(const ImVec2& center, const char* popup_id, std::vector<PieMenuItem*>& items, bool shouldClose);
 }
