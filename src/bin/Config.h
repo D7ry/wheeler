@@ -41,6 +41,7 @@ namespace Config
 			inline uint32_t NumWheels = 3;  // # of wheels
 			
 			inline bool BlurOnOpen = true;
+			inline float SlowTimeScale = .1f;
 		}
 
 		namespace Entry

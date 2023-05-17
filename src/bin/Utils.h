@@ -10,4 +10,10 @@ namespace Utils
 		RE::BGSEquipSlot* GetRightHandSlot();
 	}
 
+	namespace Time
+	{
+		float GGTM();
+		void SGTM(float a_in);
+	}
+
 }

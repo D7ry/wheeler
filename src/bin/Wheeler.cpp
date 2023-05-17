@@ -15,6 +15,8 @@
 #include "WheelItems/WheelEntry.h"
 #include "include/lib/Drawer.h"
 #include "Controls.h"
+
+#include "Utils.h"
 namespace TestData
 {
 	void Load(std::vector<Wheeler::Wheel*>& _wheels)
@@ -239,6 +241,11 @@ void Wheeler::OpenMenu()
 		return;
 	}
 	if (!_active) {
+		if (Config::Styling::Wheel::SlowTimeScale <= 1) {
+			if (Utils::Time::GGTM() == 1) {
+				Utils::Time::SGTM(Config::Styling::Wheel::SlowTimeScale);
+			}
+		}
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
 			_active = true;
@@ -252,6 +259,11 @@ void Wheeler::CloseMenu()
 		return;
 	}
 	if (_active) {
+		if (Config::Styling::Wheel::SlowTimeScale <= 1) {
+			if (Utils::Time::GGTM() != 1) {
+				Utils::Time::SGTM(1);
+			}
+		}
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
 			_active = false;

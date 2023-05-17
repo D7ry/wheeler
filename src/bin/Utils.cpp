@@ -23,4 +23,21 @@ namespace Utils
 			return func();
 		}
 	}
+
+	namespace Time
+	{
+		float GGTM()
+		{
+			static float* g_SGTM = (float*)RELOCATION_ID(511883, 388443).address();
+			return *g_SGTM;
+		}
+		void SGTM(float a_in)
+		{
+			static float* g_SGTM = (float*)RELOCATION_ID(511883, 388443).address();
+			*g_SGTM = a_in;
+			using func_t = decltype(SGTM);
+			REL::Relocation<func_t> func{ RELOCATION_ID(66989, 68246) };
+			return;
+		}
+	}
 }
