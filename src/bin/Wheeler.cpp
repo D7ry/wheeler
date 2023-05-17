@@ -99,9 +99,9 @@ void Wheeler::Draw()
 		_activeItem = -1; // reset active item on reopen
 		_cursorPos = { 0, 0 }; // reset cursor pos
 	}
+	_openTimer += ImGui::GetIO().DeltaTime;
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
-
 	auto inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
 	// begin draw
 	if (ImGui::BeginPopup(_wheelWindowID)) {
@@ -235,6 +235,13 @@ void Wheeler::FlushWheelItems()
 	INFO("...wheel items flushed!");
 }
 
+void Wheeler::CloseMenuIfOpenedLongEnough()
+{
+	if (_active && _openTimer > _pressThreshold) {
+		CloseMenu();
+	}
+}
+
 void Wheeler::OpenMenu()
 {
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
@@ -250,6 +257,7 @@ void Wheeler::OpenMenu()
 			RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
 			_active = true;
 		}
+		_openTimer = 0;
 	}
 }
 
@@ -268,6 +276,7 @@ void Wheeler::CloseMenu()
 			RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
 			_active = false;
 		}
+		_openTimer = 0;
 	}
 }
 

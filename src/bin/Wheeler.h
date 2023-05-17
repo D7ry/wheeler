@@ -32,8 +32,10 @@ public:
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
+	static void CloseMenuIfOpenedLongEnough();
 	static void OpenMenu();
 	static void CloseMenu();
+	
 	static void NextWheel();
 	static void PrevWheel();
 	static void PrevItem();
@@ -46,7 +48,6 @@ public:
 	};
 
 private:
-
 	static inline bool _active = false;
 	static inline bool _editMode = false;
 	/// <summary>
@@ -66,6 +67,10 @@ private:
 	
 	static inline std::vector<Wheel*> _wheels;
 	static inline int _activeWheel = 0;
-
+	
+	// if the user presses longer than this(without sending close), the wheel will close on release
+	// the the user presses shorter than this, the wheel will close on a second press.
+	static inline const float _pressThreshold = .4f; 
+	static inline float _openTimer = 0;
 };
 
