@@ -2,24 +2,30 @@
 WIP design of a wheel menu....
 Pipeline:
 
-
 - `Wheeler`: manages items
 - `Serializer`: gets saved items, init `WheelItems`(vector of vector of stuff...), flush changes made by `Wheeler`
 - `WheelItem`: parent class of all wheel items, contains `Draw()` function called by `Wheeler`
 - `Renderer`: ImGui hook and entry
 - `Texture`: interface for getting ptrs to textures, responsible for reading textures
 - `Config`: all settings, styling etc...
-Metadata of an item.
+- `Controls`: input mapping
 
-```
 To-dos:
-
-- [ ]allow users to edit wheel
-- [ ]add config in DMenu
-- [ ]framework texture styling
+- [ ] multi-wheel
+	- [ ] data structure
+	- [ ] UI
+- [ ] in-game wheel editing
+- [ ] add config in DMenu
+- [ ] framework texture styling
+- [ ] Scaling
+	- [ ] Support magic
+	- [ ] Support shout
+	- [ ] Support power
+- [ ] animated armoury support
 Nice-to-haves:
-- [ ]block only used inputs(input hooking)
-- [ ]multi-lingual and custom font
+- [ ] block only used inputs(input hooking)
+- [ ] multi-lingual and custom font
+- [ ] theme
 
 
 References:
