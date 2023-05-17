@@ -239,8 +239,10 @@ void Wheeler::OpenMenu()
 		return;
 	}
 	if (!_active) {
-		RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
-		_active = true;
+		if (Config::Styling::Wheel::BlurOnOpen) {
+			RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
+			_active = true;
+		}
 	}
 }
 
@@ -250,8 +252,10 @@ void Wheeler::CloseMenu()
 		return;
 	}
 	if (_active) {
-		RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
-		_active = false;
+		if (Config::Styling::Wheel::BlurOnOpen) {
+			RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
+			_active = false;
+		}
 	}
 }
 

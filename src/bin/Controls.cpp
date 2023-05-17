@@ -7,8 +7,8 @@ void Controls::Init()
 		{
 			{ 0x10, &Wheeler::NextWheel }, // e
 			{ 0x12, &Wheeler::PrevWheel }, // q
-			{ 79, &Wheeler::OpenMenu },// numpad 1
-			{ 80, &Wheeler::CloseMenu }, // numpad 2
+			{ 58, &Wheeler::OpenMenu },   // caps lock
+			//{ 80, &Wheeler::CloseMenu }, 
 			{ 81, &Wheeler::ToggleEditMode }, // numpad 3
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
 			{ 265, &Wheeler::NextItem }, // mouse wheel down
@@ -16,28 +16,54 @@ void Controls::Init()
 			{ 257, &Wheeler::ActivateItemLeft} // mouse right
 		}
 		) {
-		BindInput(pair.first, pair.second);
+		BindInput(pair.first, pair.second, true);
+	}
+	for (const auto pair :
+		std::vector<std::pair<KeyId, FunctionPtr>>{
+			{ 58, &Wheeler::CloseMenu },  // caps lock
+		}) {
+		BindInput(pair.first, pair.second, false);
 	}
 }
-void Controls::BindInput(KeyId key, FunctionPtr func)
+void Controls::BindInput(KeyId key, FunctionPtr func, bool isDown)
 {
-	if (_functionKeyMap.contains(func)) {
-		KeyId oldKey = _functionKeyMap[func];
-		_keyFunctionMap.erase(oldKey);
+	// do a linear search for the old key(can't have 2 keys bound to the same function)
+	if (isDown) {
+		for (auto& [k, f] : _keyFunctionMapDown) {
+			if (f == func) {
+				_keyFunctionMapDown.erase(k);
+				break;
+			}
+		}
+		_keyFunctionMapDown[key] = func;
+	} else {
+		for (auto& [k, f] : _keyFunctionMapUp) {
+			if (f == func) {
+				_keyFunctionMapUp.erase(k);
+				break;
+			}
+		}
+		_keyFunctionMapUp[key] = func;
 	}
-	_functionKeyMap[func] = key;
-	_keyFunctionMap[key] = func;
+	
 }
 
 bool Controls::IsKeyBound(KeyId key)
 {
-	return _keyFunctionMap.contains(key);
+	return _keyFunctionMapDown.contains(key) || _keyFunctionMapUp.contains(key);
 }
 
-void Controls::Dispatch(KeyId key)
+void Controls::Dispatch(KeyId key, bool isDown)
 {
-	if (_keyFunctionMap.contains(key)) {
-		FunctionPtr func = _keyFunctionMap[key];
-		func();
+	if (isDown) {
+		if (_keyFunctionMapDown.contains(key)) {
+			FunctionPtr func = _keyFunctionMapDown[key];
+			func();
+		}
+	} else {
+		if (_keyFunctionMapUp.contains(key)) {
+			FunctionPtr func = _keyFunctionMapUp[key];
+			func();
+		}
 	}
 }

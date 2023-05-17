@@ -347,6 +347,8 @@ RE::BSEventNotifyControl Input::ProcessEvent(RE::InputEvent* const* a_event, RE:
 
 			if (button->IsDown()) {
 				Controls::Dispatch(input);
+			} else if (button->IsUp()) {
+				Controls::Dispatch(input, false);
 			}
 
 			

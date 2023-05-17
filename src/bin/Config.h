@@ -39,6 +39,8 @@ namespace Config
 			inline float ActiveArcWidth = 10.f;
 
 			inline uint32_t NumWheels = 3;  // # of wheels
+			
+			inline bool BlurOnOpen = true;
 		}
 
 		namespace Entry
