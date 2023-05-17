@@ -102,10 +102,11 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 	if (invBoundObj.second < 2) { // we have less than 2, meaning we can't dual-wield
 		int hand = pc->GetWeaponEquippedHand(_weapon);
 		if ((hand == 1 && !a_toRight) || (hand == 0 && a_toRight)) {
-			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first);
+			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot();
+			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first, nullptr, 1, oppositeSlot);
+
 		}
 	}
-	
 	auto slot = a_toRight ? Utils::Slot::GetRightHandSlot() : Utils::Slot::GetLeftHandSlot();
 	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, invBoundObj.first, nullptr, 1, slot);
 }

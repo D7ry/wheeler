@@ -7,7 +7,7 @@ void Controls::Init()
 		{
 			{ 0x10, &Wheeler::NextWheel }, // e
 			{ 0x12, &Wheeler::PrevWheel }, // q
-			{ 58, &Wheeler::OpenMenu },   // caps lock
+			{ 58, &Wheeler::ToggleMenu },        // caps lock
 			{ 81, &Wheeler::ToggleEditMode }, // numpad 3
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
 			{ 265, &Wheeler::NextItem }, // mouse wheel down

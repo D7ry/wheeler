@@ -235,6 +235,15 @@ void Wheeler::FlushWheelItems()
 	INFO("...wheel items flushed!");
 }
 
+void Wheeler::ToggleMenu()
+{
+	if (!_active) {
+		OpenMenu();
+	} else {
+		CloseMenu();
+	}
+}
+
 void Wheeler::CloseMenuIfOpenedLongEnough()
 {
 	if (_active && _openTimer > _pressThreshold) {

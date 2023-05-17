@@ -32,6 +32,7 @@ public:
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
+	static void ToggleMenu();
 	static void CloseMenuIfOpenedLongEnough();
 	static void OpenMenu();
 	static void CloseMenu();
