@@ -22,6 +22,17 @@ namespace Utils
 			const REL::Relocation<func_t> func{ RELOCATION_ID(23151, 23608) };
 			return func();
 		}
+		void CleanSlot(RE::PlayerCharacter* a_pc, RE::BGSEquipSlot* a_slot)
+		{
+			RE::ActorEquipManager* aem = RE::ActorEquipManager::GetSingleton();
+			if (!aem) {
+				return;
+			}
+			auto* dummy = RE::TESForm::LookupByID<RE::TESForm>(0x00020163)->As<RE::TESObjectWEAP>();
+			//sound false, queue false, force true
+			aem->EquipObject(a_pc, dummy, nullptr, 1, a_slot, false, true, false);
+			aem->UnequipObject(a_pc, dummy, nullptr, 1, a_slot, false, true, false);
+		}
 	}
 
 	namespace Time

@@ -99,13 +99,17 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 	}
 	RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
 	std::pair<RE::TESBoundObject*, uint32_t> invBoundObj = this->getInvBoundObject(inv); // obj, count
-	if (invBoundObj.second < 2) { // we have less than 2, meaning we can't dual-wield
+	if (invBoundObj.second < 2) {                                                         // we have less than 2, meaning we can't dual-wield
 		int hand = pc->GetWeaponEquippedHand(_weapon);
 		if ((hand == 1 && !a_toRight) || (hand == 0 && a_toRight)) {
 			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot();
-			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first, nullptr, 1, oppositeSlot);
-
+			//RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first, nullptr, 1, oppositeSlot);
+			Utils::Slot::CleanSlot(pc, oppositeSlot);
 		}
+	}
+	if (_weapon->IsTwoHanded()) { // clean up both slots
+		Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
+		Utils::Slot::CleanSlot(pc, Utils::Slot::GetRightHandSlot());
 	}
 	auto slot = a_toRight ? Utils::Slot::GetRightHandSlot() : Utils::Slot::GetLeftHandSlot();
 	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, invBoundObj.first, nullptr, 1, slot);
