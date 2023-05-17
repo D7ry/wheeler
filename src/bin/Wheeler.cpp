@@ -238,12 +238,21 @@ void Wheeler::OpenMenu()
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
 	}
-	_active = true;
+	if (!_active) {
+		RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
+		_active = true;
+	}
 }
 
 void Wheeler::CloseMenu()
 {
-	_active = false;
+	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
+		return;
+	}
+	if (_active) {
+		RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
+		_active = false;
+	}
 }
 
 void Wheeler::ToggleEditMode()
