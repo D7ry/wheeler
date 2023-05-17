@@ -71,48 +71,51 @@ WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon)
 
 void WheelItemWeapon::ActivateItemLeft()
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc || !pc->Is3DLoaded()) {
-		return;
-	}
-	auto inv = pc->GetInventory();
-	if (!this->IsAvailable(inv)) {
-		return;
-	}
-	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->getBoundObject(inv), nullptr, 1, Utils::Slot::GetLeftHandSlot());
+	equipItem(false);
 }
 
 void WheelItemWeapon::ActivateItemRight()
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc || !pc->Is3DLoaded()) {
-		return;
-	}
-	auto inv = pc->GetInventory();
-	if (!this->IsAvailable(inv)) {
-		return;
-	}
-	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->getBoundObject(inv), nullptr, 1, Utils::Slot::GetRightHandSlot());
+	equipItem(true);
 }
 
-RE::TESBoundObject* WheelItemWeapon::getBoundObject(RE::TESObjectREFR::InventoryItemMap& a_inv)
+std::pair<RE::TESBoundObject*, uint32_t> WheelItemWeapon::getInvBoundObject(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	for (auto& [item, count] : a_inv) {
 		if (item->GetFormType() == RE::FormType::Weapon) {
 			if (item->GetFormID() == _weapon->GetFormID()) {
-				return item;
+				return { item, count.first };
 			}
 		}
 	}
-	return nullptr;
+	return { nullptr, -1 };
+}
+
+void WheelItemWeapon::equipItem(bool a_toRight)
+{
+	auto pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc || !pc->Is3DLoaded()) {
+		return;
+	}
+	RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
+	std::pair<RE::TESBoundObject*, uint32_t> invBoundObj = this->getInvBoundObject(inv); // obj, count
+	if (invBoundObj.second < 2) { // we have less than 2, meaning we can't dual-wield
+		int hand = pc->GetWeaponEquippedHand(_weapon);
+		if ((hand == 1 && !a_toRight) || (hand == 0 && a_toRight)) {
+			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first);
+		}
+	}
+	
+	auto slot = a_toRight ? Utils::Slot::GetRightHandSlot() : Utils::Slot::GetLeftHandSlot();
+	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, invBoundObj.first, nullptr, 1, slot);
 }
 
 bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
-	return pc && pc->IsWeaponEquipped(_weapon);
+	return pc && pc->GetWeaponEquippedHand(_weapon) != -1;
 }
 bool WheelItemWeapon::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	return this->getBoundObject(a_inv) != nullptr;
+	return this->getInvBoundObject(a_inv).first != nullptr;
 }

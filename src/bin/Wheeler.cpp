@@ -165,7 +165,7 @@ void Wheeler::Draw()
 				wheelCenter.y + t2 * t4
 				);
 			
-			int arc_segments = (int)(64 * item_arc_span / (2 * IM_PI)) + 1;
+			int arc_segments = (int)(256 * item_arc_span / (2 * IM_PI)) + 1;
 			// fancy math end
 			Drawer::draw_arc_gradient(wheelCenter,
 				RADIUS_MIN + ITEM_INNER_SPACING,
@@ -179,15 +179,15 @@ void Wheeler::Draw()
 
 			WheelEntry* entry = wheel->entries[item_n];
 
-			if (entry->IsActive(inv)) {
-				Drawer::draw_arc_gradient(wheelCenter,
-					RADIUS_MAX - ITEM_INNER_SPACING,
-					RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
-					item_outer_ang_min, item_outer_ang_max,
-					item_outer_ang_min, item_outer_ang_max,
-					ActiveArcColorBegin, ActiveArcColorEnd,
-					arc_segments);
-			}
+			bool active = entry->IsActive(inv);
+			Drawer::draw_arc_gradient(wheelCenter,
+				RADIUS_MAX - ITEM_INNER_SPACING,
+				RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
+				item_outer_ang_min, item_outer_ang_max,
+				item_outer_ang_min, item_outer_ang_max,
+				active ? ActiveArcColorBegin : InActiveArcColorBegin,
+				active ? ActiveArcColorEnd : InActiveArcColorEnd,
+				arc_segments);
 			
 			if (hovered) {
 				entry->DrawHighlight(wheelCenter);

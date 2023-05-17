@@ -14,5 +14,6 @@ public:
 
 private:
 	RE::TESObjectWEAP* _weapon;
-	RE::TESBoundObject* getBoundObject(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	std::pair<RE::TESBoundObject*, uint32_t> getInvBoundObject(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	void equipItem(bool a_toRight = true);
 };

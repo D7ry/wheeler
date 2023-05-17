@@ -9,6 +9,7 @@ namespace Config
 		namespace Wheel
 		{
 			inline float cursorRadius = 60.f;
+			inline bool DoubleActivateDisable = true;
 		}
 
 	}
@@ -23,14 +24,17 @@ namespace Config
 			inline float ITEM_INNER_SPACING = 5.f;
 
 			inline ImColor BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
-			inline ImColor HoveredColorBegin = ImColor(27, 198, 250, 25);
-			inline ImColor HoveredColorEnd = ImColor(27, 198, 250, 225);
+			inline ImColor HoveredColorBegin = ImColor(105, 177, 207, 25);
+			inline ImColor HoveredColorEnd = ImColor(105, 177, 207, 150);
 
-			inline ImColor UnhoveredColorBegin = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
-			inline ImColor UnhoveredColorEnd = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
+			inline ImColor UnhoveredColorBegin = ImColor(0.0f, 0.0f, 0.0f, 0.3f);
+			inline ImColor UnhoveredColorEnd = ImColor(0.0f, 0.0f, 0.0f, 0.3f);
 
-			inline ImColor ActiveArcColorBegin = ImColor(28, 191, 255);
-			inline ImColor ActiveArcColorEnd = ImColor(28, 191, 255, 255);
+			inline ImColor ActiveArcColorBegin = ImColor(105,177,207);
+			inline ImColor ActiveArcColorEnd = ImColor(105, 177, 207);
+			
+			inline ImColor InActiveArcColorBegin = ImColor(77, 79, 80, 200);
+			inline ImColor InActiveArcColorEnd = ImColor(77, 79, 80, 200);
 
 			inline float ActiveArcWidth = 10.f;
 
