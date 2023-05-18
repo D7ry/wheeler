@@ -10,7 +10,7 @@
 #include "imgui_internal.h"
 #include "imgui.h"
 #include "WheelItems/WheelItem.h"
-
+#include "WheelItems/WheelItemSpell.h"
 #include "WheelItems/WheelItemWeapon.h"
 #include "WheelItems/WheelEntry.h"
 #include "include/lib/Drawer.h"
@@ -60,8 +60,36 @@ namespace TestData
 		w1->entries.push_back(l4);
 		w1->entries.push_back(l5);
 
+		
+		auto generateSpellWheelItem = [dh](RE::FormID formID) {
+			return new WheelItemSpeel((RE::SpellItem*)dh->LookupForm(formID, "Skyrim.esm"));
+		};
 
 		Wheeler::Wheel* w2 = new Wheeler::Wheel();
+		
+		WheelEntry* e6 = new WheelEntry();
+		WheelEntry* e7 = new WheelEntry();
+		WheelEntry* e8 = new WheelEntry();
+		WheelEntry* e9 = new WheelEntry();
+		WheelEntry* e10 = new WheelEntry();
+		WheelEntry* e11 = new WheelEntry();
+		e6->_items.push_back(generateSpellWheelItem(0x12FCC));  // healing
+		e7->_items.push_back(generateSpellWheelItem(0x12FCD));  // flames
+		e7->_items.push_back(generateSpellWheelItem(0x12FD0));  // firebolt
+		e7->_items.push_back(generateSpellWheelItem(0x1C789));  // fireball
+
+		e8->_items.push_back(generateSpellWheelItem(0x2B96b));  // frostbite
+		e9->_items.push_back(generateSpellWheelItem(0x13018));  // wardlesser
+		e10->_items.push_back(generateSpellWheelItem(0x204c3));  // conjure flame atronach
+		e11->_items.push_back(generateSpellWheelItem(0x4deee));  // frenzy
+		
+		w2->entries.push_back(e6);
+		w2->entries.push_back(e7);
+		w2->entries.push_back(e8);
+		w2->entries.push_back(e9);
+		w2->entries.push_back(e10);
+		w2->entries.push_back(e11);
+		
 		_wheels.push_back(w1);
 		_wheels.push_back(w2);
 

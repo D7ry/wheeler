@@ -75,8 +75,19 @@ void WheelItemSpeel::DrawHighlight(ImVec2 a_center)
 
 bool WheelItemSpeel::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
+	
 	auto pc = RE::PlayerCharacter::GetSingleton();
-	return pc && pc->GetSpellEquippedHand(this->_spell) != RE::Actor::Hand::None;
+	if (!pc) {
+		return false;
+	}
+	auto lhs = pc->GetEquippedObject(true);
+	bool lhsEquipped = lhs && lhs->GetFormID() == this->_spell->GetFormID();
+	
+	auto rhs = pc->GetEquippedObject(false);
+	bool rhsEquipped = rhs && rhs->GetFormID() == this->_spell->GetFormID();
+	
+	
+	return lhsEquipped || rhsEquipped;
 }
 
 bool WheelItemSpeel::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
