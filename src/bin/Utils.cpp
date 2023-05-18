@@ -51,4 +51,82 @@ namespace Utils
 			return;
 		}
 	}
+
+	namespace Inventory
+	{
+		std::pair<RE::EnchantmentItem*, float> GetEntryEnchantAndHealth(const std::unique_ptr<RE::InventoryEntryData>& a_invEntry)
+		{
+			std::pair<RE::EnchantmentItem*, float> ret = { nullptr, -1.f };
+			if (a_invEntry->extraLists == nullptr) {
+				return ret;
+			}
+			bool foundEnchant = false, foundHealth = false;
+			for (RE::ExtraDataList* extraDataList : *a_invEntry->extraLists) {
+				if (extraDataList == nullptr) {
+					continue;
+				}
+				if (extraDataList->HasType(RE::ExtraDataType::kEnchantment)) {
+					auto Xench = extraDataList->GetByType<RE::ExtraEnchantment>();
+					if (Xench != nullptr) {
+						ret.first = Xench->enchantment;
+						foundEnchant = true;
+						if (foundHealth) {
+							return ret;
+						}
+					}
+				}
+				if (extraDataList->HasType(RE::ExtraDataType::kHealth)) {
+					auto Xhealth = extraDataList->GetByType<RE::ExtraHealth>();
+					if (Xhealth != nullptr) {
+						ret.second = Xhealth->health;
+						foundHealth = true;
+						if (foundEnchant) {
+							return ret;
+						}
+					}
+				}
+			}
+			return ret;
+		}
+
+		void GetEntryExtraDatas(std::vector<ItemExtraData>& r_ret, const std::unique_ptr<RE::InventoryEntryData>& a_invEntry)
+		{
+			if (a_invEntry->extraLists == nullptr) {
+				return;
+			}
+			for (RE::ExtraDataList* extraDataList : *a_invEntry->extraLists) {
+				// one extraDatalist should correspond to one item
+				ItemExtraData data;
+				data.hasEnchant = false;
+				data.hasHealth = false;
+				data.hasPoison = false;
+				if (extraDataList != nullptr) {
+					if (extraDataList->HasType(RE::ExtraDataType::kEnchantment)) {
+						auto Xench = extraDataList->GetByType<RE::ExtraEnchantment>();
+						if (Xench != nullptr) {
+							data.hasEnchant = true;
+							data.enchant = *Xench;
+						}
+					}
+					if (extraDataList->HasType(RE::ExtraDataType::kHealth)) {
+						auto Xhealth = extraDataList->GetByType<RE::ExtraHealth>();
+						if (Xhealth != nullptr) {
+							data.hasHealth = true;
+							data.health = *Xhealth;
+						}
+					}
+					if (extraDataList->HasType(RE::ExtraDataType::kPoison)) {  // poison won't be used for now
+						auto xPoison = extraDataList->GetByType<RE::ExtraPoison>();
+						if (xPoison != nullptr) {
+							data.hasPoison = true;
+							data.poison = *xPoison;
+						}
+					}
+				}
+				r_ret.push_back(data);
+			}
+		}
+
+	}
 }
+
