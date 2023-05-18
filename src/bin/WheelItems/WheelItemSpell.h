@@ -12,5 +12,5 @@ public:
 	virtual void ActivateItemRight() override;
 
 private:
-	RE::SpellItem* _spell;
+	RE::SpellItem* _spell = nullptr;
 };
