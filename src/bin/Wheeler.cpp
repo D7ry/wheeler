@@ -89,9 +89,12 @@ namespace TestData
 		w2->entries.push_back(e9);
 		w2->entries.push_back(e10);
 		w2->entries.push_back(e11);
+
+		Wheeler::Wheel* w3 = new Wheeler::Wheel();
 		
 		_wheels.push_back(w1);
 		_wheels.push_back(w2);
+		_wheels.push_back(w3);
 
 	}
 	
@@ -106,6 +109,7 @@ void Wheeler::Draw()
 
 	if (!_active) { // queued to close
 		if (ImGui::IsPopupOpen(_wheelWindowID)) {
+			ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
 			ImGui::BeginPopup(_wheelWindowID);
 			ImGui::CloseCurrentPopup();
 			ImGui::EndPopup();
@@ -224,8 +228,23 @@ void Wheeler::Draw()
 			}
 			entry->DrawSlot(itemCenter, hovered);
 		}
+		// draw cursor indicator
 		drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
-
+		// draw wheel indicator
+		for (int i = 0; i < _wheels.size(); i++) {
+			if (i == _activeWheel) {
+				drawList->AddCircleFilled(
+					{wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
+					wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY},
+					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10);
+			} else {
+				drawList->AddCircleFilled(
+					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
+						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
+					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10);
+			}
+		}
+		
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -366,7 +385,10 @@ void Wheeler::NextWheel()
 	if (_active) {
 		_cursorPos = { 0, 0 };
 		_activeItem = -1;
-		_activeWheel = (_activeWheel + 1) % _wheels.size();
+		_activeWheel += 1;
+		if (_activeWheel >= _wheels.size()) {
+			_activeWheel = 0;
+		}
 	}
 }
 
@@ -375,7 +397,10 @@ void Wheeler::PrevWheel()
 	if (_active) {
 		_cursorPos = { 0, 0 };
 		_activeItem = -1;
-		_activeWheel = (_activeWheel - 1) % _wheels.size();
+		_activeWheel -= 1;
+		if (_activeWheel < 0) {
+			_activeWheel = _wheels.size() - 1;
+		}
 	}
 }
 

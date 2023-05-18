@@ -17,6 +17,13 @@ namespace Config
 	{
 		namespace Wheel
 		{
+			inline float WheelIndicatorOffsetX = 260.f;
+			inline float WheelIndicatorOffsetY = 340.f;
+			inline float WheelIndicatorSize = 10.f;
+			inline float WheelIndicatorSpacing = 25.f;
+			inline ImColor WheelIndicatorActiveColor = ImColor(105, 177, 207, 225);
+			inline ImColor WheelIndicatorInactiveColor = ImColor(255, 255, 255, 100);
+
 			inline float RADIUS_SELECT_MIN = pow(60.f, 2);
 			inline float RADIUS_MIN = 220.0f;
 			inline float RADIUS_MAX = 360.0f;

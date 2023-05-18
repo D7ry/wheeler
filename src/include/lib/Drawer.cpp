@@ -2,7 +2,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 
-void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y, const char* a_text, UINT32 a_alpha, UINT32 a_red, UINT32 a_green, UINT32 a_blue, float a_font_size, bool a_center_text, bool a_deduct_text_x, bool a_deduct_text_y, bool a_add_text_x, bool a_add_text_y)
+void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y, const char* a_text, UINT32 a_alpha, UINT32 a_red, UINT32 a_green, UINT32 a_blue, float a_font_size, bool add_shadow, bool a_center_text, bool a_deduct_text_x, bool a_deduct_text_y, bool a_add_text_x, bool a_add_text_y)
 {
 	auto* font = ImGui::GetDefaultFont();  // TODO: add custom font support
 	if (!font) {
@@ -45,8 +45,27 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 	const auto position =
 		ImVec2(a_x + a_offset_x + text_x, a_y + a_offset_y + text_y);
 
-
-	ImGui::GetWindowDrawList()->AddText(font, a_font_size, position, color, a_text, nullptr, 0.0f, nullptr);
+	auto drawList = ImGui::GetWindowDrawList();
+	if (add_shadow) {
+		ImVec2 shadowPos1(position);
+		ImVec2 shadowPos2(position);
+		ImVec2 shadowPos3(position);
+		ImVec2 shadowPos4(position);
+		shadowPos1.x -= 2;
+		shadowPos1.y -= 2;
+		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		shadowPos2.x -= 2;
+		shadowPos2.y += 2;
+		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		shadowPos3.x += 2;
+		shadowPos3.y -= 2;
+		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		shadowPos4.x += 2;
+		shadowPos4.y += 2;
+		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+	}
+	
+	drawList->AddText(font, a_font_size, position, color, a_text, nullptr, 0.0f, nullptr);
 }
 
 void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, float a_offset_x, float a_offset_y, ImVec2 a_size, float a_angle, ImU32 a_color)

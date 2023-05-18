@@ -5,8 +5,8 @@ void Controls::Init()
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>
 		{
-			{ 0x10, &Wheeler::NextWheel }, // e
-			{ 0x12, &Wheeler::PrevWheel }, // q
+			{ 0x12, &Wheeler::NextWheel }, // e
+			{ 0x10, &Wheeler::PrevWheel }, // q
 			{ 58, &Wheeler::ToggleMenu },        // caps lock
 			{ 81, &Wheeler::ToggleEditMode }, // numpad 3
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
