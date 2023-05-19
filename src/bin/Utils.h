@@ -20,18 +20,21 @@ namespace Utils
 	namespace Inventory
 	{
 		std::pair<RE::EnchantmentItem*, float> GetEntryEnchantAndHealth(const std::unique_ptr<RE::InventoryEntryData>& a_invEntry);
-		struct ItemExtraData
-		{
-			bool hasEnchant;
-			bool hasHealth;
-			bool hasPoison;
-			RE::ExtraEnchantment enchant;
-			RE::ExtraHealth health;
-			RE::ExtraPoison poison;
-		};
-		void GetEntryExtraDatas(std::vector<ItemExtraData>& r_ret, const std::unique_ptr<RE::InventoryEntryData>& a_invEntry);
 
+		void GetEntryExtraDataLists(std::vector<RE::ExtraDataList*>& r_ret, const std::unique_ptr<RE::InventoryEntryData>& a_invEntry);
 		
+		enum class Hand
+		{
+			Left,
+			Right,
+			Both,
+			None
+		};
+		Hand GetWeaponEquippedHand(RE::Actor* a_actor, RE::TESObjectWEAP* a_weapon, uint32_t a_uniqueID);
+
+		RE::InventoryEntryData* GetSelectedItemIninventory();
+		RE::TESForm* GetSelectedMagicInMagicMenu();
+
 	}
 
 }

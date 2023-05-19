@@ -89,44 +89,151 @@ namespace Utils
 			return ret;
 		}
 
-		void GetEntryExtraDatas(std::vector<ItemExtraData>& r_ret, const std::unique_ptr<RE::InventoryEntryData>& a_invEntry)
+		/// <summary>
+		/// Gets all extradatalists of one inventory entry. 
+		/// Inventory entries in Skyrim is designed as follows:
+		/// Each entry has its base information stored directly in its form. However, once the entry is modified
+		/// by player(e.g. smithing, enchanting, poisoning), the item the entry is associated with gains an ExtraData.
+		/// The trick is that items of the same form(for example, 2 iron swords), albeit their different tempering/enchants,
+		///  are stored in the same InventoryEntryData. Their modifications are in turn stored in 2 extradatlists of the given entry.
+		/// </summary>
+		void GetEntryExtraDataLists(std::vector<RE::ExtraDataList*>& r_ret, const std::unique_ptr<RE::InventoryEntryData>& a_invEntry)
 		{
 			if (a_invEntry->extraLists == nullptr) {
 				return;
 			}
 			for (RE::ExtraDataList* extraDataList : *a_invEntry->extraLists) {
-				// one extraDatalist should correspond to one item
-				ItemExtraData data;
-				data.hasEnchant = false;
-				data.hasHealth = false;
-				data.hasPoison = false;
-				if (extraDataList != nullptr) {
-					if (extraDataList->HasType(RE::ExtraDataType::kEnchantment)) {
-						auto Xench = extraDataList->GetByType<RE::ExtraEnchantment>();
-						if (Xench != nullptr) {
-							data.hasEnchant = true;
-							data.enchant = *Xench;
-						}
-					}
-					if (extraDataList->HasType(RE::ExtraDataType::kHealth)) {
-						auto Xhealth = extraDataList->GetByType<RE::ExtraHealth>();
-						if (Xhealth != nullptr) {
-							data.hasHealth = true;
-							data.health = *Xhealth;
-						}
-					}
-					if (extraDataList->HasType(RE::ExtraDataType::kPoison)) {  // poison won't be used for now
-						auto xPoison = extraDataList->GetByType<RE::ExtraPoison>();
-						if (xPoison != nullptr) {
-							data.hasPoison = true;
-							data.poison = *xPoison;
+				if (extraDataList == nullptr) {
+					continue;
+				}
+				r_ret.push_back(extraDataList);
+			}			
+		}
+
+		uint16_t GetNextUniqueID()
+		{
+			auto pc = RE::PlayerCharacter::GetSingleton();
+			if (!pc) {
+				return 0;
+			}
+			auto invc = pc->GetInventoryChanges();
+			if (!invc) {
+				return 0;
+			}
+			return invc->GetNextUniqueID();
+		}
+
+		RE::ExtraHealth GetExtraHealth(RE::ExtraDataList* a_list)
+		{
+			return *a_list->GetByType<RE::ExtraHealth>();
+		}
+		RE::ExtraEnchantment GetExtraEnchant(RE::ExtraDataList* a_list)
+		{
+			return *a_list->GetByType<RE::ExtraEnchantment>();
+		}
+		RE::ExtraPoison GetExtraPoison(RE::ExtraDataList* a_list)
+		{
+			return *a_list->GetByType<RE::ExtraPoison>();
+		}
+
+		Hand GetWeaponEquippedHand(RE::Actor* a_actor, RE::TESObjectWEAP* a_weapon, uint32_t a_uniqueID)
+		{
+			if (!a_actor) {
+				return Hand::None;
+			}
+			bool lhsEquipped = false, rhsEquipped = false;
+			RE::InventoryEntryData* lhs = a_actor->GetEquippedEntryData(true);
+			if (lhs && lhs->GetObject__() && lhs->GetObject__()->GetFormID() == a_weapon->GetFormID()) {
+				if (lhs->extraLists) {
+					for (auto* extraList : *lhs->extraLists) {
+						if (extraList->HasType(RE::ExtraDataType::kUniqueID) && extraList->GetByType<RE::ExtraUniqueID>()->uniqueID == a_uniqueID) {
+							lhsEquipped = true;
+							break;
 						}
 					}
 				}
-				r_ret.push_back(data);
 			}
+			auto rhs = a_actor->GetEquippedEntryData(false);
+			if (rhs && rhs->GetObject__() && rhs->GetObject__()->GetFormID() == a_weapon->GetFormID()) {
+				if (rhs->extraLists) {
+					for (auto* extraList : *rhs->extraLists) {
+						if (extraList->HasType(RE::ExtraDataType::kUniqueID) && extraList->GetByType<RE::ExtraUniqueID>()->uniqueID == a_uniqueID) {
+							rhsEquipped = true;
+							break;
+						}
+					}
+				}
+			}
+			if (lhsEquipped && rhsEquipped) {
+				return Hand::Both;
+			} else if (lhsEquipped) {
+				return Hand::Left;
+			} else if (rhsEquipped) {
+				return Hand::Right;
+			}
+			return Hand::None;
 		}
-
+		RE::InventoryEntryData* GetSelectedItemIninventory()
+		{
+			RE::UI* ui = RE::UI::GetSingleton();
+			if (!ui) {
+				return nullptr;
+			}
+			if (ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
+				RE::InventoryMenu* invUI = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
+				if (!invUI) {
+					return nullptr;
+				}
+				RE::ItemList* il = invUI->itemList;
+				if (!il) {
+					return nullptr;
+				}
+				RE::ItemList::Item* selectedItem = il->GetSelectedItem();
+				if (!selectedItem) {
+					return nullptr;
+				}
+				RE::InventoryEntryData* invEntry = selectedItem->data.objDesc;
+				return invEntry;
+			}
+			return nullptr;
+		}
+		RE::TESForm* GetSelectedMagicInMagicMenu()
+		{
+			RE::UI* ui = RE::UI::GetSingleton();
+			if (!ui) {
+				return nullptr;
+			}
+			if (ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
+				auto* magic_menu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
+				if (magic_menu) {
+					RE::GFxValue result;
+					magic_menu->uiMovie->GetVariable(&result, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+					if (result.GetType() == RE::GFxValue::ValueType::kNumber) {
+						RE::FormID formID = static_cast<std::uint32_t>(result.GetNumber());
+						return RE::TESForm::LookupByID(formID);
+					}
+				}
+			}
+			return nullptr;
+		}
 	}
 }
+
+//if (invEntry->extraLists) {
+//for (auto* list : *invEntry->extraLists) {
+//	if (list->HasType(RE::ExtraDataType::kUniqueID)) {
+//		auto xID = static_cast<RE::ExtraUniqueID*>(list->GetByType<RE::ExtraUniqueID>());
+//		INFO("{}", xID->uniqueID);
+//	}
+/*if (list->HasType(RE::ExtraDataType::kHealth)) {
+						auto xHealth = static_cast<RE::ExtraHealth*>(list->GetByType<RE::ExtraHealth>());
+					}
+					if (list->HasType(RE::ExtraDataType::kEnchantment)) {
+						auto xEnch = static_cast<RE::ExtraEnchantment*>(list->GetByType<RE::ExtraEnchantment>());
+						const char* enchName = xEnch->enchantment->GetFullName();
+						std::string name2 = enchName;
+					}
+					if (list->HasType(RE::ExtraDataType::kPoison)) {
+						auto xPoison = static_cast<RE::ExtraPoison*>(list->GetByType<RE::ExtraPoison>());
+					}*/
 

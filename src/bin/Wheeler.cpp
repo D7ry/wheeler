@@ -10,9 +10,11 @@
 #include "imgui_internal.h"
 #include "imgui.h"
 #include "WheelItems/WheelItem.h"
+#include "WheelItems/WheelItemMutable.h"
 #include "WheelItems/WheelItemSpell.h"
 #include "WheelItems/WheelItemWeapon.h"
 #include "WheelItems/WheelEntry.h"
+#include "WheelItems/WheelItemMutableManager.h"
 #include "include/lib/Drawer.h"
 #include "Controls.h"
 
@@ -24,41 +26,41 @@ namespace TestData
 		assert(_wheels.empty());
 		auto dh = RE::TESDataHandler::GetSingleton();
 
-		auto o1 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139A4, "Skyrim.esm"));  // glass battle axe
-		auto o2 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B6, "Skyrim.esm"));  // daedric dagger
-		auto o3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm"));  // ebony sword
-		auto o4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm"));  // steel greatsword
-		auto o5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm"));  // Gauldur Blackbow
-		auto o6 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13998, "Skyrim.esm"));  // Dwarven mace
-		auto o7 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x10c6fb, "Skyrim.esm"));  // Dwarven mace
+		//auto o1 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139A4, "Skyrim.esm"));  // glass battle axe
+		//auto o2 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B6, "Skyrim.esm"));  // daedric dagger
+		//auto o3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm"));  // ebony sword
+		//auto o4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm"));  // steel greatsword
+		//auto o5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm"));  // Gauldur Blackbow
+		//auto o6 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13998, "Skyrim.esm"));  // Dwarven mace
+		//auto o7 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x10c6fb, "Skyrim.esm"));  // Dwarven mace
 	
 		Wheeler::Wheel* w1 = new Wheeler::Wheel();
 
-		// 1st entry in w1, contains 1 item
-		WheelEntry* l1 = new WheelEntry();
-		l1->_items.push_back(o1);
+		//// 1st entry in w1, contains 1 item
+		//WheelEntry* l1 = new WheelEntry();
+		//l1->_items.push_back(o1);
 
-		// 2nd entry, 1 item
-		WheelEntry* l2 = new WheelEntry();
-		l2->_items.push_back(o2);
+		//// 2nd entry, 1 item
+		//WheelEntry* l2 = new WheelEntry();
+		//l2->_items.push_back(o2);
 
-		// 3rd entry in w1, contains 3 items
-		WheelEntry* l3 = new WheelEntry();
-		l3->_items.push_back(o3);
-		l3->_items.push_back(o4);
-		l3->_items.push_back(o5);
+		//// 3rd entry in w1, contains 3 items
+		//WheelEntry* l3 = new WheelEntry();
+		//l3->_items.push_back(o3);
+		//l3->_items.push_back(o4);
+		//l3->_items.push_back(o5);
 
-		WheelEntry* l4 = new WheelEntry();
-		l4->_items.push_back(o6);
+		//WheelEntry* l4 = new WheelEntry();
+		//l4->_items.push_back(o6);
 
-		WheelEntry* l5 = new WheelEntry();
-		l5->_items.push_back(o7);
-		
-		w1->entries.push_back(l1);
-		w1->entries.push_back(l2);
-		w1->entries.push_back(l3);
-		w1->entries.push_back(l4);
-		w1->entries.push_back(l5);
+		//WheelEntry* l5 = new WheelEntry();
+		//l5->_items.push_back(o7);
+		//
+		//w1->entries.push_back(l1);
+		//w1->entries.push_back(l2);
+		//w1->entries.push_back(l3);
+		//w1->entries.push_back(l4);
+		//w1->entries.push_back(l5);
 
 		
 		auto generateSpellWheelItem = [dh](RE::FormID formID) {
@@ -132,6 +134,8 @@ void Wheeler::Draw()
 		_cursorPos = { 0, 0 }; // reset cursor pos
 	}
 	_openTimer += ImGui::GetIO().DeltaTime;
+	
+	bool editMode = RE::UI::GetSingleton()->IsMenuOpen(RE::InventoryMenu::MENU_NAME);
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
 	auto inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
@@ -239,6 +243,8 @@ void Wheeler::Draw()
 					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10);
 			} else {
 				drawList->AddCircleFilled(
+					
+					
 					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
 					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10);
@@ -256,11 +262,11 @@ void Wheeler::LoadWheelItems()
 {
 	_active = false;
 	_activeItem = -1;
-
+	WheelItemMutableManager::GetSingleton()->Clear();
 	// clean up old wheels
 	for (Wheel* wheel : _wheels) {
 		for (WheelEntry* e : wheel->entries) {
-			delete e;  // itemList's destructor frees underlying items
+			delete e;  // WheelEntry's destructor frees underlying items
 		}
 		delete wheel;
 	}
@@ -334,15 +340,6 @@ void Wheeler::CloseMenu()
 		}
 		_openTimer = 0;
 	}
-}
-
-void Wheeler::ToggleEditMode()
-{
-	_editMode = !_editMode;
-}
-
-void Wheeler::verifyWheelItems(std::vector<WheelEntry*> a_items)
-{
 }
 
 void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
@@ -430,6 +427,52 @@ void Wheeler::ActivateItemRight()
 	if (_active && _activeItem != -1) {
 		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemRight();
 	}
+}
+
+void Wheeler::TestAddItemToWheel()
+{
+	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc || !pc->Is3DLoaded()) {
+		return;
+	}
+	RE::InventoryEntryData* invEntry = Utils::Inventory::GetSelectedItemIninventory();
+	if (!invEntry) {
+		return;
+	}
+	RE::TESBoundObject* boundObj = invEntry->GetObject__();
+	if (!boundObj) {
+		return;
+	}
+	uint16_t uniqueID = 0;
+	if (invEntry->extraLists) {
+		for (auto* extraDataList : *invEntry->extraLists) {
+			if (extraDataList->HasType(RE::ExtraDataType::kUniqueID)) {
+				RE::ExtraUniqueID* Xid = extraDataList->GetByType<RE::ExtraUniqueID>();
+				if (Xid) {
+					uniqueID = Xid->uniqueID;
+					break;
+				}
+			}
+		}
+	}
+	if (uniqueID == 0) { // unique ID not found, make a new uniqueID for the object.
+		uniqueID = pc->GetInventoryChanges()->GetNextUniqueID();
+		RE::ExtraUniqueID* Xid = new RE::ExtraUniqueID(0x14, uniqueID); // make a new uniqueID for the object
+		if (invEntry->extraLists == nullptr) {
+			invEntry->extraLists = new RE::BSSimpleList<RE::ExtraDataList*>;
+		}
+		if (invEntry->extraLists->begin() == invEntry->extraLists->end()) {
+			RE::ExtraDataList* XList = RE::ExtraDataList::ConstructExtraDataList();
+		}
+		invEntry->extraLists->front()->Add(Xid);
+	}
+	if (boundObj->GetFormType() == RE::FormType::Weapon) {
+		WheelItemWeapon* wheelItem= new WheelItemWeapon(boundObj->As<RE::TESObjectWEAP>(), uniqueID);
+		WheelEntry* wheelEntry = new WheelEntry();
+		wheelEntry->_items.push_back(wheelItem);
+		_wheels[0]->entries.push_back(wheelEntry);
+	}
+
 }
 
 

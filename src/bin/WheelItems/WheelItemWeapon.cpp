@@ -5,7 +5,7 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered)
 {
 	Drawer::draw_text(a_center.x, a_center.y, 
 		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
-		_weapon->GetName(), 255, 255, 255, 255,
+		this->_obj->GetName(), 255, 255, 255, 255,
 		Config::Styling::Item::Slot::Text::Size);
 	Drawer::draw_texture(_texture.texture, 
 		ImVec2(a_center.x, a_center.y),
@@ -20,7 +20,7 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center)
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,
-		_weapon->GetName(), 255, 255, 255, 255,
+		this->_obj->GetName(), 255, 255, 255, 255,
 		Config::Styling::Item::Highlight::Text::Size);
 	Drawer::draw_texture(_texture.texture,
 		ImVec2(a_center.x, a_center.y),
@@ -30,11 +30,10 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center)
 		0);
 }
 
-WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon, RE::EnchantmentItem* a_enchant, float a_health)
+WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon, uint16_t a_uniqueID)
 {
-	_weapon = a_weapon;
-	_enchant = a_enchant;
-	_weaponHealth = a_health;
+	this->_obj = a_weapon;
+	this->SetUniqueID(a_uniqueID);
 	// get weapon's texture
 	// TODO: add support for animated armory/2h mace
 	switch (a_weapon->GetWeaponType()) {
@@ -81,22 +80,7 @@ void WheelItemWeapon::ActivateItemRight()
 	equipItem(true);
 }
 
-std::pair<RE::TESBoundObject*, int> WheelItemWeapon::getInvBoundObject(RE::TESObjectREFR::InventoryItemMap& a_inv)
-{
-	//RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
-	for (auto& [boundObj, invEntry] : a_inv) {
-		if (boundObj->GetFormType() == RE::FormType::Weapon) { // object type match
-			if (boundObj->GetFormID() == _weapon->GetFormID()) {
-				// todo: add proper enchantment filtering
-				//std::pair<RE::EnchantmentItem*, float> extraDataPair = Utils::Inventory::GetEntryEnchantAndHealth(invEntry.second);
-				//if (extraDataPair.first == this->_enchant && extraDataPair.second == this->_weaponHealth) {
-					return { boundObj, invEntry.first };
-				//}
-			}
-		}
-	}
-	return { nullptr, -1 };
-}
+
 
 void WheelItemWeapon::equipItem(bool a_toRight)
 {
@@ -105,44 +89,43 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 		return;
 	}
 	RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
-	std::pair<RE::TESBoundObject*, int> invBoundObj = this->getInvBoundObject(inv);  // obj, count
-	if (invBoundObj.first == nullptr) {                                                   // does not exist in inv
+	auto itemData = this->GetItemData(inv);
+	int count = itemData.first;
+	RE::ExtraDataList* extraData = itemData.second;
+	if (count <= 0) { // nothing to equip
 		return;
 	}
-
-	if (invBoundObj.second < 2) {  // we have less than 2, meaning we can't dual-wield
-		RE::Actor::Hand hand = pc->GetWeaponEquippedHand(_weapon);
-		if ((hand == RE::Actor::Hand::Right && !a_toRight) || (hand == RE::Actor::Hand::Right && a_toRight)) {
+	
+	if (count < 2) {  // we have less than 2, meaning we can't dual-wield
+		Utils::Inventory::Hand hand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID());
+		if ((hand == Utils::Inventory::Hand::Right && !a_toRight) || (hand == Utils::Inventory::Hand::Left && a_toRight)) {
 			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot();
 			//RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first, nullptr, 1, oppositeSlot);
 			Utils::Slot::CleanSlot(pc, oppositeSlot);
 		}
 	}
-	if (_weapon->IsTwoHanded()) {  // clean up both slots
+	if (this->_obj->As<RE::TESObjectWEAP>()->IsTwoHanded()) {  // clean up both slots
 		Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
 		Utils::Slot::CleanSlot(pc, Utils::Slot::GetRightHandSlot());
 	}
 	auto slot = a_toRight ? Utils::Slot::GetRightHandSlot() : Utils::Slot::GetLeftHandSlot();
-	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, invBoundObj.first, nullptr, 1, slot);
-	
+	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, _obj, extraData, 1, slot);
 	
 }
 
 bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
-	//RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
-	auto invData = this->getInvBoundObject(a_inv);
-	if (invData.first == nullptr) {
+	if (!pc) {
 		return false;
 	}
-	return pc && pc->GetWeaponEquippedHand(invData.first) != RE::Actor::Hand::None;
+	return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID()) != Utils::Inventory::Hand::None;
 }
 bool WheelItemWeapon::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 
-	//RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
+	auto itemData = this->GetItemData(a_inv);
 
-	return this->getInvBoundObject(a_inv).first != nullptr;
+	return itemData.first > 0;
 }

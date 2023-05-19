@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "imgui.h"
 class WheelItem;
+class WheelItemMutable;
 class WheelEntry;
 class Wheeler
 {
@@ -26,9 +27,6 @@ public:
 	/// </summary>
 	static void FlushWheelItems();
 
-
-
-	static void ToggleEditMode();
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
@@ -43,6 +41,9 @@ public:
 	static void NextItem();
 	static void ActivateItemLeft();
 	static void ActivateItemRight();
+
+	static void TestAddItemToWheel();
+	
 	struct Wheel
 	{
 		std::vector<WheelEntry*> entries;
@@ -51,11 +52,6 @@ public:
 private:
 	static inline bool _active = false;
 	static inline bool _editMode = false;
-	/// <summary>
-	/// Check if wheel items are valid(existing in player inventory).
-	/// If not, remove the invalid item and flush the new data.
-	/// </summary>
-	static void verifyWheelItems(std::vector<WheelEntry*> a_items);
 
 	static inline const char* _wheelWindowID = "##Wheeler";
 
@@ -73,5 +69,6 @@ private:
 	// the the user presses shorter than this, the wheel will close on a second press.
 	static inline const float _pressThreshold = .25f; 
 	static inline float _openTimer = 0;
+
 };
 
