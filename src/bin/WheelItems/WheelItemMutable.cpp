@@ -28,14 +28,34 @@ std::pair<int, RE::ExtraDataList*> WheelItemMutable::GetItemData(RE::TESObjectRE
 		}
 	}
 	if (pp) {
+		int cleanItemCount = 0;  // items not modified by enchantment, poison or tempering
 		uint16_t uniqueID = this->GetUniqueID();
+		// iterate through the entry, searching for extradata
+		bool targetClean = false;
 		for (auto* extraList : *pp->get()->extraLists) {
+			bool thisClean = false;
+			if (!extraList->HasType(RE::ExtraDataType::kEnchantment)
+				&& !extraList->HasType(RE::ExtraDataType::kPoison)
+				&& !extraList->HasType(RE::ExtraDataType::kHealth)) {
+				thisClean = true; // itme is not modified
+			}
+			if (thisClean) {
+				cleanItemCount++;
+			}
 			if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
 				if (uniqueID == extraList->GetByType<RE::ExtraUniqueID>()->uniqueID) {
-					ret.first++;
 					ret.second = extraList;
+					if (thisClean) {
+						targetClean = true;
+					} else { // item with matching uniqueID isn't clean, item therefore can't stack.
+						ret.first = 1;
+						return ret;
+					}
 				}
 			}
+		}
+		if (targetClean) {
+			ret.first = cleanItemCount;
 		}
 	}
 	return ret;

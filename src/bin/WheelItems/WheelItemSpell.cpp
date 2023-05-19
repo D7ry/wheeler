@@ -45,7 +45,7 @@ WheelItemSpeel::WheelItemSpeel(RE::SpellItem* a_spell)
 	this->_texture = Texture::GetIconImage(iconType);
 }
 
-void WheelItemSpeel::DrawSlot(ImVec2 a_center, bool a_hovered)
+void WheelItemSpeel::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
@@ -59,7 +59,7 @@ void WheelItemSpeel::DrawSlot(ImVec2 a_center, bool a_hovered)
 		0);
 }
 
-void WheelItemSpeel::DrawHighlight(ImVec2 a_center)
+void WheelItemSpeel::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,

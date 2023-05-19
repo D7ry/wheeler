@@ -22,11 +22,15 @@ EventResult WheelItemMutableManager::ProcessEvent(const RE::TESUniqueIDChangeEve
 		return EventResult::kContinue;
 	}
 	auto form = RE::TESForm::LookupByID(a_event->objectID);
+	if (!form) {
+		return EventResult::kContinue;
+	}
 	uint16_t oldUniqueID = a_event->oldUniqueID;
 	uint16_t newUniqueID = a_event->newUniqueID;
 	for (auto item : this->_mutables) {
 		if (item->GetFormID() == form->GetFormID()) {
 			if (item->GetUniqueID() == oldUniqueID) {
+				INFO("{}'s new unique id changed from {} to {} due to external changes.", form->GetName(), oldUniqueID, newUniqueID);
 				item->SetUniqueID(newUniqueID); // update the uniqueID of the item
 			}
 		}

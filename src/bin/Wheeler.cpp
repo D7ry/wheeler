@@ -228,9 +228,9 @@ void Wheeler::Draw()
 				arc_segments);
 			
 			if (hovered) {
-				entry->DrawHighlight(wheelCenter);
+				entry->DrawHighlight(wheelCenter, inv);
 			}
-			entry->DrawSlot(itemCenter, hovered);
+			entry->DrawSlot(itemCenter, hovered, inv);
 		}
 		// draw cursor indicator
 		drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);

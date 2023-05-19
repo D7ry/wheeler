@@ -1,14 +1,14 @@
 #include "WheelEntry.h"
 #include "include/lib/Drawer.h"
 
-void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered)
+void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
-	_items[_selectedItem]->DrawSlot(a_center, a_hovered);
+	_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap);
 }
 
-void WheelEntry::DrawHighlight(ImVec2 a_center)
+void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
-	_items[_selectedItem]->DrawHighlight(a_center);
+	_items[_selectedItem]->DrawHighlight(a_center, a_imap);
 	if (_items.size() > 1) {
 		Drawer::draw_text(
 			a_center.x,

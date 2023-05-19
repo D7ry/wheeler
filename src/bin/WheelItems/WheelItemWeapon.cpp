@@ -1,11 +1,16 @@
 #include "WheelItemWeapon.h"
 #include "include/lib/Drawer.h"
 #include "bin/Utils.h"
-void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered)
+void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
+	std::string text = this->_obj->GetName();
+	int itemCount = this->GetItemData(a_imap).first;
+	if (itemCount > 1) {
+		text += " (" + std::to_string(itemCount) + ")";
+	}
 	Drawer::draw_text(a_center.x, a_center.y, 
 		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
-		this->_obj->GetName(), 255, 255, 255, 255,
+		text.data(), 255, 255, 255, 255,
 		Config::Styling::Item::Slot::Text::Size);
 	Drawer::draw_texture(_texture.texture, 
 		ImVec2(a_center.x, a_center.y),
@@ -13,10 +18,12 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered)
 		Config::Styling::Item::Slot::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale), 
 		0);
+
+
 	//PieMenu::PieMenuItem("one weapon");
 }
 
-void WheelItemWeapon::DrawHighlight(ImVec2 a_center)
+void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,
@@ -103,6 +110,8 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 			//RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, invBoundObj.first, nullptr, 1, oppositeSlot);
 			Utils::Slot::CleanSlot(pc, oppositeSlot);
 		}
+	} else { // a count bigger than 1 guarantees that the item is untempered
+		extraData = nullptr; // set extraData to nullptr, let the game handle which one to equip.
 	}
 	if (this->_obj->As<RE::TESObjectWEAP>()->IsTwoHanded()) {  // clean up both slots
 		Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
