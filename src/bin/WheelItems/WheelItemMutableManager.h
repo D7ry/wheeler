@@ -21,6 +21,9 @@ public:
 	/// </summary>
 	void Track(WheelItemMutable* a_mutable);
 
+	void UnTrack(WheelItemMutable* a_mutable);
+
+
 	/// <summary>
 	/// Clear the tracked items. Right before reloading the wheels.
 	/// </summary>

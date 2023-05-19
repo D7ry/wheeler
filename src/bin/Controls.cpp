@@ -10,9 +10,8 @@ void Controls::Init()
 			{ 58, &Wheeler::ToggleMenu },        // caps lock
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
 			{ 265, &Wheeler::NextItem }, // mouse wheel down
-			{ 256, &Wheeler::ActivateItemRight}, // mouse left
+			{ 256, &Wheeler::ActivateItemRight}, // mouse left to activate right
 			{ 257, &Wheeler::ActivateItemLeft}, // mouse right
-			{ 258, &Wheeler::TestAddItemToWheel }  // middle mouse
 		}
 		) {
 		BindInput(pair.first, pair.second, true, false);

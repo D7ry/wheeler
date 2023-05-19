@@ -7,6 +7,11 @@ void WheelItemMutableManager::Track(WheelItemMutable* a_mutable)
 	this->_mutables.insert(a_mutable);
 }
 
+void WheelItemMutableManager::UnTrack(WheelItemMutable* a_mutable)
+{
+	this->_mutables.erase(a_mutable);
+}
+
 void WheelItemMutableManager::Clear()
 {
 	this->_mutables.clear();

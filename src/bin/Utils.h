@@ -32,7 +32,7 @@ namespace Utils
 		};
 		Hand GetWeaponEquippedHand(RE::Actor* a_actor, RE::TESObjectWEAP* a_weapon, uint32_t a_uniqueID);
 
-		RE::InventoryEntryData* GetSelectedItemIninventory();
+		RE::InventoryEntryData* GetSelectedItemIninventory(RE::InventoryMenu* a_invMenu);
 		RE::TESForm* GetSelectedMagicInMagicMenu();
 
 	}

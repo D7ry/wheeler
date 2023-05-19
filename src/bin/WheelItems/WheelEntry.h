@@ -6,18 +6,18 @@ class WheelEntry
 {
 	// this don't inherit WheelItem because it is a container of that
 public:
-	void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap);
+	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap);
 	
-	void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap);
+	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap);
 
-	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
-	bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	virtual bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
-	void ActivateItemLeft();
-	void ActivateItemRight();
+	virtual void ActivateItemLeft(bool editMode = false);
+	virtual void ActivateItemRight(bool editMode = false);
 
-	void PrevItem();
-	void NextItem();
+	virtual void PrevItem();
+	virtual void NextItem();
 
 	WheelEntry() 
 	{
@@ -34,4 +34,5 @@ public:
 
 private:
 	int _selectedItem;
+	std::mutex _lock;
 };

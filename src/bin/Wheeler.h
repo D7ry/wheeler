@@ -42,8 +42,12 @@ public:
 	static void ActivateItemLeft();
 	static void ActivateItemRight();
 
-	static void TestAddItemToWheel();
-	
+	static void AddEntryToCurrentWheel();
+
+	// Add a new wheel
+	static void AddWheel();
+	// Delete the current wheel
+	static void DeleteWheel();
 	struct Wheel
 	{
 		std::vector<WheelEntry*> entries;
@@ -70,5 +74,14 @@ private:
 	static inline const float _pressThreshold = .25f; 
 	static inline float _openTimer = 0;
 
+	static inline std::mutex _wheelDataLock; // global lock
+
+	// Enter edit mode by pushing the adder entry to the wheel entry list. Must be called outside of the render loop
+	// and cannot be called while the wheel is open.
+	static void enterEditMode();
+	
+	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
+	// and cannot be called while the wheel is open.
+	static void exitEditMode();
 };
 

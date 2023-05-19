@@ -14,6 +14,7 @@
 #include "WheelItems/WheelItemSpell.h"
 #include "WheelItems/WheelItemWeapon.h"
 #include "WheelItems/WheelEntry.h"
+#include "WheelItems/WheelEntryAdder.h"
 #include "WheelItems/WheelItemMutableManager.h"
 #include "include/lib/Drawer.h"
 #include "Controls.h"
@@ -104,6 +105,8 @@ namespace TestData
 
 void Wheeler::Draw()
 {
+	std::lock_guard<std::mutex> lock(_wheelDataLock);
+
 	using namespace Config::Styling::Wheel;
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
@@ -135,12 +138,22 @@ void Wheeler::Draw()
 	}
 	_openTimer += ImGui::GetIO().DeltaTime;
 	
-	bool editMode = RE::UI::GetSingleton()->IsMenuOpen(RE::InventoryMenu::MENU_NAME);
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
-	auto inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
 	// begin draw
-	if (ImGui::BeginPopup(_wheelWindowID)) {
+	if (RE::UI::GetSingleton()->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
+		if (!_editMode) {
+			enterEditMode();
+		}
+	} else {
+		if (_editMode) {
+			exitEditMode();
+		}
+	}
+	bool poppedUp = _editMode ? ImGui::BeginPopupModal(_wheelWindowID) : ImGui::BeginPopup(_wheelWindowID);
+	if (poppedUp) {
+		RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
+
 		const ImVec2 wheelCenter = getWheelCenter();
 
 		auto drawList = ImGui::GetWindowDrawList();
@@ -260,7 +273,13 @@ void Wheeler::Draw()
 // TODO: swap to real serializer after implementing it
 void Wheeler::LoadWheelItems()
 {
-	_active = false;
+	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	if (_active) {
+		CloseMenu();
+	}
+	if (_editMode) {
+		exitEditMode();
+	}
 	_activeItem = -1;
 	WheelItemMutableManager::GetSingleton()->Clear();
 	// clean up old wheels
@@ -317,8 +336,8 @@ void Wheeler::OpenMenu()
 		}
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
-			_active = true;
 		}
+		_active = true;
 		_openTimer = 0;
 	}
 }
@@ -336,8 +355,8 @@ void Wheeler::CloseMenu()
 		}
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
-			_active = false;
 		}
+		_active = false;
 		_openTimer = 0;
 	}
 }
@@ -418,61 +437,26 @@ void Wheeler::NextItem()
 void Wheeler::ActivateItemLeft()
 {
 	if (_active && _activeItem != -1) {
-		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemLeft();
+		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemLeft(_editMode);
 	}
 }
 
 void Wheeler::ActivateItemRight()
 {
 	if (_active && _activeItem != -1) {
-		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemRight();
+		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemRight(_editMode);
 	}
 }
 
-void Wheeler::TestAddItemToWheel()
+void Wheeler::AddEntryToCurrentWheel()
 {
-	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc || !pc->Is3DLoaded()) {
-		return;
+	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		throw std::runtime_error("AddEntryToCurrentWheel must be called in edit mode!");
 	}
-	RE::InventoryEntryData* invEntry = Utils::Inventory::GetSelectedItemIninventory();
-	if (!invEntry) {
-		return;
-	}
-	RE::TESBoundObject* boundObj = invEntry->GetObject__();
-	if (!boundObj) {
-		return;
-	}
-	uint16_t uniqueID = 0;
-	if (invEntry->extraLists) {
-		for (auto* extraDataList : *invEntry->extraLists) {
-			if (extraDataList->HasType(RE::ExtraDataType::kUniqueID)) {
-				RE::ExtraUniqueID* Xid = extraDataList->GetByType<RE::ExtraUniqueID>();
-				if (Xid) {
-					uniqueID = Xid->uniqueID;
-					break;
-				}
-			}
-		}
-	}
-	if (uniqueID == 0) { // unique ID not found, make a new uniqueID for the object.
-		uniqueID = pc->GetInventoryChanges()->GetNextUniqueID();
-		RE::ExtraUniqueID* Xid = new RE::ExtraUniqueID(0x14, uniqueID); // make a new uniqueID for the object
-		if (invEntry->extraLists == nullptr) {
-			invEntry->extraLists = new RE::BSSimpleList<RE::ExtraDataList*>;
-		}
-		if (invEntry->extraLists->begin() == invEntry->extraLists->end()) {
-			RE::ExtraDataList* XList = RE::ExtraDataList::ConstructExtraDataList();
-		}
-		invEntry->extraLists->front()->Add(Xid);
-	}
-	if (boundObj->GetFormType() == RE::FormType::Weapon) {
-		WheelItemWeapon* wheelItem= new WheelItemWeapon(boundObj->As<RE::TESObjectWEAP>(), uniqueID);
-		WheelEntry* wheelEntry = new WheelEntry();
-		wheelEntry->_items.push_back(wheelItem);
-		_wheels[0]->entries.push_back(wheelEntry);
-	}
-
+	WheelEntry* newEntry = new WheelEntry();
+	Wheel* activeWheel = _wheels[_activeWheel];
+	activeWheel->entries.insert(activeWheel->entries.begin() + activeWheel->entries.size() - 1, newEntry);
 }
 
 
@@ -480,4 +464,27 @@ inline ImVec2 Wheeler::getWheelCenter()
 {
 	return ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
 }
+
+void Wheeler::enterEditMode()
+{
+	if (_editMode) {
+		return;
+	}
+	for (auto wheel : _wheels) {
+		wheel->entries.push_back(WheelEntryAdder::GetSingleton());
+	}
+	_editMode = true;
+}
+
+void Wheeler::exitEditMode()
+{
+	if (!_editMode) {
+		return;
+	}
+	for (auto wheel : _wheels) {
+		wheel->entries.pop_back();
+	}
+	_editMode = false;
+}
+
 

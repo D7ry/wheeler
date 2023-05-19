@@ -173,29 +173,21 @@ namespace Utils
 			}
 			return Hand::None;
 		}
-		RE::InventoryEntryData* GetSelectedItemIninventory()
+		RE::InventoryEntryData* GetSelectedItemIninventory(RE::InventoryMenu* a_invMenu)
 		{
-			RE::UI* ui = RE::UI::GetSingleton();
-			if (!ui) {
+			if (!a_invMenu) {
 				return nullptr;
 			}
-			if (ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
-				RE::InventoryMenu* invUI = static_cast<RE::InventoryMenu*>(ui->GetMenu(RE::InventoryMenu::MENU_NAME).get());
-				if (!invUI) {
-					return nullptr;
-				}
-				RE::ItemList* il = invUI->itemList;
-				if (!il) {
-					return nullptr;
-				}
-				RE::ItemList::Item* selectedItem = il->GetSelectedItem();
-				if (!selectedItem) {
-					return nullptr;
-				}
-				RE::InventoryEntryData* invEntry = selectedItem->data.objDesc;
-				return invEntry;
+			RE::ItemList* il = a_invMenu->itemList;
+			if (!il) {
+				return nullptr;
 			}
-			return nullptr;
+			RE::ItemList::Item* selectedItem = il->GetSelectedItem();
+			if (!selectedItem) {
+				return nullptr;
+			}
+			RE::InventoryEntryData* invEntry = selectedItem->data.objDesc;
+			return invEntry;
 		}
 		RE::TESForm* GetSelectedMagicInMagicMenu()
 		{

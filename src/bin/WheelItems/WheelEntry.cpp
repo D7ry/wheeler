@@ -1,13 +1,24 @@
 #include "WheelEntry.h"
 #include "include/lib/Drawer.h"
+#include "WheelItemFactory.h"
 
 void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
+	std::lock_guard<std::mutex> lock(this->_lock);
+
+	if (_items.size() == 0) {
+		return; // nothing to draw
+	}
 	_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap);
 }
 
 void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
+	std::lock_guard<std::mutex> lock(this->_lock);
+
+	if (_items.size() == 0) {
+		return;  // nothing to draw
+	}
 	_items[_selectedItem]->DrawHighlight(a_center, a_imap);
 	if (_items.size() > 1) {
 		Drawer::draw_text(
@@ -24,46 +35,78 @@ void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItem
 
 bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	if (_selectedItem < 0) {
-		return false;
+	std::lock_guard<std::mutex> lock(this->_lock);
+
+	if (_items.size() == 0) {
+		return false;  // nothing to draw
 	}
 	return _items[_selectedItem]->IsActive(a_inv);
 }
 
 bool WheelEntry::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	if (_selectedItem < 0) {
-		return false;
+	std::lock_guard<std::mutex> lock(this->_lock);
+
+	if (_items.size() == 0) {
+		return false;  // nothing to draw
 	}
 	return _items[_selectedItem]->IsAvailable(a_inv);
 }
 
-void WheelEntry::ActivateItemLeft()
+void WheelEntry::ActivateItemLeft(bool editMode)
 {
-	if (_selectedItem < 0) {
-		return;
+	std::lock_guard<std::mutex> lock(this->_lock);
+
+	if (_items.size() == 0) {
+		return;  // nothing erase or activate
 	}
-	_items[_selectedItem]->ActivateItemLeft();
+	if (!editMode) {
+		_items[_selectedItem]->ActivateItemLeft();
+	} else { 
+		// remove selected item
+		_items.erase(_items.begin() + _selectedItem);
+		// move _selecteditem to the item immediately before the erased item
+		if (_selectedItem > 0) {
+			_selectedItem--;
+		}
+	}
 }
 
-void WheelEntry::ActivateItemRight()
+void WheelEntry::ActivateItemRight(bool editMode)
 {
-	if (_selectedItem < 0) {
-		return;
+	std::lock_guard<std::mutex> lock(this->_lock);
+
+	if (!editMode) { 
+		if (_items.size() == 0) {
+			return;  // nothing to erase
+		}
+		_items[_selectedItem]->ActivateItemRight();
+	} else {// append item to after _selectedItem index
+		WheelItem* newItem = WheelItemFactory::MakeWheelItemFromSelected();
+		if (newItem) {
+			_items.insert(_items.begin() + _selectedItem, newItem);
+		}
 	}
-	_items[_selectedItem]->ActivateItemRight();
 }
 
 void WheelEntry::PrevItem()
 {
+	std::lock_guard<std::mutex> lock(this->_lock);
+
 	_selectedItem--;
 	if (_selectedItem < 0) {
-		_selectedItem = _items.size() - 1;
+		if (_items.size() > 1) {
+			_selectedItem = _items.size() - 1;
+		} else {
+			_selectedItem = 0;
+		}
 	}
 }
 
 void WheelEntry::NextItem()
 {
+	std::lock_guard<std::mutex> lock(this->_lock);
+
 	_selectedItem++;
 	if (_selectedItem >= _items.size()) {
 		_selectedItem = 0;

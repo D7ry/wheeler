@@ -1,6 +1,6 @@
 #pragma once
-#include "WheelItem.h"
 #include "WheelItemMutable.h"
+
 class WheelItemWeapon : public WheelItemMutable 
 {
 public:
