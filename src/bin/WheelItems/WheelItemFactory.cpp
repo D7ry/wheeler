@@ -31,7 +31,7 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
 
 		uint16_t uniqueID = 0;
 		if (!invEntry->extraLists) {
-			throw new std::exception("invEntry->extraLists is null");
+			return nullptr;
 		}
 		for (auto& extraList : *invEntry->extraLists) {
 			if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
@@ -43,7 +43,7 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
 			}
 		}
 		if (uniqueID == 0) {
-			throw new std::exception("uniqueID is 0, but it should have been properly assigned.");
+			return nullptr;
 		}
 		
 		RE::FormType formType = boundObj->GetFormType();
@@ -53,6 +53,20 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
 			return wheelItemweap;
 		} else if (formType == RE::FormType::Armor) {
 		
+		}
+	} else if (ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
+		auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
+		if (!magMenu) {
+			return nullptr;
+		}
+		RE::TESForm* form = Utils::Inventory::GetSelectedFormInMagicMenu(magMenu);
+		if (!form) {
+			return nullptr;
+		}
+		switch (form->GetFormType()) {
+		case RE::FormType::Spell:
+			std::shared_ptr<WheelItemSpeel> wheelItemSpell = std::make_shared<WheelItemSpeel>(form->As<RE::SpellItem>());
+			return wheelItemSpell;
 		}
 	}
 	return nullptr;

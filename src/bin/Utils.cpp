@@ -189,21 +189,14 @@ namespace Utils
 			RE::InventoryEntryData* invEntry = selectedItem->data.objDesc;
 			return invEntry;
 		}
-		RE::TESForm* GetSelectedMagicInMagicMenu()
+		RE::TESForm* GetSelectedFormInMagicMenu(RE::MagicMenu* a_magMen)
 		{
-			RE::UI* ui = RE::UI::GetSingleton();
-			if (!ui) {
-				return nullptr;
-			}
-			if (ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
-				auto* magic_menu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
-				if (magic_menu) {
-					RE::GFxValue result;
-					magic_menu->uiMovie->GetVariable(&result, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
-					if (result.GetType() == RE::GFxValue::ValueType::kNumber) {
-						RE::FormID formID = static_cast<std::uint32_t>(result.GetNumber());
-						return RE::TESForm::LookupByID(formID);
-					}
+			if (a_magMen) {
+				RE::GFxValue result;
+				a_magMen->uiMovie->GetVariable(&result, "_root.Menu_mc.inventoryLists.itemList.selectedEntry.formId");
+				if (result.GetType() == RE::GFxValue::ValueType::kNumber) {
+					RE::FormID formID = static_cast<std::uint32_t>(result.GetNumber());
+					return RE::TESForm::LookupByID(formID);
 				}
 			}
 			return nullptr;

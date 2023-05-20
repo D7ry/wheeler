@@ -111,6 +111,11 @@ void Wheeler::Draw()
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
 	}
+	// begin draw
+	auto ui = RE::UI::GetSingleton();
+	if (!ui) {
+		return;
+	}
 
 	if (!_active) { // queued to close
 		if (ImGui::IsPopupOpen(_wheelWindowID)) {
@@ -122,6 +127,9 @@ void Wheeler::Draw()
 			auto controlMap = RE::ControlMap::GetSingleton();
 			if (controlMap) {
 				controlMap->ignoreKeyboardMouse = false;
+			}
+			if (_editMode) {
+				showEditModeVanillaMenus(ui);
 			}
 		}
 		return;
@@ -140,16 +148,18 @@ void Wheeler::Draw()
 	
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
-	// begin draw
-	if (RE::UI::GetSingleton()->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
+
+	if (shouldBeInEditMode(ui)) {
 		if (!_editMode) {
 			enterEditMode();
 		}
+		hideEditModeVanillaMenus(ui);
 	} else {
 		if (_editMode) {
 			exitEditMode();
 		}
 	}
+
 	bool poppedUp = _editMode ? ImGui::BeginPopupModal(_wheelWindowID) : ImGui::BeginPopup(_wheelWindowID);
 	if (poppedUp) {
 		RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
@@ -476,10 +486,14 @@ void Wheeler::DeleteCurrent()
 		return;
 	}
 	activeWheel = _wheels[_activeWheel];
-	if (_activeEntry == activeWheel->entries.size() - 1 && _wheels.size() > 1) {
-		// we're at the adder entry, deleting this means we're deleting the whole wheel
-		deleteCurrentWheel = true;
-	} else if (activeWheel->entries.size() > 1) {
+	if (_activeEntry == activeWheel->entries.size() - 1) { // at adder entry(the last entry)
+		if (activeWheel->entries.size() == 1// the wheel has nothing left
+			&& _wheels.size() > 1 // we have more than one wheel
+			) { 
+			deleteCurrentWheel = true;
+		}
+	} else {
+		// we're at a regular entry, the entry is guaranteed to be empty, so we can delete it
 		deleteCurrentEntry = true;
 	}
 	
@@ -541,6 +555,43 @@ inline ImVec2 Wheeler::getWheelCenter()
 	return ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
 }
 
+bool Wheeler::shouldBeInEditMode(RE::UI* a_ui)
+{
+	return a_ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME) || a_ui->IsMenuOpen(RE::MagicMenu::MENU_NAME);
+}
+
+void Wheeler::hideEditModeVanillaMenus(RE::UI* a_ui)
+{
+	if (a_ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
+		RE::GFxMovieView* uiMovie = a_ui->GetMenu<RE::InventoryMenu>()->uiMovie.get();
+		if (uiMovie) {
+			uiMovie->SetVisible(false);
+		}
+	}
+	if (a_ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
+		RE::GFxMovieView* uiMovie = a_ui->GetMenu<RE::MagicMenu>()->uiMovie.get();
+		if (uiMovie) {
+			uiMovie->SetVisible(false);
+		}
+	}
+}
+
+void Wheeler::showEditModeVanillaMenus(RE::UI* a_ui)
+{
+	if (a_ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
+		RE::GFxMovieView* uiMovie = a_ui->GetMenu<RE::InventoryMenu>()->uiMovie.get();
+		if (uiMovie) {
+			uiMovie->SetVisible(true);
+		}
+	}
+	if (a_ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
+		RE::GFxMovieView* uiMovie = a_ui->GetMenu<RE::MagicMenu>()->uiMovie.get();
+		if (uiMovie) {
+			uiMovie->SetVisible(true);
+		}
+	}
+}
+
 void Wheeler::enterEditMode()
 {
 	if (_editMode) {
@@ -549,6 +600,7 @@ void Wheeler::enterEditMode()
 	for (auto wheel : _wheels) {
 		wheel->entries.push_back(WheelEntryAdder::GetSingleton());
 	}
+	
 	_editMode = true;
 }
 
@@ -560,6 +612,8 @@ void Wheeler::exitEditMode()
 	for (auto wheel : _wheels) {
 		wheel->entries.pop_back();
 	}
+	auto ui = RE::UI::GetSingleton();
+	
 	_editMode = false;
 }
 

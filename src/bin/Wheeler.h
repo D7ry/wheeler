@@ -89,12 +89,15 @@ private:
 
 	static inline std::shared_mutex _wheelDataLock;  // global lock
 
+	static bool shouldBeInEditMode(RE::UI* a_ui);
+
+	static void hideEditModeVanillaMenus(RE::UI* a_ui);
+	static void showEditModeVanillaMenus(RE::UI* a_ui);
+
 	// Enter edit mode by pushing the adder entry to the wheel entry list. Must be called outside of the render loop
-	// and cannot be called while the wheel is open.
 	static void enterEditMode();
 	
 	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
-	// and cannot be called while the wheel is open.
 	static void exitEditMode();
 };
 
