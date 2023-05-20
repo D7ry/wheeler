@@ -1,6 +1,6 @@
 #pragma once
 #include "WheelItem.h"
-class WheelItemSpeel : public WheelItem
+class WheelItemSpeel : public WheelItem // spell AND power
 {
 public:
 	WheelItemSpeel(RE::SpellItem* a_spell);

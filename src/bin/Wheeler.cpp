@@ -612,7 +612,6 @@ void Wheeler::exitEditMode()
 	for (auto wheel : _wheels) {
 		wheel->entries.pop_back();
 	}
-	auto ui = RE::UI::GetSingleton();
 	
 	_editMode = false;
 }

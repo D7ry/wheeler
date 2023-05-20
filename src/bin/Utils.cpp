@@ -136,16 +136,23 @@ namespace Utils
 			return *a_list->GetByType<RE::ExtraPoison>();
 		}
 
-		Hand GetWeaponEquippedHand(RE::Actor* a_actor, RE::TESObjectWEAP* a_weapon, uint32_t a_uniqueID)
+		Hand GetWeaponEquippedHand(RE::Actor* a_actor, RE::TESObjectWEAP* a_weapon, uint32_t a_uniqueID, bool itemClean)
 		{
 			if (!a_actor) {
 				return Hand::None;
 			}
 			bool lhsEquipped = false, rhsEquipped = false;
+			bool lhsEquippedBase = false, rhsEquippedBase = false;
 			RE::InventoryEntryData* lhs = a_actor->GetEquippedEntryData(true);
 			if (lhs && lhs->GetObject__() && lhs->GetObject__()->GetFormID() == a_weapon->GetFormID()) {
 				if (lhs->extraLists) {
 					for (auto* extraList : *lhs->extraLists) {
+						if (!extraList->HasType(RE::ExtraDataType::kEnchantment) 
+							&& !extraList->HasType(RE::ExtraDataType::kHealth) 
+							&& !extraList->HasType(RE::ExtraDataType::kPoison)
+							) {
+							lhsEquippedBase = true;
+						}
 						if (extraList->HasType(RE::ExtraDataType::kUniqueID) && extraList->GetByType<RE::ExtraUniqueID>()->uniqueID == a_uniqueID) {
 							lhsEquipped = true;
 							break;
@@ -157,11 +164,25 @@ namespace Utils
 			if (rhs && rhs->GetObject__() && rhs->GetObject__()->GetFormID() == a_weapon->GetFormID()) {
 				if (rhs->extraLists) {
 					for (auto* extraList : *rhs->extraLists) {
+						if (!extraList->HasType(RE::ExtraDataType::kEnchantment) 
+							&& !extraList->HasType(RE::ExtraDataType::kHealth) 
+							&& !extraList->HasType(RE::ExtraDataType::kPoison)) {
+							rhsEquippedBase = true;
+						}
 						if (extraList->HasType(RE::ExtraDataType::kUniqueID) && extraList->GetByType<RE::ExtraUniqueID>()->uniqueID == a_uniqueID) {
 							rhsEquipped = true;
 							break;
 						}
 					}
+				}
+			}
+			if (itemClean) {
+				if (lhsEquippedBase && rhsEquippedBase) {
+					return Hand::Both;
+				} else if (lhsEquippedBase) {
+					return Hand::Left;
+				} else if (rhsEquippedBase) {
+					return Hand::Right;
 				}
 			}
 			if (lhsEquipped && rhsEquipped) {

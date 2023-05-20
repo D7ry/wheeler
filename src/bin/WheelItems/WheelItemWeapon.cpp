@@ -128,7 +128,11 @@ bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	if (!pc) {
 		return false;
 	}
-	return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID()) != Utils::Inventory::Hand::None;
+	if (this->GetItemData(a_inv).first >= 2) {
+		return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true) != Utils::Inventory::Hand::None;
+	} else {
+		return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID()) != Utils::Inventory::Hand::None;
+	}
 }
 bool WheelItemWeapon::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
