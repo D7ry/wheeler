@@ -4,6 +4,7 @@
 #include "Wheeler.h"
 #include "Texture.h"
 #include "Controls.h"
+#include "UniqueIDHandler.h"
 #include "bin/WheelItems/WheelItemMutableManager.h"
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
@@ -22,6 +23,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	case SKSE::MessagingInterface::kPostLoadGame:
 	case SKSE::MessagingInterface::kNewGame:
 		Wheeler::LoadWheelItems();
+		UniqueIDHandler::AssignUniqueIDsToAllObjects();
 		break;
 	}
 }

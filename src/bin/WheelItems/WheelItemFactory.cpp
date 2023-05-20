@@ -28,33 +28,24 @@ WheelItem* WheelItemFactory::MakeWheelItemFromSelected()
 		if (!boundObj) {
 			return nullptr;
 		}
-		// What the following code does:
-		// 1. search for the inventory entry's unique ID
-		// 2. if the entry has uniqueID, use id as an identifier for the wheel item when looking for the entry to equip
-		// 3. if the entry has no uniqueID, assign it a new one.
+
 		uint16_t uniqueID = 0;
-		if (invEntry->extraLists) {
-			for (auto* extraDataList : *invEntry->extraLists) {
-				if (extraDataList->HasType(RE::ExtraDataType::kUniqueID)) {
-					RE::ExtraUniqueID* Xid = extraDataList->GetByType<RE::ExtraUniqueID>();
-					if (Xid) {
-						uniqueID = Xid->uniqueID;
-						break;
-					}
+		if (!invEntry->extraLists) {
+			throw new std::exception("invEntry->extraLists is null");
+		}
+		for (auto& extraList : *invEntry->extraLists) {
+			if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
+				auto* uniqueIDExtra = extraList->GetByType<RE::ExtraUniqueID>();
+				if (uniqueIDExtra) {
+					uniqueID = uniqueIDExtra->uniqueID;
+					break;
 				}
 			}
 		}
-		if (uniqueID == 0) {  // unique ID not found, make a new uniqueID for the object.
-			uniqueID = pc->GetInventoryChanges()->GetNextUniqueID();
-			RE::ExtraUniqueID* Xid = new RE::ExtraUniqueID(0x14, uniqueID);  // make a new uniqueID for the object
-			if (invEntry->extraLists == nullptr) {
-				invEntry->extraLists = new RE::BSSimpleList<RE::ExtraDataList*>;
-			}
-			if (invEntry->extraLists->begin() == invEntry->extraLists->end()) {
-				RE::ExtraDataList* XList = RE::ExtraDataList::ConstructExtraDataList();
-			}
-			invEntry->extraLists->front()->Add(Xid);
+		if (uniqueID == 0) {
+			throw new std::exception("uniqueID is 0, but it should have been properly assigned.");
 		}
+		
 		RE::FormType formType = boundObj->GetFormType();
 		if (formType == RE::FormType::Weapon) {
 			WheelItemWeapon* wheelItemWeap = new WheelItemWeapon(boundObj->As<RE::TESObjectWEAP>(), uniqueID);

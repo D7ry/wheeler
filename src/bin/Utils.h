@@ -36,5 +36,15 @@ namespace Utils
 		RE::TESForm* GetSelectedMagicInMagicMenu();
 
 	}
+	
+	namespace Workaround
+	{
+		inline void* NiMemAlloc_1400F6B40(int size)
+		{
+			using func_t = void* (*)(int);
+			REL::Relocation<func_t> func{ RELOCATION_ID(10798, 10854) };
+			return func(size);
+		}
+	}
 
 }
