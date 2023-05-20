@@ -1,6 +1,9 @@
 #pragma once
 #include "Config.h"
 #include "imgui.h"
+#include <mutex>
+#include <shared_mutex>
+
 class WheelItem;
 class WheelItemMutable;
 class WheelEntry;
@@ -43,12 +46,21 @@ public:
 	static void ActivateItemRight();
 
 	static void AddEntryToCurrentWheel();
-	static void DeleteCurrentEntry();
+
+	/// <summary>
+	/// This functions behaves differently depending on the current state of the wheel.
+	/// If the currently hovered over item is a regular entry, the regular entry is guaranteed to have
+	/// an empty list of items(ensured by ActivateItemLeft), we delete the hovered-over entry
+	/// If the currently hovered over item is an Adder entry, we delete the wheel iff:
+	/// 1. the wheel is empty execept for the adder entry.
+	/// 2. the wheel is not the last remaining wheel
+	/// </summary>
+	static void DeleteCurrent();
 
 	// Add a new wheel
 	static void AddWheel();
 	// Delete the current wheel
-	static void DeleteWheel();
+	static void DeleteCurrentWheel();
 	struct Wheel
 	{
 		std::vector<WheelEntry*> entries;
@@ -75,7 +87,7 @@ private:
 	static inline const float _pressThreshold = .25f; 
 	static inline float _openTimer = 0;
 
-	static inline std::mutex _wheelDataLock; // global lock
+	static inline std::shared_mutex _wheelDataLock;  // global lock
 
 	// Enter edit mode by pushing the adder entry to the wheel entry list. Must be called outside of the render loop
 	// and cannot be called while the wheel is open.

@@ -105,7 +105,7 @@ namespace TestData
 
 void Wheeler::Draw()
 {
-	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
 
 	using namespace Config::Styling::Wheel;
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
@@ -273,7 +273,7 @@ void Wheeler::Draw()
 // TODO: swap to real serializer after implementing it
 void Wheeler::LoadWheelItems()
 {
-	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
 	if (_active) {
 		CloseMenu();
 	}
@@ -439,7 +439,7 @@ void Wheeler::ActivateItemLeft()
 	if (_active && _activeEntry != -1) {
 		if (_editMode && _wheels[_activeWheel]->entries[_activeEntry]->IsEmpty()) {
 			// remove empty entry
-			DeleteCurrentEntry();
+			DeleteCurrent();
 			return;
 		}
 		_wheels[_activeWheel]->entries[_activeEntry]->ActivateItemLeft(_editMode);
@@ -455,29 +455,82 @@ void Wheeler::ActivateItemRight()
 
 void Wheeler::AddEntryToCurrentWheel()
 {
-	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
 	if (!_editMode) {
-		throw std::runtime_error("AddEntryToCurrentWheel must be called in edit mode!");
+		return;
 	}
 	WheelEntry* newEntry = new WheelEntry();
 	Wheel* activeWheel = _wheels[_activeWheel];
 	activeWheel->entries.insert(activeWheel->entries.begin() + activeWheel->entries.size() - 1, newEntry);
 }
 
-void Wheeler::DeleteCurrentEntry()
+void Wheeler::DeleteCurrent()
 {
-	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+
+	bool deleteCurrentWheel = false;
+	bool deleteCurrentEntry = false;
+	Wheel* activeWheel = nullptr;
+	
 	if (!_editMode) {
-		throw std::runtime_error("DeleteCurrentEntry must be called in edit mode!");
+		return;
 	}
-	Wheel* activeWheel = _wheels[_activeWheel];
-	if (activeWheel->entries.size() > 1) {
+	activeWheel = _wheels[_activeWheel];
+	if (_activeEntry == activeWheel->entries.size() - 1 && _wheels.size() > 1) {
+		// we're at the adder entry, deleting this means we're deleting the whole wheel
+		deleteCurrentWheel = true;
+	} else if (activeWheel->entries.size() > 1) {
+		deleteCurrentEntry = true;
+	}
+	
+	if (deleteCurrentWheel) {
+		Wheel* toDelete = _wheels[_activeWheel];
+		if (toDelete->entries.size() > 1) {
+			return;  // don'delete the wheel if the wheel has more than the adder entry
+			//TODO: add a text notification
+		}
+		_wheels.erase(_wheels.begin() + _activeWheel);
+		delete toDelete;
+		if (_activeWheel == _wheels.size() && _activeWheel != 0) {  //deleted the last wheel
+			_activeWheel = _wheels.size() - 1;
+		}
+	} else if (deleteCurrentEntry) {
 		WheelEntry* toDelete = activeWheel->entries[_activeEntry];
 		activeWheel->entries.erase(activeWheel->entries.begin() + _activeEntry);
 		delete toDelete;
-		if (_activeEntry == activeWheel->entries.size() && _activeEntry != 0) { //deleted the last entry
+		if (_activeEntry == activeWheel->entries.size() && _activeEntry != 0) {  //deleted the last entry
 			_activeEntry = activeWheel->entries.size() - 1;
-			_activeEntry = 0;
+		}
+	}
+	
+}
+
+void Wheeler::AddWheel()
+{
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		return;
+	}
+	Wheel* newWheel = new Wheel();
+	newWheel->entries.push_back(WheelEntryAdder::GetSingleton()); // add the adder entry, since we're in edit mode
+	_wheels.push_back(newWheel);
+}
+
+void Wheeler::DeleteCurrentWheel()
+{
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		return;
+	}
+	if (_wheels.size() > 1) {
+		Wheel* toDelete = _wheels[_activeWheel];
+		if (toDelete->entries.size() > 1) {
+			throw std::runtime_error("Cannot delete wheel with more than one entry!");
+		}
+		_wheels.erase(_wheels.begin() + _activeWheel);
+		delete toDelete;
+		if (_activeWheel == _wheels.size() && _activeWheel != 0) {  //deleted the last wheel
+			_activeWheel = _wheels.size() - 1;
 		}
 	}
 }
