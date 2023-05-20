@@ -65,7 +65,7 @@ namespace TestData
 
 		
 		auto generateSpellWheelItem = [dh](RE::FormID formID) {
-			return new WheelItemSpeel((RE::SpellItem*)dh->LookupForm(formID, "Skyrim.esm"));
+			return std::make_shared<WheelItemSpeel>((RE::SpellItem*)dh->LookupForm(formID, "Skyrim.esm"));
 		};
 
 		Wheeler::Wheel* w2 = new Wheeler::Wheel();
@@ -133,7 +133,7 @@ void Wheeler::Draw()
 			controlMap->ignoreKeyboardMouse = true;
 		}
 		ImGui::OpenPopup(_wheelWindowID);
-		_activeItem = -1; // reset active item on reopen
+		_activeEntry = -1; // reset active item on reopen
 		_cursorPos = { 0, 0 }; // reset cursor pos
 	}
 	_openTimer += ImGui::GetIO().DeltaTime;
@@ -197,13 +197,13 @@ void Wheeler::Draw()
 			if (_cursorPos.x != 0 || _cursorPos.y != 0) {
 				if (drag_angle >= item_inner_ang_min) {  // Normal case
 					if (drag_angle < item_inner_ang_max) {
-						_activeItem = item_n;
+						_activeEntry = item_n;
 					}
 				} else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
-					_activeItem = item_n;
+					_activeEntry = item_n;
 				}
 			}
-			bool hovered = _activeItem == item_n;
+			bool hovered = _activeEntry == item_n;
 
 			// calculate wheel center
 			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
@@ -280,7 +280,7 @@ void Wheeler::LoadWheelItems()
 	if (_editMode) {
 		exitEditMode();
 	}
-	_activeItem = -1;
+	_activeEntry = -1;
 	WheelItemMutableManager::GetSingleton()->Clear();
 	// clean up old wheels
 	for (Wheel* wheel : _wheels) {
@@ -400,7 +400,7 @@ void Wheeler::NextWheel()
 {
 	if (_active) {
 		_cursorPos = { 0, 0 };
-		_activeItem = -1;
+		_activeEntry = -1;
 		_activeWheel += 1;
 		if (_activeWheel >= _wheels.size()) {
 			_activeWheel = 0;
@@ -412,7 +412,7 @@ void Wheeler::PrevWheel()
 {
 	if (_active) {
 		_cursorPos = { 0, 0 };
-		_activeItem = -1;
+		_activeEntry = -1;
 		_activeWheel -= 1;
 		if (_activeWheel < 0) {
 			_activeWheel = _wheels.size() - 1;
@@ -422,29 +422,34 @@ void Wheeler::PrevWheel()
 
 void Wheeler::PrevItem()
 {
-	if (_active && _activeItem != -1) {
-		_wheels[_activeWheel]->entries[_activeItem]->PrevItem();
+	if (_active && _activeEntry != -1) {
+		_wheels[_activeWheel]->entries[_activeEntry]->PrevItem();
 	}
 }
 
 void Wheeler::NextItem()
 {
-	if (_active && _activeItem != -1) {
-		_wheels[_activeWheel]->entries[_activeItem]->NextItem();
+	if (_active && _activeEntry != -1) {
+		_wheels[_activeWheel]->entries[_activeEntry]->NextItem();
 	}
 }
 
 void Wheeler::ActivateItemLeft()
 {
-	if (_active && _activeItem != -1) {
-		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemLeft(_editMode);
+	if (_active && _activeEntry != -1) {
+		if (_editMode && _wheels[_activeWheel]->entries[_activeEntry]->IsEmpty()) {
+			// remove empty entry
+			DeleteCurrentEntry();
+			return;
+		}
+		_wheels[_activeWheel]->entries[_activeEntry]->ActivateItemLeft(_editMode);
 	}
 }
 
 void Wheeler::ActivateItemRight()
 {
-	if (_active && _activeItem != -1) {
-		_wheels[_activeWheel]->entries[_activeItem]->ActivateItemRight(_editMode);
+	if (_active && _activeEntry != -1) {
+		_wheels[_activeWheel]->entries[_activeEntry]->ActivateItemRight(_editMode);
 	}
 }
 
@@ -457,6 +462,24 @@ void Wheeler::AddEntryToCurrentWheel()
 	WheelEntry* newEntry = new WheelEntry();
 	Wheel* activeWheel = _wheels[_activeWheel];
 	activeWheel->entries.insert(activeWheel->entries.begin() + activeWheel->entries.size() - 1, newEntry);
+}
+
+void Wheeler::DeleteCurrentEntry()
+{
+	std::lock_guard<std::mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		throw std::runtime_error("DeleteCurrentEntry must be called in edit mode!");
+	}
+	Wheel* activeWheel = _wheels[_activeWheel];
+	if (activeWheel->entries.size() > 1) {
+		WheelEntry* toDelete = activeWheel->entries[_activeEntry];
+		activeWheel->entries.erase(activeWheel->entries.begin() + _activeEntry);
+		delete toDelete;
+		if (_activeEntry == activeWheel->entries.size() && _activeEntry != 0) { //deleted the last entry
+			_activeEntry = activeWheel->entries.size() - 1;
+			_activeEntry = 0;
+		}
+	}
 }
 
 

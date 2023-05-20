@@ -1,6 +1,8 @@
 #include "WheelEntry.h"
 #include "include/lib/Drawer.h"
 #include "WheelItemFactory.h"
+#include "WheelItemMutableManager.h"
+#include "WheelItemMutable.h"
 
 void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
@@ -58,12 +60,17 @@ void WheelEntry::ActivateItemLeft(bool editMode)
 	std::lock_guard<std::mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
-		return;  // nothing erase or activate
+		return;
 	}
 	if (!editMode) {
 		_items[_selectedItem]->ActivateItemLeft();
-	} else { 
+	} else {
 		// remove selected item
+		std::shared_ptr<WheelItem> itemToDelete = _items[_selectedItem];
+		if (itemToDelete->IsMutable()) {
+			std::shared_ptr<WheelItemMutable> mutableItem = std::dynamic_pointer_cast<WheelItemMutable>(itemToDelete);
+			WheelItemMutableManager::GetSingleton()->UnTrack(mutableItem);
+		}
 		_items.erase(_items.begin() + _selectedItem);
 		// move _selecteditem to the item immediately before the erased item
 		if (_selectedItem > 0) {
@@ -82,7 +89,7 @@ void WheelEntry::ActivateItemRight(bool editMode)
 		}
 		_items[_selectedItem]->ActivateItemRight();
 	} else {// append item to after _selectedItem index
-		WheelItem* newItem = WheelItemFactory::MakeWheelItemFromSelected();
+		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromSelected();
 		if (newItem) {
 			_items.insert(_items.begin() + _selectedItem, newItem);
 		}
@@ -111,5 +118,26 @@ void WheelEntry::NextItem()
 	if (_selectedItem >= _items.size()) {
 		_selectedItem = 0;
 	}
+}
+
+bool WheelEntry::IsEmpty()
+{
+	return this->_items.empty();
+}
+
+WheelEntry::WheelEntry()
+{
+	_selectedItem = 0;
+}
+
+WheelEntry::~WheelEntry()
+{
+	for (auto& item : _items) {
+		if (item->IsMutable()) {
+			std::shared_ptr<WheelItemMutable> mutableItem = std::dynamic_pointer_cast<WheelItemMutable>(item);
+			WheelItemMutableManager::GetSingleton()->UnTrack(mutableItem);
+		}
+	}
+	_items.clear();
 }
 

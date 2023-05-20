@@ -25,6 +25,8 @@ public:
 	virtual void ActivateItemLeft();
 	virtual void ActivateItemRight();
 
+	virtual bool IsMutable();
+
 protected:
 	Texture::Image _texture;
 };

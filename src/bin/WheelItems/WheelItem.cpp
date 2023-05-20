@@ -28,3 +28,9 @@ void WheelItem::ActivateItemLeft()
 void WheelItem::ActivateItemRight()
 {
 }
+
+bool WheelItem::IsMutable()
+{
+	return false;
+}
+

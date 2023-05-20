@@ -43,6 +43,7 @@ public:
 	static void ActivateItemRight();
 
 	static void AddEntryToCurrentWheel();
+	static void DeleteCurrentEntry();
 
 	// Add a new wheel
 	static void AddWheel();
@@ -60,7 +61,7 @@ private:
 	static inline const char* _wheelWindowID = "##Wheeler";
 
 	// currently active item, will be highlighted. Gets reset every time wheel reopens.
-	static inline int _activeItem = -1; 
+	static inline int _activeEntry = -1; 
 	
 	static inline ImVec2 _cursorPos = { 0, 0 };
 

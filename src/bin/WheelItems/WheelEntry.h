@@ -19,18 +19,12 @@ public:
 	virtual void PrevItem();
 	virtual void NextItem();
 
-	WheelEntry() 
-	{
-		_selectedItem = 0;
-	}
+	bool IsEmpty();
 
-	~WheelEntry()
-	{
-		for (auto& item : _items) {
-			delete item;
-		}
-	}
-	std::vector<WheelItem*> _items;
+	WheelEntry();
+
+	~WheelEntry();
+	std::vector<std::shared_ptr<WheelItem>> _items;
 
 private:
 	int _selectedItem;

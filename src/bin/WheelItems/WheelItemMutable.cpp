@@ -1,5 +1,4 @@
 #include "WheelItemMutable.h"
-
 uint16_t WheelItemMutable::GetUniqueID()
 {
 	std::lock_guard<std::mutex> lock(_uniqueIDLock);
@@ -15,6 +14,11 @@ void WheelItemMutable::SetUniqueID(uint16_t a_id)
 RE::FormID WheelItemMutable::GetFormID()
 {
 	return this->_obj->GetFormID();
+}
+
+bool WheelItemMutable::IsMutable()
+{
+	return true;
 }
 
 std::pair<int, RE::ExtraDataList*> WheelItemMutable::GetItemData(RE::TESObjectREFR::InventoryItemMap& a_inv)

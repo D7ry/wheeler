@@ -2,14 +2,19 @@
 #include "WheelItemMutable.h"
 using EventResult = RE::BSEventNotifyControl;
 
-void WheelItemMutableManager::Track(WheelItemMutable* a_mutable)
+void WheelItemMutableManager::Track(std::shared_ptr<WheelItemMutable> a_mutable)
 {
 	this->_mutables.insert(a_mutable);
 }
 
-void WheelItemMutableManager::UnTrack(WheelItemMutable* a_mutable)
+void WheelItemMutableManager::UnTrack(std::shared_ptr<WheelItemMutable> a_mutable)
 {
 	this->_mutables.erase(a_mutable);
+}
+
+void WheelItemMutableManager::UnTrack(std::weak_ptr<WheelItemMutable> a_mutable)
+{
+	this->_mutables.erase(a_mutable.lock());
 }
 
 void WheelItemMutableManager::Clear()

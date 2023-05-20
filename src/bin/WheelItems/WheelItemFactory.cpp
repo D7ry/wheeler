@@ -5,7 +5,7 @@
 #include "WheelItemWeapon.h"
 #include "WheelItemMutableManager.h"
 
-WheelItem* WheelItemFactory::MakeWheelItemFromSelected()
+std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
 {
 	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
 	if (!pc || !pc->Is3DLoaded()) {
@@ -48,9 +48,9 @@ WheelItem* WheelItemFactory::MakeWheelItemFromSelected()
 		
 		RE::FormType formType = boundObj->GetFormType();
 		if (formType == RE::FormType::Weapon) {
-			WheelItemWeapon* wheelItemWeap = new WheelItemWeapon(boundObj->As<RE::TESObjectWEAP>(), uniqueID);
-			WheelItemMutableManager::GetSingleton()->Track(wheelItemWeap);  // track the new wheelItem
-			return wheelItemWeap;
+			std::shared_ptr<WheelItemWeapon> wheelItemweap = std::make_shared<WheelItemWeapon>(boundObj->As<RE::TESObjectWEAP>(), uniqueID);
+			WheelItemMutableManager::GetSingleton()->Track(wheelItemweap);  // track the new wheelItem
+			return wheelItemweap;
 		} else if (formType == RE::FormType::Armor) {
 		
 		}
