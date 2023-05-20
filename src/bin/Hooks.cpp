@@ -116,9 +116,17 @@ namespace Hooks
 			//https://github.com/ahzaab/iEquipUtil/commit/34ff707f1a2654eded7023dd66237e4f6d5df578
 			void Hook_PickUpObject(RE::TESObjectREFR* a_object, uint32_t a_count, bool a_arg3, bool a_playSound)
 			{
-				auto ft = a_object->GetFormType();
+				if (!a_object) {
+					return _PickUpObject(this, a_object, a_count, a_arg3, a_playSound);
+				}
+				auto bo = a_object->GetBaseObject();
+				if (!bo) {
+					return _PickUpObject(this, a_object, a_count, a_arg3, a_playSound);
+				}
+				
+				auto ft = bo->GetFormType();
 
-				if (a_count <= 0 || !a_object || !a_object->GetBaseObject() || (ft != RE::FormType::Weapon && ft != RE::FormType::Armor)) {
+				if (a_count <= 0 || (ft != RE::FormType::Weapon && ft != RE::FormType::Armor)) {
 					return _PickUpObject(this, a_object, a_count, a_arg3, a_playSound);
 				}
 				_PickUpObject(this, a_object, a_count, a_arg3, a_playSound);
