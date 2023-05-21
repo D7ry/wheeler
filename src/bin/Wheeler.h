@@ -15,7 +15,12 @@ public:
 		// insert an empty wheel
 		_wheels.emplace_back(new Wheel());
 	}
-	static void Draw();
+
+	/// <summary>
+	/// Update wheeler, calling draw function etc...
+	/// This function can only be invoked by the renderer.
+	/// </summary>
+	static void Update();
 	
 	/// <summary>
 	/// Load all items in the wheel customized by the current save through the serializer.
@@ -33,10 +38,14 @@ public:
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
-	static void ToggleMenu();
-	static void CloseMenuIfOpenedLongEnough();
-	static void OpenMenu();
-	static void CloseMenu();
+	static void ToggleWheel();
+	static void CloseWheelIfOpenedLongEnough();
+	
+	static void TryOpenWheel();
+	static void TryCloseWheel();
+
+	static void OpenWheel();
+	static void CloseWheel();
 	
 	static void NextWheel();
 	static void PrevWheel();
@@ -91,7 +100,15 @@ public:
 
 
 private:
-	static inline bool _active = false;
+	enum class WheelState
+	{
+		KOpened,
+		KClosed,
+		KOpening,
+		KClosing
+	};
+	static inline WheelState _state = WheelState::KClosed;
+	
 	static inline bool _editMode = false;
 
 	static inline const char* _wheelWindowID = "##Wheeler";
@@ -110,6 +127,7 @@ private:
 	// the the user presses shorter than this, the wheel will close on a second press.
 	static inline const float PRESS_THRESHOLD = .25f; 
 	static inline float _openTimer = 0;
+	static inline float _closeTimer = 0;
 
 	static inline std::shared_mutex _wheelDataLock;  // global lock
 
@@ -123,6 +141,7 @@ private:
 	
 	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
 	static void exitEditMode();
+
 
 };
 

@@ -103,10 +103,10 @@ namespace TestData
 	
 }
 
-void Wheeler::Draw()
+void Wheeler::Update()
 {
 	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
-
+	float deltaTime = ImGui::GetIO().DeltaTime;
 	using namespace Config::Styling::Wheel;
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
@@ -117,8 +117,8 @@ void Wheeler::Draw()
 		return;
 	}
 
-	if (!_active) { // queued to close
-		if (ImGui::IsPopupOpen(_wheelWindowID)) {
+	if (_state == WheelState::KClosed) { // should close
+		if (ImGui::IsPopupOpen(_wheelWindowID)) {         // if it's open, close it
 			ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
 			ImGui::BeginPopup(_wheelWindowID);
 			ImGui::CloseCurrentPopup();
@@ -134,7 +134,9 @@ void Wheeler::Draw()
 		}
 		return;
 	}
-	if (!ImGui::IsPopupOpen(_wheelWindowID)) {  // queued to open
+	// state is opened, opening, or closing, draw the wheel with different alphas.
+
+	if (!ImGui::IsPopupOpen(_wheelWindowID)) {  // should open, but not opened yet
 		//ImGui::GetIO().MouseDrawCursor = true;
 		auto controlMap = RE::ControlMap::GetSingleton();
 		if (controlMap) {
@@ -144,7 +146,6 @@ void Wheeler::Draw()
 		_activeEntryIdx = -1; // reset active item on reopen
 		_cursorPos = { 0, 0 }; // reset cursor pos
 	}
-	_openTimer += ImGui::GetIO().DeltaTime;
 	
 	
 	ImGui::SetNextWindowPos(ImVec2(-100, -100));  // set the pop-up pos to be outside the screen space.
@@ -177,49 +178,66 @@ void Wheeler::Draw()
 
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
-		float drag_angle = atan2f(_cursorPos.y, _cursorPos.x);
+		float cursorAngle = atan2f(_cursorPos.y, _cursorPos.x);
 
 		if (numItems == 0) {
 			Drawer::draw_text(wheelCenter.x, wheelCenter.y, 0, 0, "Empty Wheel", 255, 255, 255, 255, 40.f);
 			// draw an arc so users don't get confused
-			drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
-			drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
+			//drawList->PathArcTo(wheelCenter, (InnerCircleRadius + OuterCircleRadius) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
+			//drawList->PathStroke(BackGroundColor, true, OuterCircleRadius - InnerCircleRadius);
 		}
-		for (int item_n = 0; item_n < numItems; item_n++) {
+		for (int entryIdx = 0; entryIdx < numItems; entryIdx++) {
 			// fancy math begin
 
-			const float item_arc_span = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
+			const float entryArcSpan = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
 
-			const float inner_spacing = ITEM_INNER_SPACING / RADIUS_MIN / 2;
-			float item_inner_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing) + IM_PI / 2;
-			float item_inner_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing) + IM_PI / 2;
+			const float innerSpacing = InnerSpacing / InnerCircleRadius / 2;
+			float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f + innerSpacing) + IM_PI / 2;
+			float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f - innerSpacing) + IM_PI / 2;
 			
-			float item_outer_ang_min = item_arc_span * (item_n - 0.5f + inner_spacing * (RADIUS_MIN / RADIUS_MAX)) + IM_PI / 2;
-			float item_outer_ang_max = item_arc_span * (item_n + 0.5f - inner_spacing * (RADIUS_MIN / RADIUS_MAX)) + IM_PI / 2;
+			float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f + innerSpacing * (InnerCircleRadius / OuterCircleRadius)) + IM_PI / 2;
+			float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f - innerSpacing * (InnerCircleRadius / OuterCircleRadius)) + IM_PI / 2;
 			
-			if (item_inner_ang_max > IM_PI * 2) {
-				item_inner_ang_min -= IM_PI * 2;
-				item_inner_ang_max -= IM_PI * 2;
+			if (entryInnerAngleMax > IM_PI * 2) {
+				entryInnerAngleMin -= IM_PI * 2;
+				entryInnerAngleMax -= IM_PI * 2;
 			}
 			
-			if (item_outer_ang_max > IM_PI * 2) {
-				item_outer_ang_min -= IM_PI * 2;
-				item_outer_ang_max -= IM_PI * 2;
+			if (entryOuterAngleMax > IM_PI * 2) {
+				entryOuterAngleMin -= IM_PI * 2;
+				entryOuterAngleMax -= IM_PI * 2;
 			}
 
 			// update hovered item
 			if (_cursorPos.x != 0 || _cursorPos.y != 0) {
 				bool updatedActiveEntry = false;
-				if (drag_angle >= item_inner_ang_min) {  // Normal case
-					if (drag_angle < item_inner_ang_max) {
-						if (item_n != _activeEntryIdx) {
-							_activeEntryIdx = item_n;
+				float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
+				Drawer::draw_arc(wheelCenter,
+					cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
+					cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
+					cursorAngle - (CursorIndicatorArcAngle / 2), cursorAngle + (CursorIndicatorArcAngle / 2),
+					cursorAngle - (CursorIndicatorArcAngle / 2), cursorAngle + (CursorIndicatorArcAngle / 2),
+					CursorIndicatorColor,
+					32);
+				ImVec2 cursorIndicatorTriPts[3] = {
+					{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
+					{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
+					{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
+				};
+				for (ImVec2& pos: cursorIndicatorTriPts) {
+					pos = ImRotate(pos, cos(cursorAngle), sin(cursorAngle));
+				}
+				Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + wheelCenter, cursorIndicatorTriPts[1] + wheelCenter, cursorIndicatorTriPts[2] + wheelCenter, CursorIndicatorColor);
+				if (cursorAngle >= entryInnerAngleMin) {  // Normal case
+					if (cursorAngle < entryInnerAngleMax) {
+						if (entryIdx != _activeEntryIdx) {
+							_activeEntryIdx = entryIdx;
 							updatedActiveEntry = true;
 						}
 					}
-				} else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
-					if (item_n != _activeEntryIdx) {
-						_activeEntryIdx = item_n;
+				} else if (cursorAngle + 2 * IM_PI < entryInnerAngleMax && cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
+					if (entryIdx != _activeEntryIdx) {
+						_activeEntryIdx = entryIdx;
 						updatedActiveEntry = true;
 					}
 				}
@@ -227,12 +245,12 @@ void Wheeler::Draw()
 					RE::PlaySoundRE(SD_ENTRYSWITCH);
 				}
 			}
-			bool hovered = _activeEntryIdx == item_n;
+			bool hovered = _activeEntryIdx == entryIdx;
 
 			// calculate wheel center
-			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
-			float t2 = RADIUS_MIN + t1;
-			float rad = (item_inner_ang_max - item_inner_ang_min) / 2 + item_inner_ang_min;
+			float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
+			float t2 = InnerCircleRadius + t1;
+			float rad = (entryInnerAngleMax - entryInnerAngleMin) / 2 + entryInnerAngleMin;
 			float t3 = cosf(rad);
 			float t4 = sinf(rad);
 			ImVec2 itemCenter = ImVec2(
@@ -240,29 +258,34 @@ void Wheeler::Draw()
 				wheelCenter.y + t2 * t4
 				);
 			
-			int arc_segments = (int)(256 * item_arc_span / (2 * IM_PI)) + 1;
+			int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
 			// fancy math end
 			Drawer::draw_arc_gradient(wheelCenter,
-				RADIUS_MIN + ITEM_INNER_SPACING,
-				RADIUS_MAX - ITEM_INNER_SPACING,
-				item_inner_ang_min, item_inner_ang_max,
-				item_outer_ang_min, item_outer_ang_max,
+				InnerCircleRadius + InnerSpacing,
+				OuterCircleRadius - InnerSpacing,
+				entryInnerAngleMin, entryInnerAngleMax,
+				entryOuterAngleMin, entryOuterAngleMax,
 				hovered ? HoveredColorBegin : UnhoveredColorBegin,
 				hovered ? HoveredColorEnd : UnhoveredColorEnd,
-				arc_segments);
+				numArcSegments);
 
 
-			WheelEntry* entry = wheel->entries[item_n];
+			WheelEntry* entry = wheel->entries[entryIdx];
 
 			bool active = entry->IsActive(inv);
+			ImU32 arcColorBegin = active ? ActiveArcColorBegin : InActiveArcColorBegin;
+			ImU32 arcColorEnd = active ? ActiveArcColorEnd : InActiveArcColorEnd;
+			
 			Drawer::draw_arc_gradient(wheelCenter,
-				RADIUS_MAX - ITEM_INNER_SPACING,
-				RADIUS_MAX - ITEM_INNER_SPACING + ActiveArcWidth,
-				item_outer_ang_min, item_outer_ang_max,
-				item_outer_ang_min, item_outer_ang_max,
-				active ? ActiveArcColorBegin : InActiveArcColorBegin,
-				active ? ActiveArcColorEnd : InActiveArcColorEnd,
-				arc_segments);
+				OuterCircleRadius - InnerSpacing,
+				OuterCircleRadius - InnerSpacing + ActiveArcWidth,
+				entryOuterAngleMin,
+				entryOuterAngleMax,
+				entryOuterAngleMin, 
+				entryOuterAngleMax,
+				arcColorBegin,
+				arcColorEnd,
+				numArcSegments);
 			
 			if (hovered) {
 				entry->DrawHighlight(wheelCenter, inv);
@@ -270,22 +293,46 @@ void Wheeler::Draw()
 			entry->DrawSlot(itemCenter, hovered, inv);
 		}
 		// draw cursor indicator
-		drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
+		//drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
 		// draw wheel indicator
 		for (int i = 0; i < _wheels.size(); i++) {
 			if (i == _activeWheelIdx) {
-				drawList->AddCircleFilled(
-					{wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
-					wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY},
-					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10);
+				Drawer::draw_circle_filled(
+					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
+						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
+					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10);					
 			} else {
-				drawList->AddCircleFilled(
+				Drawer::draw_circle_filled(
 					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
 					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10);
 			}
 		}
-		
+
+		// update fade timer, alpha and wheel state.
+		_openTimer += deltaTime;
+
+		float alphaMult = 1.0f;
+		switch (_state) {
+		case WheelState::KOpening:
+			if (_openTimer >= Config::Styling::Wheel::FadeTime) {
+				_state = WheelState::KOpened;
+			} else {
+				alphaMult = _openTimer / Config::Styling::Wheel::FadeTime;
+			}
+			break;
+		case WheelState::KClosing:
+			_closeTimer += deltaTime;
+			if (_closeTimer >= Config::Styling::Wheel::FadeTime) {
+				CloseWheel();
+				_closeTimer = 0;
+			} else {
+				alphaMult = 1 - _closeTimer / Config::Styling::Wheel::FadeTime;
+			}
+			break;
+		}
+
+		Drawer::set_alpha_mult(alphaMult);
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -296,8 +343,8 @@ void Wheeler::Draw()
 void Wheeler::LoadWheelItems()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (_active) {
-		CloseMenu();
+	if (_state != WheelState::KClosed) { 
+		CloseWheel(); // force close menu, since we're loading items
 	}
 	if (_editMode) {
 		exitEditMode();
@@ -329,28 +376,55 @@ void Wheeler::FlushWheelItems()
 	INFO("...wheel items flushed!");
 }
 
-void Wheeler::ToggleMenu()
+void Wheeler::ToggleWheel()
 {
-	if (!_active) {
-		OpenMenu();
+	if (_state == WheelState::KClosed) {
+		TryOpenWheel();
 	} else {
-		CloseMenu();
+		TryCloseWheel();
 	}
 }
 
-void Wheeler::CloseMenuIfOpenedLongEnough()
+void Wheeler::CloseWheelIfOpenedLongEnough()
 {
-	if (_active && _openTimer > PRESS_THRESHOLD) {
-		CloseMenu();
+	if (_state == WheelState::KOpened && _openTimer > PRESS_THRESHOLD) {
+		TryCloseWheel();
 	}
 }
 
-void Wheeler::OpenMenu()
+void Wheeler::TryOpenWheel()
+{
+	// here we straight up open the wheel, and set state to opening if we have a fade time.
+	// this is because for the fade to start showing the wheel has to be actually fully opened,
+	// but to track the state we give it a "opening" state.
+	OpenWheel();
+}
+
+void Wheeler::TryCloseWheel()
+{
+	if (_state == WheelState::KClosed || _state == WheelState::KClosing) {
+		return;
+	}
+	if (Config::Styling::Wheel::FadeTime == 0) {
+		CloseWheel(); // close directly
+	} else {
+		// set timescale to 1 prior to closing the wheel to avoid weirdness
+		if (Config::Styling::Wheel::SlowTimeScale <= 1) {
+			if (Utils::Time::GGTM() != 1) {
+				Utils::Time::SGTM(1);
+			}
+		}
+		_state = WheelState::KClosing;  // set state to closing, will be closed once time out
+		_closeTimer = 0;
+	}
+}
+
+void Wheeler::OpenWheel()
 {
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
 	}
-	if (!_active) {
+	if (_state != WheelState::KOpened && _state != WheelState::KOpening) {
 		if (Config::Styling::Wheel::SlowTimeScale <= 1) {
 			if (Utils::Time::GGTM() == 1) {
 				Utils::Time::SGTM(Config::Styling::Wheel::SlowTimeScale);
@@ -359,18 +433,18 @@ void Wheeler::OpenMenu()
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
 		}
-		_active = true;
+		_state = Config::Styling::Wheel::FadeTime > 0 ? WheelState::KOpening : WheelState::KOpened;
 		_openTimer = 0;
 		RE::PlaySoundRE(SD_WHEELERTOGGLE);
 	}
 }
 
-void Wheeler::CloseMenu()
+void Wheeler::CloseWheel()
 {
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
 	}
-	if (_active) {
+	if (_state != WheelState::KClosed) {
 		if (Config::Styling::Wheel::SlowTimeScale <= 1) {
 			if (Utils::Time::GGTM() != 1) {
 				Utils::Time::SGTM(1);
@@ -379,9 +453,10 @@ void Wheeler::CloseMenu()
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
 		}
-		_active = false;
 		_openTimer = 0;
+		_closeTimer = 0;
 	}
+	_state = WheelState::KClosed;
 }
 
 void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
@@ -391,12 +466,12 @@ void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
 	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
 
 	// If the distance exceeds the cursor radius, adjust the cursor position
-	if (distanceFromCenter > Config::Control::Wheel::cursorRadius) {
+	if (distanceFromCenter > Config::Control::Wheel::CursorRadiusPerEntry) {
 		// Calculate the normalized direction vector from the center to the new position
 		ImVec2 direction = newPos / distanceFromCenter;
 
 		// Set the cursor position at the edge of the cursor radius
-		newPos = direction * Config::Control::Wheel::cursorRadius;
+		newPos = direction * Config::Control::Wheel::CursorRadiusPerEntry;
 	}
 	
 	_cursorPos = newPos;
@@ -407,12 +482,12 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 	ImVec2 newPos = { a_x,a_y };
 	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
 	// If the distance exceeds the cursor radius, adjust the cursor position
-	if (distanceFromCenter > Config::Control::Wheel::cursorRadius) {
+	if (distanceFromCenter > Config::Control::Wheel::CursorRadiusPerEntry) {
 		// Calculate the normalized direction vector from the center to the new position
 		ImVec2 direction = newPos / distanceFromCenter;
 
 		// Set the cursor position at the edge of the cursor radius
-		newPos = direction * Config::Control::Wheel::cursorRadius;
+		newPos = direction * Config::Control::Wheel::CursorRadiusPerEntry;
 	}
 
 	_cursorPos = newPos;
@@ -421,7 +496,7 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 
 void Wheeler::NextWheel()
 {
-	if (_active) {
+	if (_state == WheelState::KOpened) {
 		_cursorPos = { 0, 0 };
 		_activeEntryIdx = -1;
 		_activeWheelIdx += 1;
@@ -436,7 +511,7 @@ void Wheeler::NextWheel()
 
 void Wheeler::PrevWheel()
 {
-	if (_active) {
+	if (_state == WheelState::KOpened) {
 		_cursorPos = { 0, 0 };
 		_activeEntryIdx = -1;
 		_activeWheelIdx -= 1;
@@ -451,21 +526,21 @@ void Wheeler::PrevWheel()
 
 void Wheeler::PrevItem()
 {
-	if (_active && _activeEntryIdx != -1) {
+	if (_state == WheelState::KOpened && _activeEntryIdx != -1) {
 		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->PrevItem();
 	}
 }
 
 void Wheeler::NextItem()
 {
-	if (_active && _activeEntryIdx != -1) {
+	if (_state == WheelState::KOpened && _activeEntryIdx != -1) {
 		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->NextItem();
 	}
 }
 
 void Wheeler::ActivateEntryLeft()
 {
-	if (_active) {
+	if (_state == WheelState::KOpened) {
 		Wheel* activeWheel = _wheels[_activeWheelIdx];
 		if (activeWheel->entries.empty()) {  // empty wheel, we can only delete in edit mode.
 			if (_editMode && _wheels.size() > 1) {  // we have more than one wheel, so it's safe to delete this one.
@@ -484,7 +559,7 @@ void Wheeler::ActivateEntryLeft()
 
 void Wheeler::ActivateEntryRight()
 {
-	if (_active && _activeEntryIdx != -1 && !_wheels[_activeWheelIdx]->entries.empty()) {
+	if (_state == WheelState::KOpened && _activeEntryIdx != -1 && !_wheels[_activeWheelIdx]->entries.empty()) {
 		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->ActivateItemRight(_editMode);
 	}
 }
@@ -575,7 +650,6 @@ void Wheeler::MoveEntryBack()
 		std::swap(activeWheel->entries[_activeEntryIdx], activeWheel->entries[targetIdx]);
 		_activeEntryIdx = targetIdx;
 	}
-	
 }
 
 void Wheeler::MoveWheelForward()
@@ -585,12 +659,19 @@ void Wheeler::MoveWheelForward()
 		return;
 	}
 	if (_wheels.size() > 1) {
-		int targetIdx = _activeWheelIdx + 1 >= _wheels.size() ? 0 : _activeWheelIdx + 1;
-		std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
-		_activeWheelIdx = targetIdx;
+		if (_activeWheelIdx == _wheels.size() - 1) {
+			// Move the current wheel to the very front
+			auto currentWheel = std::move(_wheels.back());
+			_wheels.pop_back();
+			_wheels.insert(_wheels.begin(), std::move(currentWheel));
+		} else {
+			int targetIdx = _activeWheelIdx + 1;
+			std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
+			_activeWheelIdx = targetIdx;
+		}
 	}
-	
 }
+
 
 void Wheeler::MoveWheelBack()
 {
@@ -599,11 +680,20 @@ void Wheeler::MoveWheelBack()
 		return;
 	}
 	if (_wheels.size() > 1) {
-		int targetIdx = _activeWheelIdx - 1 < 0 ? _wheels.size() - 1 : _activeWheelIdx - 1;
-		std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
-		_activeWheelIdx = targetIdx;
+		if (_activeWheelIdx == 0) {
+			// Move the current wheel to the very end
+			auto currentWheel = std::move(_wheels.front());
+			_wheels.erase(_wheels.begin());
+			_wheels.push_back(std::move(currentWheel));
+			_activeWheelIdx = _wheels.size() - 1;
+		} else {
+			int targetIdx = _activeWheelIdx - 1;
+			std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
+			_activeWheelIdx = targetIdx;
+		}
 	}
 }
+
 
 
 inline ImVec2 Wheeler::getWheelCenter()

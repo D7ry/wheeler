@@ -7,7 +7,7 @@ void Controls::Init()
 		{
 			{ 0x12, &Wheeler::NextWheel }, // e
 			{ 0x10, &Wheeler::PrevWheel }, // q
-			{ 58, &Wheeler::ToggleMenu },        // caps lock
+			{ 58, &Wheeler::ToggleWheel },        // caps lock
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
 			{ 265, &Wheeler::NextItem }, // mouse wheel down
 			{ 256, &Wheeler::ActivateEntryRight}, // mouse left
@@ -24,7 +24,7 @@ void Controls::Init()
 	}
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>{
-			{ 58, &Wheeler::CloseMenuIfOpenedLongEnough },  // caps lock
+			{ 58, &Wheeler::CloseWheelIfOpenedLongEnough },  // caps lock
 		}) {
 		BindInput(pair.first, pair.second, false, false);
 	}

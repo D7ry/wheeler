@@ -45,3 +45,4 @@ namespace std
 #include "Plugin.h"
 #include <d3d11.h>
 #include <dxgi.h>
+#define IM_PI 3.14159265358979323846f

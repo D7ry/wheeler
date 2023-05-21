@@ -44,4 +44,9 @@ namespace Drawer
 		ImU32 color, uint32_t segments);
 	void draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 color_start, ImU32 color_end, uint32_t segments);
 
+	void draw_circle_filled(const ImVec2& center, float radius, ImU32 color, int segments = 0);
+
+	void draw_triangle_filled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col);
+
+	void set_alpha_mult(float a_in);
 };
