@@ -1,6 +1,14 @@
 #pragma once
 #include "Wheeler.h"
 #include "imgui.h"
+
+static ImU32 C_SKYRIMGREY = IM_COL32(255, 255, 255, 100 );
+static ImU32 C_SKYRIMWHITE = IM_COL32(255, 255, 255, 255);
+static ImU32 C_SKYRIMDARKGREY_MENUBACKGROUND = IM_COL32(0, 0, 0, 125);
+static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
+static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
+static ImU32 C_TRIQUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .75));
+
 namespace Config
 {
 	
@@ -8,7 +16,8 @@ namespace Config
 	{
 		namespace Wheel
 		{
-			inline float cursorRadius = 60.f;
+			// radius that bounds the mouse cursor. Increases with each entry in wheel to make sure MKB users don't rotate the cursor too fast.
+			inline float CursorRadiusPerEntry = 15.f;
 			inline bool DoubleActivateDisable = true;
 		}
 
@@ -25,38 +34,46 @@ namespace Config
 	{
 		namespace Wheel
 		{
+			inline float CursorIndicatorDist = 10.f; // distance from cusor indicator to the inner circle
+			inline float CusorIndicatorArcWidth = 3.f; 
+			inline float CursorIndicatorArcAngle = 2 * IM_PI * 1 / 12.f;  // 1/12 of a circle
+			inline float CursorIndicatorTriangleSideLength = 5.f;
+			inline ImU32 CursorIndicatorColor = C_SKYRIMWHITE;
+
 			inline float WheelIndicatorOffsetX = 260.f;
 			inline float WheelIndicatorOffsetY = 340.f;
 			inline float WheelIndicatorSize = 10.f;
 			inline float WheelIndicatorSpacing = 25.f;
-			inline ImColor WheelIndicatorActiveColor = ImColor(105, 177, 207, 225);
-			inline ImColor WheelIndicatorInactiveColor = ImColor(255, 255, 255, 100);
+			inline ImU32 WheelIndicatorActiveColor = C_SKYRIMWHITE;
+			inline ImU32 WheelIndicatorInactiveColor = C_SKYRIMGREY;
 
 			inline float RADIUS_SELECT_MIN = pow(60.f, 2);
-			inline float RADIUS_MIN = 220.0f;
-			inline float RADIUS_MAX = 360.0f;
+			inline float InnerCircleRadius = 220.0f;
+			inline float OuterCircleRadius = 360.0f;
 			inline int ITEMS_MIN = 1;
-			inline float ITEM_INNER_SPACING = 5.f;
+			inline float InnerSpacing = 5.f;
 
-			inline ImColor BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
-			inline ImColor HoveredColorBegin = ImColor(105, 177, 207, 25);
-			inline ImColor HoveredColorEnd = ImColor(105, 177, 207, 150);
+			inline ImU32 BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
+			inline ImU32 HoveredColorBegin = C_QUARTERTRANSPARENT;
+			inline ImU32 HoveredColorEnd = C_HALFTRANSPARENT;
 
-			inline ImColor UnhoveredColorBegin = ImColor(0.0f, 0.0f, 0.0f, 0.6f);
-			inline ImColor UnhoveredColorEnd = ImColor(0.0f, 0.0f, 0.0f, 0.6f);
+			inline ImU32 UnhoveredColorBegin = C_SKYRIMDARKGREY_MENUBACKGROUND;
+			inline ImU32 UnhoveredColorEnd = C_SKYRIMDARKGREY_MENUBACKGROUND;
 
-			inline ImColor ActiveArcColorBegin = ImColor(105,177,207);
-			inline ImColor ActiveArcColorEnd = ImColor(105, 177, 207);
+			inline ImU32 ActiveArcColorBegin = C_SKYRIMWHITE;
+			inline ImU32 ActiveArcColorEnd = C_SKYRIMWHITE;
 			
-			inline ImColor InActiveArcColorBegin = ImColor(77, 79, 80, 200);
-			inline ImColor InActiveArcColorEnd = ImColor(77, 79, 80, 200);
+			inline ImU32 InActiveArcColorBegin = C_SKYRIMGREY;
+			inline ImU32 InActiveArcColorEnd = C_SKYRIMGREY;
 
-			inline float ActiveArcWidth = 10.f;
+			inline float ActiveArcWidth = 7.f;
 
 			inline uint32_t NumWheels = 3;  // # of wheels
 			
 			inline bool BlurOnOpen = true;
 			inline float SlowTimeScale = .1f;
+
+			inline float FadeTime = 0.08f;  // time it takes to fade in/out, set to 0 to disable.
 		}
 
 		namespace Entry
@@ -87,7 +104,7 @@ namespace Config
 				{
 					const inline float OffsetX = 0;
 					const inline float OffsetY = 20;
-					const inline float Size = 30;
+					const inline float Size = 35;
 				}
 
 				namespace Desc
@@ -110,14 +127,14 @@ namespace Config
 				{
 					const inline float OffsetX = 0;
 					const inline float OffsetY = 10;
-					const inline float Size = 20;
+					const inline float Size = 30;
 				}
 
 				namespace Desc
 				{
 					const inline float OffsetX = 0;
 					const inline float OFfsetY = 30;
-					const inline float Size = 15;
+					const inline float Size = 20;
 				}
 			}
 			
