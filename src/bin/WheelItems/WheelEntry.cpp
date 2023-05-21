@@ -108,6 +108,9 @@ void WheelEntry::PrevItem()
 			_selectedItem = 0;
 		}
 	}
+	if (Config::Sound::ItemSwitchSound && _items.size() > 1) {
+		RE::PlaySoundRE(SD_ITEMSWITCH);
+	}
 }
 
 void WheelEntry::NextItem()
@@ -117,6 +120,9 @@ void WheelEntry::NextItem()
 	_selectedItem++;
 	if (_selectedItem >= _items.size()) {
 		_selectedItem = 0;
+	}
+	if (Config::Sound::ItemSwitchSound && _items.size() > 1) {
+		RE::PlaySoundRE(SD_ITEMSWITCH);
 	}
 }
 

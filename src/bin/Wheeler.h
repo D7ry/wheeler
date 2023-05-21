@@ -42,29 +42,53 @@ public:
 	static void PrevWheel();
 	static void PrevItem();
 	static void NextItem();
-	static void ActivateItemLeft();
-	static void ActivateItemRight();
 
+	/// <summary>
+	/// Activate the currently active entry with secondary (left) input, which corresponds to right mouse click or left controller trigger.
+	/// If we're in edit mode:
+	///  - the function first checks if there's any entry left. If not, the function calls DeleteCurrentWheel(), given there are more than 1 wheel present(must have at least 1 wheel on stack).
+	///  - if there's some entry left, the function checks if the entry is empty.
+	///		- If yes, we delete the current entry.
+	///		- otherwise, the function invokes the entry's ActivateItemLeft(true) function, which handles deletion of entry's inner items.
+	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemLeft()
+	/// </summary>
+	static void ActivateEntryLeft();
+
+	/// <summary>
+	/// Activate the currently active entry with primary (right) input, which corresponds to left mouse click or right controller trigger,
+	/// The function simply invokes current entry's ActivateItemRight(), which either handles activation of items or addition of items, if in edit mode.
+	/// </summary>
+	static void ActivateEntryRight();
+
+	/// <summary>
+	/// Push an empty entry to the current wheel.
+	/// </summary>
 	static void AddEntryToCurrentWheel();
 
 	/// <summary>
-	/// This functions behaves differently depending on the current state of the wheel.
-	/// If the currently hovered over item is a regular entry, the regular entry is guaranteed to have
-	/// an empty list of items(ensured by ActivateItemLeft), we delete the hovered-over entry
-	/// If the currently hovered over item is an Adder entry, we delete the wheel iff:
-	/// 1. the wheel is empty execept for the adder entry.
-	/// 2. the wheel is not the last remaining wheel
+	/// Deletes the currently active entry.
 	/// </summary>
-	static void DeleteCurrent();
+	static void DeleteCurrentEntry();
 
 	// Add a new wheel
 	static void AddWheel();
 	// Delete the current wheel
 	static void DeleteCurrentWheel();
+
+	static void MoveEntryForward();
+	static void MoveEntryBack();
+
+	static void MoveWheelForward();
+	static void MoveWheelBack();
+	
 	struct Wheel
 	{
 		std::vector<WheelEntry*> entries;
 	};
+	static inline const char* SD_WHEELSWITCH = "UIFavorite";
+	static inline const char* SD_ENTRYSWITCH = "UIMenuFocus";
+	static inline const char* SD_WHEELERTOGGLE = "UIInventoryOpenSD";
+
 
 private:
 	static inline bool _active = false;
@@ -73,18 +97,18 @@ private:
 	static inline const char* _wheelWindowID = "##Wheeler";
 
 	// currently active item, will be highlighted. Gets reset every time wheel reopens.
-	static inline int _activeEntry = -1; 
+	static inline int _activeEntryIdx = -1; 
 	
 	static inline ImVec2 _cursorPos = { 0, 0 };
 
 	static ImVec2 getWheelCenter();
 	
 	static inline std::vector<Wheel*> _wheels;
-	static inline int _activeWheel = 0;
+	static inline int _activeWheelIdx = 0;
 	
 	// if the user presses longer than this(without sending close), the wheel will close on release
 	// the the user presses shorter than this, the wheel will close on a second press.
-	static inline const float _pressThreshold = .25f; 
+	static inline const float PRESS_THRESHOLD = .25f; 
 	static inline float _openTimer = 0;
 
 	static inline std::shared_mutex _wheelDataLock;  // global lock
@@ -99,5 +123,6 @@ private:
 	
 	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
 	static void exitEditMode();
+
 };
 

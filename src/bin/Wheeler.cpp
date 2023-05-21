@@ -141,7 +141,7 @@ void Wheeler::Draw()
 			controlMap->ignoreKeyboardMouse = true;
 		}
 		ImGui::OpenPopup(_wheelWindowID);
-		_activeEntry = -1; // reset active item on reopen
+		_activeEntryIdx = -1; // reset active item on reopen
 		_cursorPos = { 0, 0 }; // reset cursor pos
 	}
 	_openTimer += ImGui::GetIO().DeltaTime;
@@ -169,10 +169,9 @@ void Wheeler::Draw()
 		auto drawList = ImGui::GetWindowDrawList();
 
 		drawList->PushClipRectFullScreen();
-		//drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
-		//drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
 
-		Wheel* wheel = _wheels[_activeWheel];
+
+		Wheel* wheel = _wheels[_activeWheelIdx];
 		// draws the pie menu
 		int numItems = wheel->entries.size();
 
@@ -180,7 +179,12 @@ void Wheeler::Draw()
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		float drag_angle = atan2f(_cursorPos.y, _cursorPos.x);
 
-
+		if (numItems == 0) {
+			Drawer::draw_text(wheelCenter.x, wheelCenter.y, 0, 0, "Empty Wheel", 255, 255, 255, 255, 40.f);
+			// draw an arc so users don't get confused
+			drawList->PathArcTo(wheelCenter, (RADIUS_MIN + RADIUS_MAX) * 0.5f, 0.0f, IM_PI * 2.0f * 0.99f, 128);  // FIXME: 0.99f look like full arc with closed thick stroke has a bug now
+			drawList->PathStroke(BackGroundColor, true, RADIUS_MAX - RADIUS_MIN);
+		}
 		for (int item_n = 0; item_n < numItems; item_n++) {
 			// fancy math begin
 
@@ -205,15 +209,25 @@ void Wheeler::Draw()
 
 			// update hovered item
 			if (_cursorPos.x != 0 || _cursorPos.y != 0) {
+				bool updatedActiveEntry = false;
 				if (drag_angle >= item_inner_ang_min) {  // Normal case
 					if (drag_angle < item_inner_ang_max) {
-						_activeEntry = item_n;
+						if (item_n != _activeEntryIdx) {
+							_activeEntryIdx = item_n;
+							updatedActiveEntry = true;
+						}
 					}
 				} else if (drag_angle + 2 * IM_PI < item_inner_ang_max && drag_angle + 2 * IM_PI >= item_inner_ang_min) {  // Wrap-around case
-					_activeEntry = item_n;
+					if (item_n != _activeEntryIdx) {
+						_activeEntryIdx = item_n;
+						updatedActiveEntry = true;
+					}
+				}
+				if (Config::Sound::EntrySwitchSound && updatedActiveEntry) {
+					RE::PlaySoundRE(SD_ENTRYSWITCH);
 				}
 			}
-			bool hovered = _activeEntry == item_n;
+			bool hovered = _activeEntryIdx == item_n;
 
 			// calculate wheel center
 			float t1 = (RADIUS_MAX - RADIUS_MIN) / 2;
@@ -259,15 +273,13 @@ void Wheeler::Draw()
 		drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
 		// draw wheel indicator
 		for (int i = 0; i < _wheels.size(); i++) {
-			if (i == _activeWheel) {
+			if (i == _activeWheelIdx) {
 				drawList->AddCircleFilled(
 					{wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 					wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY},
 					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10);
 			} else {
 				drawList->AddCircleFilled(
-					
-					
 					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
 					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10);
@@ -290,7 +302,7 @@ void Wheeler::LoadWheelItems()
 	if (_editMode) {
 		exitEditMode();
 	}
-	_activeEntry = -1;
+	_activeEntryIdx = -1;
 	WheelItemMutableManager::GetSingleton()->Clear();
 	// clean up old wheels
 	for (Wheel* wheel : _wheels) {
@@ -328,7 +340,7 @@ void Wheeler::ToggleMenu()
 
 void Wheeler::CloseMenuIfOpenedLongEnough()
 {
-	if (_active && _openTimer > _pressThreshold) {
+	if (_active && _openTimer > PRESS_THRESHOLD) {
 		CloseMenu();
 	}
 }
@@ -349,6 +361,7 @@ void Wheeler::OpenMenu()
 		}
 		_active = true;
 		_openTimer = 0;
+		RE::PlaySoundRE(SD_WHEELERTOGGLE);
 	}
 }
 
@@ -410,10 +423,13 @@ void Wheeler::NextWheel()
 {
 	if (_active) {
 		_cursorPos = { 0, 0 };
-		_activeEntry = -1;
-		_activeWheel += 1;
-		if (_activeWheel >= _wheels.size()) {
-			_activeWheel = 0;
+		_activeEntryIdx = -1;
+		_activeWheelIdx += 1;
+		if (_activeWheelIdx >= _wheels.size()) {
+			_activeWheelIdx = 0;
+		}
+		if (Config::Sound::WheelSwitchSound && _wheels.size() > 1) {
+			RE::PlaySoundRE(SD_WHEELSWITCH);
 		}
 	}
 }
@@ -422,44 +438,54 @@ void Wheeler::PrevWheel()
 {
 	if (_active) {
 		_cursorPos = { 0, 0 };
-		_activeEntry = -1;
-		_activeWheel -= 1;
-		if (_activeWheel < 0) {
-			_activeWheel = _wheels.size() - 1;
+		_activeEntryIdx = -1;
+		_activeWheelIdx -= 1;
+		if (_activeWheelIdx < 0) {
+			_activeWheelIdx = _wheels.size() - 1;
+		}
+		if (Config::Sound::WheelSwitchSound && _wheels.size() > 1) {
+			RE::PlaySoundRE(SD_WHEELSWITCH);
 		}
 	}
 }
 
 void Wheeler::PrevItem()
 {
-	if (_active && _activeEntry != -1) {
-		_wheels[_activeWheel]->entries[_activeEntry]->PrevItem();
+	if (_active && _activeEntryIdx != -1) {
+		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->PrevItem();
 	}
 }
 
 void Wheeler::NextItem()
 {
-	if (_active && _activeEntry != -1) {
-		_wheels[_activeWheel]->entries[_activeEntry]->NextItem();
+	if (_active && _activeEntryIdx != -1) {
+		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->NextItem();
 	}
 }
 
-void Wheeler::ActivateItemLeft()
+void Wheeler::ActivateEntryLeft()
 {
-	if (_active && _activeEntry != -1) {
-		if (_editMode && _wheels[_activeWheel]->entries[_activeEntry]->IsEmpty()) {
-			// remove empty entry
-			DeleteCurrent();
-			return;
+	if (_active) {
+		Wheel* activeWheel = _wheels[_activeWheelIdx];
+		if (activeWheel->entries.empty()) {  // empty wheel, we can only delete in edit mode.
+			if (_editMode && _wheels.size() > 1) {  // we have more than one wheel, so it's safe to delete this one.
+				DeleteCurrentWheel();
+			}
+		} else if (_activeEntryIdx != -1) {
+			WheelEntry* activeEntry = _wheels[_activeWheelIdx]->entries[_activeEntryIdx];
+			if (_editMode && activeEntry->IsEmpty()) {
+				DeleteCurrentEntry(); // delete empty entry
+				return;
+			}
+			activeEntry->ActivateItemLeft(_editMode);  // activeEntry will handle deleting the entry's items
 		}
-		_wheels[_activeWheel]->entries[_activeEntry]->ActivateItemLeft(_editMode);
 	}
 }
 
-void Wheeler::ActivateItemRight()
+void Wheeler::ActivateEntryRight()
 {
-	if (_active && _activeEntry != -1) {
-		_wheels[_activeWheel]->entries[_activeEntry]->ActivateItemRight(_editMode);
+	if (_active && _activeEntryIdx != -1 && !_wheels[_activeWheelIdx]->entries.empty()) {
+		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->ActivateItemRight(_editMode);
 	}
 }
 
@@ -470,51 +496,25 @@ void Wheeler::AddEntryToCurrentWheel()
 		return;
 	}
 	WheelEntry* newEntry = new WheelEntry();
-	Wheel* activeWheel = _wheels[_activeWheel];
-	activeWheel->entries.insert(activeWheel->entries.begin() + activeWheel->entries.size() - 1, newEntry);
+	Wheel* activeWheel = _wheels[_activeWheelIdx];
+	//activeWheel->entries.insert(activeWheel->entries.begin() + activeWheel->entries.size() - 1, newEntry); for deprecated WheelItemAdder impl
+	activeWheel->entries.push_back(newEntry);
 }
 
-void Wheeler::DeleteCurrent()
+void Wheeler::DeleteCurrentEntry()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
 
-	bool deleteCurrentWheel = false;
-	bool deleteCurrentEntry = false;
-	Wheel* activeWheel = nullptr;
-	
 	if (!_editMode) {
 		return;
 	}
-	activeWheel = _wheels[_activeWheel];
-	if (_activeEntry == activeWheel->entries.size() - 1) { // at adder entry(the last entry)
-		if (activeWheel->entries.size() == 1// the wheel has nothing left
-			&& _wheels.size() > 1 // we have more than one wheel
-			) { 
-			deleteCurrentWheel = true;
-		}
-	} else {
-		// we're at a regular entry, the entry is guaranteed to be empty, so we can delete it
-		deleteCurrentEntry = true;
-	}
-	
-	if (deleteCurrentWheel) {
-		Wheel* toDelete = _wheels[_activeWheel];
-		if (toDelete->entries.size() > 1) {
-			return;  // don'delete the wheel if the wheel has more than the adder entry
-			//TODO: add a text notification
-		}
-		_wheels.erase(_wheels.begin() + _activeWheel);
-		delete toDelete;
-		if (_activeWheel == _wheels.size() && _activeWheel != 0) {  //deleted the last wheel
-			_activeWheel = _wheels.size() - 1;
-		}
-	} else if (deleteCurrentEntry) {
-		WheelEntry* toDelete = activeWheel->entries[_activeEntry];
-		activeWheel->entries.erase(activeWheel->entries.begin() + _activeEntry);
-		delete toDelete;
-		if (_activeEntry == activeWheel->entries.size() && _activeEntry != 0) {  //deleted the last entry
-			_activeEntry = activeWheel->entries.size() - 1;
-		}
+	Wheel* activeWheel = _wheels[_activeWheelIdx];
+
+	WheelEntry* toDelete = activeWheel->entries[_activeEntryIdx];
+	activeWheel->entries.erase(activeWheel->entries.begin() + _activeEntryIdx);
+	delete toDelete;
+	if (_activeEntryIdx == activeWheel->entries.size() && _activeEntryIdx != 0) {  //deleted the last entry
+		_activeEntryIdx = activeWheel->entries.size() - 1;
 	}
 	
 }
@@ -526,7 +526,6 @@ void Wheeler::AddWheel()
 		return;
 	}
 	Wheel* newWheel = new Wheel();
-	newWheel->entries.push_back(WheelEntryAdder::GetSingleton()); // add the adder entry, since we're in edit mode
 	_wheels.push_back(newWheel);
 }
 
@@ -537,15 +536,72 @@ void Wheeler::DeleteCurrentWheel()
 		return;
 	}
 	if (_wheels.size() > 1) {
-		Wheel* toDelete = _wheels[_activeWheel];
+		Wheel* toDelete = _wheels[_activeWheelIdx];
 		if (toDelete->entries.size() > 1) {
 			throw std::runtime_error("Cannot delete wheel with more than one entry!");
 		}
-		_wheels.erase(_wheels.begin() + _activeWheel);
+		_wheels.erase(_wheels.begin() + _activeWheelIdx);
 		delete toDelete;
-		if (_activeWheel == _wheels.size() && _activeWheel != 0) {  //deleted the last wheel
-			_activeWheel = _wheels.size() - 1;
+		if (_activeWheelIdx == _wheels.size() && _activeWheelIdx != 0) {  //deleted the last wheel
+			_activeWheelIdx = _wheels.size() - 1;
 		}
+		_activeEntryIdx = -1; // no entry is active
+	}
+}
+
+void Wheeler::MoveEntryForward()
+{
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		return;
+	}
+	if (_activeEntryIdx != -1 && _wheels[_activeWheelIdx]->entries.size() > 1) {
+		Wheel* activeWheel = _wheels[_activeWheelIdx];
+		int targetIdx = _activeEntryIdx + 1 >= activeWheel->entries.size() ? 0 : _activeEntryIdx + 1;
+		std::swap(activeWheel->entries[_activeEntryIdx], activeWheel->entries[targetIdx]);
+		_activeEntryIdx = targetIdx;
+	}
+}
+
+void Wheeler::MoveEntryBack()
+{
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		return;
+	}
+	if (_activeEntryIdx != -1 && _wheels[_activeWheelIdx]->entries.size() > 1) {
+		Wheel* activeWheel = _wheels[_activeWheelIdx];
+		int targetIdx = _activeEntryIdx - 1 < 0 ? activeWheel->entries.size() - 1 : _activeEntryIdx - 1;
+		std::swap(activeWheel->entries[_activeEntryIdx], activeWheel->entries[targetIdx]);
+		_activeEntryIdx = targetIdx;
+	}
+	
+}
+
+void Wheeler::MoveWheelForward()
+{
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		return;
+	}
+	if (_wheels.size() > 1) {
+		int targetIdx = _activeWheelIdx + 1 >= _wheels.size() ? 0 : _activeWheelIdx + 1;
+		std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
+		_activeWheelIdx = targetIdx;
+	}
+	
+}
+
+void Wheeler::MoveWheelBack()
+{
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	if (!_editMode) {
+		return;
+	}
+	if (_wheels.size() > 1) {
+		int targetIdx = _activeWheelIdx - 1 < 0 ? _wheels.size() - 1 : _activeWheelIdx - 1;
+		std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
+		_activeWheelIdx = targetIdx;
 	}
 }
 
@@ -597,9 +653,9 @@ void Wheeler::enterEditMode()
 	if (_editMode) {
 		return;
 	}
-	for (auto wheel : _wheels) {
-		wheel->entries.push_back(WheelEntryAdder::GetSingleton());
-	}
+	//for (auto wheel : _wheels) {
+	//	wheel->entries.push_back(WheelEntryAdder::GetSingleton());
+	//}
 	
 	_editMode = true;
 }
@@ -609,9 +665,9 @@ void Wheeler::exitEditMode()
 	if (!_editMode) {
 		return;
 	}
-	for (auto wheel : _wheels) {
+	/*for (auto wheel : _wheels) {
 		wheel->entries.pop_back();
-	}
+	}*/
 	
 	_editMode = false;
 }

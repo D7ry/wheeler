@@ -1,8 +1,12 @@
 #pragma once
 #include "WheelEntry.h"
+
+/// <summary>
+/// Deprecated class
+/// </summary>
 class WheelEntryAdder : public WheelEntry
 {
-public:
+private:
 	static WheelEntryAdder* GetSingleton()
 	{
 		static WheelEntryAdder singleton;

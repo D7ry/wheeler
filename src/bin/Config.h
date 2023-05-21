@@ -13,6 +13,14 @@ namespace Config
 		}
 
 	}
+	namespace Sound
+	{
+		inline bool ItemSwitchSound = true;
+		inline bool EntrySwitchSound = true;
+		inline bool WheelSwitchSound = true;
+		inline bool WheelToggleSound = true;
+
+	}
 	namespace Styling
 	{
 		namespace Wheel
@@ -34,8 +42,8 @@ namespace Config
 			inline ImColor HoveredColorBegin = ImColor(105, 177, 207, 25);
 			inline ImColor HoveredColorEnd = ImColor(105, 177, 207, 150);
 
-			inline ImColor UnhoveredColorBegin = ImColor(0.0f, 0.0f, 0.0f, 0.3f);
-			inline ImColor UnhoveredColorEnd = ImColor(0.0f, 0.0f, 0.0f, 0.3f);
+			inline ImColor UnhoveredColorBegin = ImColor(0.0f, 0.0f, 0.0f, 0.6f);
+			inline ImColor UnhoveredColorEnd = ImColor(0.0f, 0.0f, 0.0f, 0.6f);
 
 			inline ImColor ActiveArcColorBegin = ImColor(105,177,207);
 			inline ImColor ActiveArcColorEnd = ImColor(105, 177, 207);

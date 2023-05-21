@@ -10,9 +10,14 @@ void Controls::Init()
 			{ 58, &Wheeler::ToggleMenu },        // caps lock
 			{ 264, &Wheeler::PrevItem }, // mouse wheel up
 			{ 265, &Wheeler::NextItem }, // mouse wheel down
-			{ 256, &Wheeler::ActivateItemRight}, // mouse left
-			{ 257, &Wheeler::ActivateItemLeft}, // mouse right
-			{ 49, &Wheeler::AddWheel }
+			{ 256, &Wheeler::ActivateEntryRight}, // mouse left
+			{ 257, &Wheeler::ActivateEntryLeft}, // mouse right
+			{ 49, &Wheeler::AddWheel }, // N
+			{ 50, &Wheeler::AddEntryToCurrentWheel }, // M
+			{ 200, &Wheeler::MoveEntryForward }, // up arrow
+			{ 208, &Wheeler::MoveEntryBack }, // down arrow
+			{ 203, &Wheeler::MoveWheelBack },          // left arrow
+			{ 205, &Wheeler::MoveWheelForward },       // right arrow
 		}
 		) {
 		BindInput(pair.first, pair.second, true, false);
