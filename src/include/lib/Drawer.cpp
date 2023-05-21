@@ -19,11 +19,11 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 
 	const ImU32 color = IM_COL32(a_red, a_green, a_blue, a_alpha);
 
-	const int defaultFontSize = 13;
+	float currFontSize = ImGui::GetFontSize();
 
 	ImVec2 text_size = ImGui::CalcTextSize(a_text);
-	text_size.x *= a_font_size / defaultFontSize;
-	text_size.y *= a_font_size / defaultFontSize;
+	text_size.x *= a_font_size / currFontSize;
+	text_size.y *= a_font_size / currFontSize;
 	
 	if (a_center_text) {
 		text_x = -text_size.x * 0.5f;

@@ -91,12 +91,17 @@ find_package(xbyak REQUIRED CONFIG)
 
 find_package(imgui REQUIRED)
 
+find_package(Freetype REQUIRED)
+
+
+
 target_link_libraries(
 	"${PROJECT_NAME}"
 	PRIVATE
 		CommonLibSSE::CommonLibSSE
 		xbyak::xbyak
 		imgui::imgui
+		Freetype::Freetype
 )
 
 target_precompile_headers(

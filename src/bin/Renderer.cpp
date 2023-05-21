@@ -10,6 +10,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
 // stole this from MaxSu's detection meter
+#include "include/lib/imgui_freetype.h"
 
 #include "Wheeler.h"
 #include "Texture.h"
@@ -92,7 +93,13 @@ void Renderer::D3DInitHook::thunk()
 			reinterpret_cast<LONG_PTR>(WndProcHook::thunk)));
 	if (!WndProcHook::func)
 		ERROR("SetWindowLongPtrA failed!");
+#ifdef IMGUI_ENABLE_FREETYPE
+	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
+	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
+	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_Bold;
+	ImGui::GetIO().Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 64.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
 
+#endif
 }
 
 void Renderer::DXGIPresentHook::thunk(std::uint32_t a_p1)

@@ -9,6 +9,7 @@
     "xbyak",
     "rapidcsv",
     "nlohmann-json",
+    "freetype",
     {
       "name":  "imgui",
       "features":  [
