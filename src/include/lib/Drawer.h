@@ -23,7 +23,7 @@ namespace Drawer
 		UINT32 a_green,
 		UINT32 a_blue,
 		float a_font_size = 20.f,
-		bool add_shadow = false,
+		bool add_shadow = true,
 		bool a_center_text = true,
 		bool a_deduct_text_x = false,
 		bool a_deduct_text_y = false,

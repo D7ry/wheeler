@@ -51,18 +51,19 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 		ImVec2 shadowPos2(position);
 		ImVec2 shadowPos3(position);
 		ImVec2 shadowPos4(position);
-		shadowPos1.x -= 2;
-		shadowPos1.y -= 2;
-		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-		shadowPos2.x -= 2;
-		shadowPos2.y += 2;
-		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-		shadowPos3.x += 2;
-		shadowPos3.y -= 2;
-		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-		shadowPos4.x += 2;
-		shadowPos4.y += 2;
-		drawList->AddText(font, a_font_size, position, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		auto offset = a_font_size * 0.08f;
+		shadowPos1.x -= offset;
+		shadowPos1.y -= offset;
+		//drawList->AddText(font, a_font_size, shadowPos1, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		shadowPos2.x -= offset;
+		shadowPos2.y += offset;
+		//drawList->AddText(font, a_font_size, shadowPos2, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		shadowPos3.x += offset;
+		shadowPos3.y -= offset;
+		//drawList->AddText(font, a_font_size, shadowPos3, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+		shadowPos4.x += offset;
+		shadowPos4.y += offset;
+		drawList->AddText(font, a_font_size, shadowPos4, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
 	}
 	
 	drawList->AddText(font, a_font_size, position, color, a_text, nullptr, 0.0f, nullptr);

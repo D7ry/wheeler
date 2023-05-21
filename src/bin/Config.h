@@ -67,7 +67,7 @@ namespace Config
 				{
 					const inline float OffsetX = 0;
 					const inline float OffsetY = -130;
-					const inline float Size = 20;
+					const inline float Size = 27;
 				}
 			}
 		}
