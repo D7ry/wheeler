@@ -96,10 +96,10 @@ void Renderer::D3DInitHook::thunk()
 #ifdef IMGUI_ENABLE_FREETYPE
 	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
-	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_Bold;
+	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_Bold | ImGuiFreeTypeBuilderFlags_LightHinting;
 	std::string path = R"(Data\SKSE\Plugins\wheeler\fonts\Futura Condensed Regular.ttf)";
 	auto file_path = std::filesystem::path(path);
-	ImGui::GetIO().Fonts->AddFontFromFileTTF(file_path.string().c_str(), 32.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+	ImGui::GetIO().Fonts->AddFontFromFileTTF(file_path.string().c_str(), 64.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
 
 #endif
 }
