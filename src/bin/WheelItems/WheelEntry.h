@@ -35,10 +35,14 @@ public:
 
 	bool IsEmpty();
 
+	std::vector<std::shared_ptr<WheelItem>>& GetItems();
+
 	WheelEntry();
 
 	~WheelEntry();
 	std::vector<std::shared_ptr<WheelItem>> _items;
+
+	int GetSelectedItem();
 
 private:
 	int _selectedItem;

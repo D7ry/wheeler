@@ -1,6 +1,7 @@
 #pragma once
 #include "bin/Texture.h"
 #include "bin/Config.h"
+#include "nlohmann/json.hpp"
 class ImVec2;
 class WheelItem
 {
@@ -27,6 +28,14 @@ public:
 
 	virtual bool IsMutable();
 
+	virtual void SerializeInto(nlohmann::json& a_json);
+
+	static inline const char* ITEM_TYPE_STR = "WheelItem";
+
+
 protected:
 	Texture::Image _texture;
+
+	
+
 };

@@ -34,3 +34,9 @@ bool WheelItem::IsMutable()
 	return false;
 }
 
+void WheelItem::SerializeInto(nlohmann::json& a_json)
+{
+	a_json["type"] = ITEM_TYPE_STR;
+	a_json["WARNING"] = "This is a placeholder item. It should not be used.";
+}
+

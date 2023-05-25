@@ -65,7 +65,7 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
 		}
 		switch (form->GetFormType()) {
 		case RE::FormType::Spell:
-			std::shared_ptr<WheelItemSpeel> wheelItemSpell = std::make_shared<WheelItemSpeel>(form->As<RE::SpellItem>());
+			std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(form->As<RE::SpellItem>());
 			return wheelItemSpell;
 		}
 	}

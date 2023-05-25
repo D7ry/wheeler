@@ -7,9 +7,14 @@
 class WheelItem;
 class WheelItemMutable;
 class WheelEntry;
+class Wheel;
 class Wheeler
 {
 public:
+	struct Wheel
+	{
+		std::vector<WheelEntry*> entries;
+	};
 	static void Init()
 	{
 		// insert an empty wheel
@@ -23,17 +28,11 @@ public:
 	static void Update();
 	
 	/// <summary>
-	/// Load all items in the wheel customized by the current save through the serializer.
-	/// This should be called on save load / on new game start.
+	/// Resets everything, must be called prior to reloading the wheels.
 	/// </summary>
-	static void LoadWheelItems();
+	static void Clear();
 
-	/// <summary>
-	/// Flush all current items into a save.
-	/// This should be called on game save. This is guaranteed to be called in the same save that's
-	/// loaded before, so to ensure ACID.
-	/// </summary>
-	static void FlushWheelItems();
+	static void SetWheels(std::vector<Wheel*> a_wheels);
 
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
@@ -90,14 +89,14 @@ public:
 	static void MoveWheelForward();
 	static void MoveWheelBack();
 	
-	struct Wheel
-	{
-		std::vector<WheelEntry*> entries;
-	};
+	static int GetActiveWheel();
+	static int GetActiveEntry();
+	
 	static inline const char* SD_WHEELSWITCH = "UIFavorite";
 	static inline const char* SD_ENTRYSWITCH = "UIMenuFocus";
 	static inline const char* SD_WHEELERTOGGLE = "UIInventoryOpenSD";
 
+	static std::vector<Wheel*>& GetWheels();
 
 private:
 	enum class WheelState

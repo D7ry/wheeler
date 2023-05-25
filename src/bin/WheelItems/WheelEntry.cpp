@@ -131,6 +131,11 @@ bool WheelEntry::IsEmpty()
 	return this->_items.empty();
 }
 
+std::vector<std::shared_ptr<WheelItem>>& WheelEntry::GetItems()
+{
+	return this->_items;
+}
+
 WheelEntry::WheelEntry()
 {
 	_selectedItem = 0;
@@ -145,5 +150,10 @@ WheelEntry::~WheelEntry()
 		}
 	}
 	_items.clear();
+}
+
+int WheelEntry::GetSelectedItem()
+{
+	return this->_selectedItem;
 }
 

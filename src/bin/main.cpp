@@ -6,6 +6,7 @@
 #include "Controls.h"
 #include "UniqueIDHandler.h"
 #include "bin/WheelItems/WheelItemMutableManager.h"
+#include "Serializer.h"
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
@@ -18,11 +19,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		break;
 
 	case SKSE::MessagingInterface::kSaveGame:
-		Wheeler::FlushWheelItems();
 		break;
 	case SKSE::MessagingInterface::kPostLoadGame:
 	case SKSE::MessagingInterface::kNewGame:
-		Wheeler::LoadWheelItems();
 		UniqueIDHandler::AssignUniqueIDsToAllObjects();
 		break;
 	}
@@ -34,6 +33,9 @@ void onSKSEInit()
 	Controls::Init();
 	Wheeler::Init();
 	Hooks::Install();
+	auto serialization = SKSE::GetSerializationInterface();
+	serialization->SetUniqueID(WHEELER_SERIALIZATION_ID);
+	Serializer_V0::BindSerializationCallbacks(serialization);
 }
 
 namespace

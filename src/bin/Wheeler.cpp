@@ -65,7 +65,7 @@ namespace TestData
 
 		
 		auto generateSpellWheelItem = [dh](RE::FormID formID) {
-			return std::make_shared<WheelItemSpeel>((RE::SpellItem*)dh->LookupForm(formID, "Skyrim.esm"));
+			return std::make_shared<WheelItemSpell>((RE::SpellItem*)dh->LookupForm(formID, "Skyrim.esm"));
 		};
 
 		Wheeler::Wheel* w2 = new Wheeler::Wheel();
@@ -251,11 +251,9 @@ void Wheeler::Update()
 			float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
 			float t2 = InnerCircleRadius + t1;
 			float rad = (entryInnerAngleMax - entryInnerAngleMin) / 2 + entryInnerAngleMin;
-			float t3 = cosf(rad);
-			float t4 = sinf(rad);
 			ImVec2 itemCenter = ImVec2(
-				wheelCenter.x + t2 * t3,
-				wheelCenter.y + t2 * t4
+				wheelCenter.x + t2 * cosf(rad),
+				wheelCenter.y + t2 * sinf(rad)
 				);
 			
 			int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
@@ -308,6 +306,8 @@ void Wheeler::Update()
 					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10);
 			}
 		}
+		
+doneDrawing:
 
 		// update fade timer, alpha and wheel state.
 		_openTimer += deltaTime;
@@ -339,8 +339,7 @@ void Wheeler::Update()
 
 }
 
-// TODO: swap to real serializer after implementing it
-void Wheeler::LoadWheelItems()
+void Wheeler::Clear()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
 	if (_state != WheelState::KClosed) { 
@@ -360,21 +359,18 @@ void Wheeler::LoadWheelItems()
 	}
 	_wheels.clear();
 	
-	//Serializer::LoadData(_items);
-	TestData::Load(_wheels);
+}
 
-	for (Wheel* wheel : _wheels) {
-		//verifyWheelItems(wheel->entries);
+void Wheeler::SetWheels(std::vector<Wheel*> a_wheels)
+{
+	Clear();  // just making sure we're clean
+	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
+	_wheels = a_wheels;
+	if (_wheels.empty()) {
+		_wheels.push_back(new Wheel());  // add an empty wheel if we don't have any
 	}
 }
 
-// TODO: implement this and the serializer
-void Wheeler::FlushWheelItems()
-{
-	INFO("Flushing wheel items...");
-	//Serializer::FlushData(_items);
-	INFO("...wheel items flushed!");
-}
 
 void Wheeler::ToggleWheel()
 {
@@ -692,6 +688,21 @@ void Wheeler::MoveWheelBack()
 			_activeWheelIdx = targetIdx;
 		}
 	}
+}
+
+int Wheeler::GetActiveWheel()
+{
+	return _activeWheelIdx;
+}
+
+int Wheeler::GetActiveEntry()
+{
+	return _activeEntryIdx;
+}
+
+std::vector<Wheeler::Wheel*>& Wheeler::GetWheels()
+{
+	return _wheels;
 }
 
 

@@ -177,6 +177,9 @@ namespace Hooks
 
 	void Install()
 	{
+		SKSE::AllocTrampoline(1 << 5);
+
+		//CanInput::Install();
 		PlayerCharacterEx::InstallHooks();
 		//BaseExtraListEx::InstallHooks();
 		logger::info("Installed all hooks");

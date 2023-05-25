@@ -1,17 +1,16 @@
 #pragma once
 #include "WheelItems/WheelItem.h"
-class Serializer
+constexpr std::uint32_t WHEELER_SERIALIZATION_ID = 'WHLR';
+constexpr std::uint32_t WHEELER_SERIALIZATION_TYPE = 'WHLR';
+class Serializer_V0
 {
+
 public:
-	/// <summary>
-	/// Populates the wheelItems vectors with serialized items of the current loaded player. Called on game start/save load.
-	/// </summary>
-	static void LoadSave(std::vector<WheelItem*>& r_wheelItems);
+	static void BindSerializationCallbacks(const SKSE::SerializationInterface* a_in);
 
-	/// <summary>
-	/// Load config and flush changes to Config.h
-	/// </summary>
-	static void LoadConfig();
-
-
+protected:
+	static void Save(SKSE::SerializationInterface* a_intfc);
+	static void Load(SKSE::SerializationInterface* a_intfc);
+	static void Revert(SKSE::SerializationInterface* a_intfc);
+	static inline uint32_t _version = 0;
 };

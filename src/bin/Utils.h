@@ -35,6 +35,19 @@ namespace Utils
 		RE::InventoryEntryData* GetSelectedItemIninventory(RE::InventoryMenu* a_invMenu);
 		RE::TESForm* GetSelectedFormInMagicMenu(RE::MagicMenu* a_magMen);
 
+		static inline RE::InventoryEntryData* sub_1401d5ba0(RE::InventoryEntryData* a_ptr, RE::TESBoundObject* a_obj, int count)
+		{
+			using func_t = RE::InventoryEntryData* (*)(RE::InventoryEntryData*, RE::TESBoundObject*, int);
+			REL::Relocation<func_t> func{ RELOCATION_ID(10798, 10854) };
+			return func(a_ptr, a_obj, count);
+		}
+
+		inline RE::InventoryEntryData* MakeInventoryEntryData(RE::TESBoundObject* a_obj)
+		{
+			RE::InventoryEntryData* ptr = (RE::InventoryEntryData*)RE::MemoryManager::GetSingleton()->Allocate(24, 0, true);
+			ptr = sub_1401d5ba0(ptr, a_obj, 1);
+			return ptr;
+		}
 	}
 	
 	namespace Workaround

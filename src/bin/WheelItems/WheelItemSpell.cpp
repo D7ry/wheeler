@@ -1,7 +1,7 @@
 #include "WheelItemSpell.h"
 #include "bin/Utils.h"
 #include "include/lib/Drawer.h"
-WheelItemSpeel::WheelItemSpeel(RE::SpellItem* a_spell)
+WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 {
 	_spell = a_spell;
 	const auto* effect = a_spell->GetCostliestEffectItem()->baseEffect;
@@ -45,7 +45,7 @@ WheelItemSpeel::WheelItemSpeel(RE::SpellItem* a_spell)
 	this->_texture = Texture::GetIconImage(iconType);
 }
 
-void WheelItemSpeel::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
@@ -59,7 +59,7 @@ void WheelItemSpeel::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR
 		0);
 }
 
-void WheelItemSpeel::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,
@@ -71,9 +71,18 @@ void WheelItemSpeel::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		0);
+	{
+		// debug: trying to use inventory3Dmanager
+		auto inv3d = RE::Inventory3DManager::GetSingleton();
+		if (inv3d) {
+			//inv3d->UpdateItem3D()
+			inv3d->UpdateMagic3D(this->_spell, 0);
+			//inv3d->Render();
+		}
+	}
 }
 
-bool WheelItemSpeel::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
+bool WheelItemSpell::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	
 	auto pc = RE::PlayerCharacter::GetSingleton();
@@ -90,13 +99,13 @@ bool WheelItemSpeel::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	return lhsEquipped || rhsEquipped;
 }
 
-bool WheelItemSpeel::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
+bool WheelItemSpell::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	return pc && pc->HasSpell(this->_spell);
 }
 
-void WheelItemSpeel::ActivateItemLeft()
+void WheelItemSpell::ActivateItemLeft()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
@@ -104,10 +113,16 @@ void WheelItemSpeel::ActivateItemLeft()
 	}
 }
 
-void WheelItemSpeel::ActivateItemRight()
+void WheelItemSpell::ActivateItemRight()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
 		RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
 	}
+}
+
+void WheelItemSpell::SerializeInto(nlohmann::json& a_json)
+{
+	a_json["type"] = WheelItemSpell::ITEM_TYPE_STR;
+	a_json["formID"] = this->_spell->GetFormID();
 }

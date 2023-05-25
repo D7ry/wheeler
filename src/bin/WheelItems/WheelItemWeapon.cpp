@@ -7,7 +7,7 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREF
 	int itemCount = this->GetItemData(a_imap).first;
 	if (itemCount > 1) {
 		text += " (" + std::to_string(itemCount) + ")";
-	}
+	} 
 	Drawer::draw_text(a_center.x, a_center.y, 
 		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
 		text.data(), 255, 255, 255, 255,
@@ -85,6 +85,13 @@ void WheelItemWeapon::ActivateItemLeft()
 void WheelItemWeapon::ActivateItemRight()
 {
 	equipItem(true);
+}
+
+void WheelItemWeapon::SerializeInto(nlohmann::json& a_json)
+{
+	a_json["type"] = WheelItemWeapon::ITEM_TYPE_STR;
+	a_json["formID"] = this->_obj->GetFormID();
+	a_json["uniqueID"] = this->GetUniqueID();
 }
 
 
