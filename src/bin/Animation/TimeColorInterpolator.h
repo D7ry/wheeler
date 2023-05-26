@@ -1,6 +1,10 @@
 #pragma once
 #include "imgui.h"
 #include "bin/Animation/TimeInterpolator/TimeUIntInterpolator.h"
+
+/**
+ * Interpolates ImU32 color value over time through 4 instances of TimeUintInterpolator.
+ */
 class TimeColorInterpolator
 {
 private:

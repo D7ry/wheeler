@@ -1,4 +1,12 @@
 #pragma once
+/**
+ * Wraps around a float value and linearly interpolates it over time when applicable.
+ * The float stays at a fixed value when not interpolating and can be read using GetValue().
+ * 
+ * Interpolator puts itself into a TimeFloatInterpolatorManager on construction and removes 
+ * itself on destruction; TimeFloatInterpolatorManager is a static class that handles updating 
+ * all instances of TimeFloatInterpolator.
+ */
 class TimeFloatInterpolator
 {
 private:
@@ -14,6 +22,7 @@ public:
 
 	void InterpolateTo(double targetValue, double interpolDuration);
 
+	// Update the interpolator's value based on a delta. Only TimeFloatInterpolatorManager may call it.
 	void Update(double dt);
 
 	double GetValue() const;
