@@ -5,7 +5,7 @@
 #include "WheelItemWeapon.h"
 #include "WheelItemMutableManager.h"
 
-std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
+std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
 	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
 	if (!pc || !pc->Is3DLoaded()) {
@@ -68,6 +68,45 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromSelected()
 			std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(form->As<RE::SpellItem>());
 			return wheelItemSpell;
 		}
+	}
+	return nullptr;
+}
+
+std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohmann::json a_json, SKSE::SerializationInterface* a_intfc)
+{
+	if (!a_json.contains("type")) {
+		ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: json object does not contain \"type\" field.");
+		return nullptr;
+	}
+	std::string type = a_json["type"];
+	if (type == WheelItemWeapon::ITEM_TYPE_STR) {
+		RE::FormID formID = a_json["formID"].get<RE::FormID>();
+		if (!a_intfc->ResolveFormID(formID, formID)) {
+			ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to resolve formID.");
+			return nullptr;
+		}
+		RE::TESObjectWEAP* weap = static_cast<RE::TESObjectWEAP*>(RE::TESForm::LookupByID(formID));
+		if (!weap) {
+			ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup weap.");
+			return nullptr;
+		}
+		uint16_t uniqueID = a_json["uniqueID"].get<uint16_t>();
+		std::shared_ptr<WheelItemWeapon> wheelItemweap = std::make_shared<WheelItemWeapon>(weap, uniqueID);
+		WheelItemMutableManager::GetSingleton()->Track(wheelItemweap);  // track the new wheelItem
+		return wheelItemweap;
+	} else if (type == WheelItemSpell::ITEM_TYPE_STR) {
+		RE::FormID formID = a_json["formID"].get<RE::FormID>();
+		if (!a_intfc->ResolveFormID(formID, formID)) {
+			ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to resolve formID.");
+			return nullptr;
+		}
+		RE::SpellItem* spell = static_cast<RE::SpellItem*>(RE::TESForm::LookupByID(formID));
+		if (!spell) {
+			ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup spell.");
+			return nullptr;
+		}
+		std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(spell);
+		return wheelItemSpell;
 	}
 	return nullptr;
 }

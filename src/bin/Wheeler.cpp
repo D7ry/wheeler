@@ -20,88 +20,6 @@
 #include "Controls.h"
 
 #include "Utils.h"
-namespace TestData
-{
-	void Load(std::vector<Wheeler::Wheel*>& _wheels)
-	{
-		assert(_wheels.empty());
-		auto dh = RE::TESDataHandler::GetSingleton();
-
-		//auto o1 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139A4, "Skyrim.esm"));  // glass battle axe
-		//auto o2 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B6, "Skyrim.esm"));  // daedric dagger
-		//auto o3 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x139B1, "Skyrim.esm"));  // ebony sword
-		//auto o4 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13987, "Skyrim.esm"));  // steel greatsword
-		//auto o5 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0xA5DEF, "Skyrim.esm"));  // Gauldur Blackbow
-		//auto o6 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x13998, "Skyrim.esm"));  // Dwarven mace
-		//auto o7 = new WheelItemWeapon((RE::TESObjectWEAP*)dh->LookupForm(0x10c6fb, "Skyrim.esm"));  // Dwarven mace
-	
-		Wheeler::Wheel* w1 = new Wheeler::Wheel();
-
-		//// 1st entry in w1, contains 1 item
-		//WheelEntry* l1 = new WheelEntry();
-		//l1->_items.push_back(o1);
-
-		//// 2nd entry, 1 item
-		//WheelEntry* l2 = new WheelEntry();
-		//l2->_items.push_back(o2);
-
-		//// 3rd entry in w1, contains 3 items
-		//WheelEntry* l3 = new WheelEntry();
-		//l3->_items.push_back(o3);
-		//l3->_items.push_back(o4);
-		//l3->_items.push_back(o5);
-
-		//WheelEntry* l4 = new WheelEntry();
-		//l4->_items.push_back(o6);
-
-		//WheelEntry* l5 = new WheelEntry();
-		//l5->_items.push_back(o7);
-		//
-		//w1->entries.push_back(l1);
-		//w1->entries.push_back(l2);
-		//w1->entries.push_back(l3);
-		//w1->entries.push_back(l4);
-		//w1->entries.push_back(l5);
-
-		
-		auto generateSpellWheelItem = [dh](RE::FormID formID) {
-			return std::make_shared<WheelItemSpell>((RE::SpellItem*)dh->LookupForm(formID, "Skyrim.esm"));
-		};
-
-		Wheeler::Wheel* w2 = new Wheeler::Wheel();
-		
-		WheelEntry* e6 = new WheelEntry();
-		WheelEntry* e7 = new WheelEntry();
-		WheelEntry* e8 = new WheelEntry();
-		WheelEntry* e9 = new WheelEntry();
-		WheelEntry* e10 = new WheelEntry();
-		WheelEntry* e11 = new WheelEntry();
-		e6->_items.push_back(generateSpellWheelItem(0x12FCC));  // healing
-		e7->_items.push_back(generateSpellWheelItem(0x12FCD));  // flames
-		e7->_items.push_back(generateSpellWheelItem(0x12FD0));  // firebolt
-		e7->_items.push_back(generateSpellWheelItem(0x1C789));  // fireball
-
-		e8->_items.push_back(generateSpellWheelItem(0x2B96b));  // frostbite
-		e9->_items.push_back(generateSpellWheelItem(0x13018));  // wardlesser
-		e10->_items.push_back(generateSpellWheelItem(0x204c3));  // conjure flame atronach
-		e11->_items.push_back(generateSpellWheelItem(0x4deee));  // frenzy
-		
-		w2->entries.push_back(e6);
-		w2->entries.push_back(e7);
-		w2->entries.push_back(e8);
-		w2->entries.push_back(e9);
-		w2->entries.push_back(e10);
-		w2->entries.push_back(e11);
-
-		Wheeler::Wheel* w3 = new Wheeler::Wheel();
-		
-		_wheels.push_back(w1);
-		_wheels.push_back(w2);
-		_wheels.push_back(w3);
-
-	}
-	
-}
 
 void Wheeler::Update()
 {
@@ -170,11 +88,17 @@ void Wheeler::Update()
 		auto drawList = ImGui::GetWindowDrawList();
 
 		drawList->PushClipRectFullScreen();
+		
+		bool atLeaseOneWheelPresent = !_wheels.empty();
+
+		if (!atLeaseOneWheelPresent) {
+			Drawer::draw_text(wheelCenter.x, wheelCenter.y, 0, 0, "No Wheel Present", 255, 255, 255, 255, 40.f);
+		}
 
 
-		Wheel* wheel = _wheels[_activeWheelIdx];
+		Wheel* wheel = atLeaseOneWheelPresent ? _wheels[_activeWheelIdx] : nullptr;
 		// draws the pie menu
-		int numItems = wheel->entries.size();
+		int numItems = wheel ? wheel->entries.size() : -1;
 
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MIN, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
 		//ImGui::GetWindowDrawList()->AddCircle(wheelCenter, RADIUS_MAX, ImGui::GetColorU32(ImGuiCol_Border), 100, 2.0f);
@@ -690,9 +614,14 @@ void Wheeler::MoveWheelBack()
 	}
 }
 
-int Wheeler::GetActiveWheel()
+int Wheeler::GetActiveWheelIndex()
 {
 	return _activeWheelIdx;
+}
+
+void Wheeler::SetActiveWheelIndex(int a_index)
+{
+	_activeWheelIdx = a_index;
 }
 
 int Wheeler::GetActiveEntry()

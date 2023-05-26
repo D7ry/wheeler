@@ -35,7 +35,7 @@ void onSKSEInit()
 	Hooks::Install();
 	auto serialization = SKSE::GetSerializationInterface();
 	serialization->SetUniqueID(WHEELER_SERIALIZATION_ID);
-	Serializer_V0::BindSerializationCallbacks(serialization);
+	Serializer::BindSerializationCallbacks(serialization);
 }
 
 namespace
@@ -54,11 +54,12 @@ namespace
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
-#ifndef NDEBUG
-		const auto level = spdlog::level::trace;
-#else
+//#ifndef NDEBUG
+//		const auto level = spdlog::level::trace;
+//#else
+//		const auto level = spdlog::level::info;
+//#endif
 		const auto level = spdlog::level::info;
-#endif
 
 		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
 		log->set_level(level);

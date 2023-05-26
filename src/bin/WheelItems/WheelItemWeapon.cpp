@@ -87,7 +87,7 @@ void WheelItemWeapon::ActivateItemRight()
 	equipItem(true);
 }
 
-void WheelItemWeapon::SerializeInto(nlohmann::json& a_json)
+void WheelItemWeapon::SerializeIntoJsonObj(nlohmann::json& a_json)
 {
 	a_json["type"] = WheelItemWeapon::ITEM_TYPE_STR;
 	a_json["formID"] = this->_obj->GetFormID();

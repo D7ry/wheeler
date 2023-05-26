@@ -39,13 +39,16 @@ public:
 
 	WheelEntry();
 
+	void PushItem(std::shared_ptr<WheelItem> item);
+
 	~WheelEntry();
-	std::vector<std::shared_ptr<WheelItem>> _items;
 
 	int GetSelectedItem();
+	void SetSelectedItem(int a_selected);
 
 private:
 	int _selectedItem;
 	std::mutex _lock;
 	static inline const char* SD_ITEMSWITCH = "UIMenuPrevNextSD";
+	std::vector<std::shared_ptr<WheelItem>> _items;
 };

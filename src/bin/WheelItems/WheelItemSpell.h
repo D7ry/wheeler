@@ -10,7 +10,7 @@ public:
 	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
 	virtual void ActivateItemLeft() override;
 	virtual void ActivateItemRight() override;
-	virtual void SerializeInto(nlohmann::json& a_json) override;
+	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 	
 
 	static inline const char* ITEM_TYPE_STR = "WheelItemSpell";

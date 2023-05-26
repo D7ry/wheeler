@@ -89,7 +89,7 @@ void WheelEntry::ActivateItemRight(bool editMode)
 		}
 		_items[_selectedItem]->ActivateItemRight();
 	} else {// append item to after _selectedItem index
-		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromSelected();
+		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromMenuHovered();
 		if (newItem) {
 			_items.insert(_items.begin() + _selectedItem, newItem);
 		}
@@ -141,6 +141,11 @@ WheelEntry::WheelEntry()
 	_selectedItem = 0;
 }
 
+void WheelEntry::PushItem(std::shared_ptr<WheelItem> item)
+{
+	this->_items.push_back(item);
+}
+
 WheelEntry::~WheelEntry()
 {
 	for (auto& item : _items) {
@@ -155,5 +160,10 @@ WheelEntry::~WheelEntry()
 int WheelEntry::GetSelectedItem()
 {
 	return this->_selectedItem;
+}
+
+void WheelEntry::SetSelectedItem(int a_selected)
+{
+	this->_selectedItem = a_selected;
 }
 

@@ -13,7 +13,7 @@ public:
 	void ActivateItemLeft() override;
 	void ActivateItemRight() override;
 	
-	virtual void SerializeInto(nlohmann::json& a_json) override;
+	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 
 
 	static inline const char* ITEM_TYPE_STR = "WheelItemWeapon";

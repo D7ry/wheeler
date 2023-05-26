@@ -28,7 +28,7 @@ public:
 
 	virtual bool IsMutable();
 
-	virtual void SerializeInto(nlohmann::json& a_json);
+	virtual void SerializeIntoJsonObj(nlohmann::json& a_json);
 
 	static inline const char* ITEM_TYPE_STR = "WheelItem";
 

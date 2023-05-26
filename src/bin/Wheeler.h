@@ -89,7 +89,8 @@ public:
 	static void MoveWheelForward();
 	static void MoveWheelBack();
 	
-	static int GetActiveWheel();
+	static int GetActiveWheelIndex();
+	static void SetActiveWheelIndex(int a_index);
 	static int GetActiveEntry();
 	
 	static inline const char* SD_WHEELSWITCH = "UIFavorite";

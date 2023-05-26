@@ -121,7 +121,7 @@ void WheelItemSpell::ActivateItemRight()
 	}
 }
 
-void WheelItemSpell::SerializeInto(nlohmann::json& a_json)
+void WheelItemSpell::SerializeIntoJsonObj(nlohmann::json& a_json)
 {
 	a_json["type"] = WheelItemSpell::ITEM_TYPE_STR;
 	a_json["formID"] = this->_spell->GetFormID();
