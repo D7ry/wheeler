@@ -4,12 +4,16 @@ using EventResult = RE::BSEventNotifyControl;
 
 void WheelItemMutableManager::Track(std::weak_ptr<WheelItemMutable> a_mutable)
 {
+	if (!a_mutable) {
+		ERROR("WheelItemMutableManager::Track: a_mutable is null");
+		return;
+	}
 	this->_mutables.insert(a_mutable);
 }
 
 void WheelItemMutableManager::UnTrack(std::weak_ptr<WheelItemMutable> a_mutable)
 {
-	this->_mutables.erase(a_mutable.lock());
+	this->_mutables.erase(a_mutable);
 }
 
 void WheelItemMutableManager::Clear()

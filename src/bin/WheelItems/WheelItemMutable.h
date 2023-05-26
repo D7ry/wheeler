@@ -29,9 +29,14 @@ public:
 	RE::FormID GetFormID();
 	bool IsMutable() override;
 
+	/// <summary>
+	/// Creates a WheelItemMutable object of type T, which must be a subclass of WheelItemMutable.
+	/// Tracks the newly created object in WheelItemMutableManager through a weak pointer.
+	/// WheelItemMutable's destructor will be invoked when all shared_ptr to the item goes out of scope,
+	/// and the item will be untracked from the WheelItemMutableManager through WheelItemMutable's destructor.
 	template <class T>
-	static WheelItemMutable* Create<T>(RE::TESBoundObject* a_obj, uint16_t a_uniqueID) {
-		WheelItemMutable* ret = new T(a_obj, a_uniqueID);
+	static std::shared_ptr<WheelItemMutable> Create<T>(RE::TESBoundObject* a_obj, uint16_t a_uniqueID) {
+		std::shared_ptr<WheelItemMutable> ret = std::make_shared<T>(a_obj, a_uniqueID);
 		WheelItemMutableManager::GetSingleton()->Track(ret->shared_from_this());
 		return ret;
 	}
