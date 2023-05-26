@@ -19,4 +19,5 @@ public:
 	uint32_t GetGreen();
 	uint32_t GetBlue();
 	uint32_t GetAlpha();
+	uint32_t GetColor();
 };

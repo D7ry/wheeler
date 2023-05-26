@@ -1,5 +1,6 @@
 #include "Hooks.h"
 #include "UniqueIDHandler.h"
+#include "Animation/TimeInterpolator/TimeInterpolatorManager.h"
 //namespace RE
 //{
 //	BaseExtraList::~BaseExtraList()
@@ -174,13 +175,32 @@ namespace Hooks
 			}
 		};
 	}
+	class Hook_OnPlayerUpdate  //no longer used
+	{
+	public:
+		static void install()
+		{
+			REL::Relocation<std::uintptr_t> PlayerCharacterVtbl{ RE::VTABLE_PlayerCharacter[0] };
 
+			_Update = PlayerCharacterVtbl.write_vfunc(0xAD, Update);
+			logger::info("hook:OnPlayerUpdate");
+		}
+
+	private:
+		static void Update(RE::PlayerCharacter* a_this, float a_delta)
+		{
+
+			_Update(a_this, a_delta);
+		}
+		static inline REL::Relocation<decltype(Update)> _Update;
+	};
 	void Install()
 	{
 		SKSE::AllocTrampoline(1 << 5);
 
 		//CanInput::Install();
 		PlayerCharacterEx::InstallHooks();
+		//Hook_OnPlayerUpdate::install();
 		//BaseExtraListEx::InstallHooks();
 		logger::info("Installed all hooks");
 	}

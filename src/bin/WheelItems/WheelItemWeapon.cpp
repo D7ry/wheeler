@@ -21,6 +21,7 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREF
 		0);
 
 
+
 	//PieMenu::PieMenuItem("one weapon");
 }
 
@@ -33,13 +34,16 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 		_testInterpolator.GetBlue(),
 		_testInterpolator.GetGreen(),
 		_testInterpolator.GetAlpha(),
-		Config::Styling::Item::Highlight::Text::Size);
+		Config::Styling::Item::Highlight::Text::Size, false);
 	Drawer::draw_texture(_texture.texture,
 		ImVec2(a_center.x, a_center.y),
 		Config::Styling::Item::Highlight::Texture::OffsetX,
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		0);
+	ImGui::GetWindowDrawList()->AddRectFilled(
+		{ a_center.x - 5, a_center.y - 5 },
+		{ a_center.x + 5, a_center.y + 5 }, _testInterpolator.GetColor());
 }
 
 WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon, uint16_t a_uniqueID)
@@ -84,13 +88,13 @@ WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon, uint16_t a_uniqueI
 
 void WheelItemWeapon::ActivateItemLeft()
 {
-	_testInterpolator.InterpolateTo(C_SKYRIMWHITE, 0.5);
+	_testInterpolator.InterpolateTo(C_SKYRIMWHITE, 1);
 	equipItem(false);
 }
 
 void WheelItemWeapon::ActivateItemRight()
 {
-	_testInterpolator.InterpolateTo(C_VOID, 0.5);
+	_testInterpolator.InterpolateTo(C_VOID, 1);
 	equipItem(true);
 }
 

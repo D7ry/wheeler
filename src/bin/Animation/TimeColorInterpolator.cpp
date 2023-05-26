@@ -39,3 +39,12 @@ uint32_t TimeColorInterpolator::GetAlpha()
 {
 	return alphaInterpolator.GetValue();
 }
+
+uint32_t TimeColorInterpolator::GetColor()
+{
+	uint32_t red = redInterpolator.GetValue() << 24;
+	uint32_t green = greenInterpolator.GetValue() << 16;
+	uint32_t blue = blueInterpolator.GetValue() << 8;
+	uint32_t alpha = alphaInterpolator.GetValue();
+	return red | green | blue | alpha;
+}

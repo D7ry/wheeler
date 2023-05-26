@@ -32,7 +32,7 @@ void TimeUintInterpolator::Update(double dt)
 {
 	if (elapsedTime < duration) {
 		elapsedTime += dt;
-		float t = min(elapsedTime / duration, 1.0f);
+		double t = min(elapsedTime / duration, 1.0);
 		value = static_cast<uint32_t>(value + (target - value) * t);
 	}
 }

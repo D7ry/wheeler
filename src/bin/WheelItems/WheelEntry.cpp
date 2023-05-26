@@ -3,6 +3,66 @@
 #include "WheelItemFactory.h"
 #include "WheelItemMutableManager.h"
 #include "WheelItemMutable.h"
+#include "include/lib/Drawer.h"
+
+void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
+ float entryInnerAngleMin, 
+	float entryInnerAngleMax,
+ float entryOuterAngleMin, 
+	float entryOuterAngleMax, const ImVec2 itemCenter,
+ bool hovered, 
+	int numArcSegments, RE::TESObjectREFR::InventoryItemMap& inv)
+{
+	using namespace Config::Styling::Wheel;
+
+	float mainArcOuterBoundRadius = OuterCircleRadius - InnerSpacing;
+	mainArcOuterBoundRadius += _arcRadiusIncInterpolator.GetValue();
+
+	float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue();
+	float entryInnerAngleMaxUpdated = entryInnerAngleMax + _arcInnerAngleIncInterpolator.GetValue();
+	float entryOuterAngleMinUpdated = entryOuterAngleMin - _arcOuterAngleIncInterpolator.GetValue();
+	float entryOuterAngleMaxUpdated = entryOuterAngleMax + _arcOuterAngleIncInterpolator.GetValue();
+	
+	Drawer::draw_arc_gradient(wheelCenter,
+		InnerCircleRadius + InnerSpacing,
+		mainArcOuterBoundRadius,
+		entryInnerAngleMinUpdated, entryInnerAngleMaxUpdated,
+		entryOuterAngleMinUpdated, entryOuterAngleMaxUpdated,
+		hovered ? HoveredColorBegin : UnhoveredColorBegin,
+		hovered ? HoveredColorEnd : UnhoveredColorEnd,
+		numArcSegments);
+
+	bool active = this->IsActive(inv);
+	ImU32 arcColorBegin = active ? ActiveArcColorBegin : InActiveArcColorBegin;
+	ImU32 arcColorEnd = active ? ActiveArcColorEnd : InActiveArcColorEnd;
+
+	Drawer::draw_arc_gradient(wheelCenter,
+		mainArcOuterBoundRadius,
+		mainArcOuterBoundRadius + ActiveArcWidth,
+		entryOuterAngleMinUpdated,
+		entryOuterAngleMaxUpdated,
+		entryOuterAngleMinUpdated,
+		entryOuterAngleMaxUpdated,
+		arcColorBegin,
+		arcColorEnd,
+		numArcSegments);
+
+	if (hovered) {
+		this->DrawHighlight(wheelCenter, inv);
+		if (!_prevHovered) {
+			_arcRadiusIncInterpolator.InterpolateTo(20, 0.2f);
+			_arcOuterAngleIncInterpolator.InterpolateTo(innerSpacing * (InnerCircleRadius / OuterCircleRadius), 0.2f);
+			_arcInnerAngleIncInterpolator.InterpolateTo(innerSpacing, 0.2f);
+			_prevHovered = true;
+		}
+	} else {
+		_prevHovered = false;
+		_arcRadiusIncInterpolator.InterpolateTo(0, 0.2f);
+		_arcOuterAngleIncInterpolator.InterpolateTo(0, 0.2f);
+		_arcInnerAngleIncInterpolator.InterpolateTo(0, 0.2f);
+	}
+	this->DrawSlot(itemCenter, hovered, inv);
+}
 
 void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {

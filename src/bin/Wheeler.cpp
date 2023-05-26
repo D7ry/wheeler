@@ -25,7 +25,6 @@
 void Wheeler::Update()
 {
 	float deltaTime = ImGui::GetIO().DeltaTime;
-
 	TimeFloatInterpolatorManager::Update(deltaTime);
 	TimeUintInterpolatorManager::Update(deltaTime);
 	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
@@ -185,38 +184,13 @@ void Wheeler::Update()
 				);
 			
 			int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
-			// fancy math end
-			Drawer::draw_arc_gradient(wheelCenter,
-				InnerCircleRadius + InnerSpacing,
-				OuterCircleRadius - InnerSpacing,
-				entryInnerAngleMin, entryInnerAngleMax,
-				entryOuterAngleMin, entryOuterAngleMax,
-				hovered ? HoveredColorBegin : UnhoveredColorBegin,
-				hovered ? HoveredColorEnd : UnhoveredColorEnd,
-				numArcSegments);
-
 
 			WheelEntry* entry = wheel->entries[entryIdx];
 
-			bool active = entry->IsActive(inv);
-			ImU32 arcColorBegin = active ? ActiveArcColorBegin : InActiveArcColorBegin;
-			ImU32 arcColorEnd = active ? ActiveArcColorEnd : InActiveArcColorEnd;
+			entry->Draw(wheelCenter, innerSpacing,
+		entryInnerAngleMin,	entryInnerAngleMax,
+		entryOuterAngleMin, entryOuterAngleMax, itemCenter, hovered, numArcSegments, inv);
 			
-			Drawer::draw_arc_gradient(wheelCenter,
-				OuterCircleRadius - InnerSpacing,
-				OuterCircleRadius - InnerSpacing + ActiveArcWidth,
-				entryOuterAngleMin,
-				entryOuterAngleMax,
-				entryOuterAngleMin, 
-				entryOuterAngleMax,
-				arcColorBegin,
-				arcColorEnd,
-				numArcSegments);
-			
-			if (hovered) {
-				entry->DrawHighlight(wheelCenter, inv);
-			}
-			entry->DrawSlot(itemCenter, hovered, inv);
 		}
 		// draw cursor indicator
 		//drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
