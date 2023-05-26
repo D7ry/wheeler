@@ -57,6 +57,9 @@ public:
 	int GetSelectedItem();
 	void SetSelectedItem(int a_selected);
 
+    void SerializeIntoJsonObj(nlohmann::json& a_json);
+	static std::unique_ptr<WheelEntry*> SerializeFromJsonObj(nlohmann::json& a_json);
+
 private:
 	bool _prevHovered = false;  // used to detect when the mouse enters the entry
 	int _selectedItem;

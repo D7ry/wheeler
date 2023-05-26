@@ -11,10 +11,6 @@ class Wheel;
 class Wheeler
 {
 public:
-	struct Wheel
-	{
-		std::vector<WheelEntry*> entries;
-	};
 	static void Init()
 	{
 		// insert an empty wheel
@@ -113,15 +109,17 @@ private:
 
 	static inline const char* _wheelWindowID = "##Wheeler";
 
-	// currently active item, will be highlighted. Gets reset every time wheel reopens.
-	static inline int _activeEntryIdx = -1; 
 	
 	static inline ImVec2 _cursorPos = { 0, 0 };
 
 	static ImVec2 getWheelCenter();
 	
-	static inline std::vector<Wheel*> _wheels;
+	static inline std::vector<std::unique_ptr<Wheel>> _wheels;
 	static inline int _activeWheelIdx = 0;
+
+
+	// currently active item, will be highlighted. Gets reset every time wheel reopens.
+	static inline int _activeEntryIdx = -1; 
 	
 	// if the user presses longer than this(without sending close), the wheel will close on release
 	// the the user presses shorter than this, the wheel will close on a second press.

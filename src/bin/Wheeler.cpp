@@ -2,6 +2,7 @@
 #include <imgui_impl_win32.h>
 
 #include "Wheeler.h"
+#include "Wheel.h"
 #include "Serializer.h"
 
 #include "Input.h"
@@ -9,6 +10,7 @@
 
 #include "imgui_internal.h"
 #include "imgui.h"
+
 #include "WheelItems/WheelItem.h"
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelItems/WheelItemSpell.h"
@@ -250,7 +252,7 @@ void Wheeler::Clear()
 	}
 	_activeEntryIdx = -1;
 	// clean up old wheels
-	for (Wheel* wheel : _wheels) {
+	for (auto const& wheel : _wheels) {
 		for (WheelEntry* e : wheel->entries) {
 			delete e;  // WheelEntry's destructor frees underlying items
 		}
@@ -258,16 +260,6 @@ void Wheeler::Clear()
 	}
 	_wheels.clear();
 	
-}
-
-void Wheeler::SetWheels(std::vector<Wheel*> a_wheels)
-{
-	Clear();  // just making sure we're clean
-	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	_wheels = a_wheels;
-	if (_wheels.empty()) {
-		_wheels.push_back(new Wheel());  // add an empty wheel if we don't have any
-	}
 }
 
 
@@ -422,14 +414,14 @@ void Wheeler::PrevWheel()
 void Wheeler::PrevItem()
 {
 	if (_state == WheelState::KOpened && _activeEntryIdx != -1) {
-		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->PrevItem();
+		_wheels[_activeWheelIdx]->PrevItemInActiveEntry(_activeEntryIdx);
 	}
 }
 
 void Wheeler::NextItem()
 {
 	if (_state == WheelState::KOpened && _activeEntryIdx != -1) {
-		_wheels[_activeWheelIdx]->entries[_activeEntryIdx]->NextItem();
+		_wheels[_activeWheelIdx]->NextItemInActiveEntry(_activeEntryIdx);
 	}
 }
 

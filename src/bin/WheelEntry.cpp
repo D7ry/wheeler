@@ -211,6 +211,12 @@ int WheelEntry::GetSelectedItem()
 	return this->_selectedItem;
 }
 
+void WheelEntry::SerializeIntoJsonObj(nlohmann::json& a_json)
+{
+
+}
+
+
 void WheelEntry::SetSelectedItem(int a_selected)
 {
 	this->_selectedItem = a_selected;

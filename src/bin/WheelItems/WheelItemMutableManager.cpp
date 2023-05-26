@@ -38,7 +38,7 @@ EventResult WheelItemMutableManager::ProcessEvent(const RE::TESUniqueIDChangeEve
 	uint16_t newUniqueID = a_event->newUniqueID;
 	for (auto item : this->_mutables) {
 		if (!item) {
-			continue;
+			continue; // this should never happen because object removes itself from manager when it's destroyed
 		}
 		if (item->GetFormID() == form->GetFormID()) {
 			if (item->GetUniqueID() == oldUniqueID) {
