@@ -8,6 +8,7 @@ static ImU32 C_SKYRIMDARKGREY_MENUBACKGROUND = IM_COL32(0, 0, 0, 125);
 static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
 static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
 static ImU32 C_TRIQUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .75));
+static ImU32 C_VOID = IM_COL32(255, 255, 255, 0);
 
 namespace Config
 {
@@ -51,7 +52,7 @@ namespace Config
 			inline float InnerCircleRadius = 220.0f;
 			inline float OuterCircleRadius = 360.0f;
 			inline int ITEMS_MIN = 1;
-			inline float InnerSpacing = 5.f;
+			inline float InnerSpacing = 10.f;
 
 			inline ImU32 BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
 			inline ImU32 HoveredColorBegin = C_QUARTERTRANSPARENT;

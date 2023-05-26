@@ -21,10 +21,14 @@
 
 #include "Utils.h"
 
+#include "Animation/TimeInterpolator/TimeInterpolatorManager.h"
 void Wheeler::Update()
 {
-	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
 	float deltaTime = ImGui::GetIO().DeltaTime;
+
+	TimeFloatInterpolatorManager::Update(deltaTime);
+	TimeUintInterpolatorManager::Update(deltaTime);
+	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
 	using namespace Config::Styling::Wheel;
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
@@ -116,11 +120,11 @@ void Wheeler::Update()
 			const float entryArcSpan = 2 * IM_PI / ImMax(ITEMS_MIN, numItems);
 
 			const float innerSpacing = InnerSpacing / InnerCircleRadius / 2;
-			float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f + innerSpacing) + IM_PI / 2;
-			float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f - innerSpacing) + IM_PI / 2;
+			float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing + IM_PI / 2;
+			float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacing + IM_PI / 2;
 			
-			float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f + innerSpacing * (InnerCircleRadius / OuterCircleRadius)) + IM_PI / 2;
-			float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f - innerSpacing * (InnerCircleRadius / OuterCircleRadius)) + IM_PI / 2;
+			float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+			float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f ) - innerSpacing * (InnerCircleRadius / OuterCircleRadius)+ IM_PI / 2;
 			
 			if (entryInnerAngleMax > IM_PI * 2) {
 				entryInnerAngleMin -= IM_PI * 2;

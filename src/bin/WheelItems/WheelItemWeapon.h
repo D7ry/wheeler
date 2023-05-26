@@ -1,6 +1,8 @@
 #pragma once
 #include "WheelItemMutable.h"
+#include "bin/Animation/TimeColorInterpolator.h"
 
+class TimeColorInterpolator;
 class WheelItemWeapon : public WheelItemMutable 
 {
 public:
@@ -19,6 +21,6 @@ public:
 	static inline const char* ITEM_TYPE_STR = "WheelItemWeapon";
 
 private:
-
 	void equipItem(bool a_toRight = true);
+	TimeColorInterpolator _testInterpolator;
 };

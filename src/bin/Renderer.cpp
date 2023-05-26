@@ -15,6 +15,7 @@
 #include "Wheeler.h"
 #include "Texture.h"
 
+
 namespace stl
 {
 	using namespace SKSE::stl;
@@ -187,7 +188,6 @@ void Renderer::draw()
 
 	// Add UI elements here
 	//ImGui::Text("sizeX: %f, sizeYL %f", screenSizeX, screenSizeY);
-
 	Wheeler::Update();
 
 }

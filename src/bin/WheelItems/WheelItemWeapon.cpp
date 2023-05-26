@@ -1,6 +1,7 @@
 #include "WheelItemWeapon.h"
 #include "include/lib/Drawer.h"
 #include "bin/Utils.h"
+
 void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
 	std::string text = this->_obj->GetName();
@@ -27,7 +28,11 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 {
 	Drawer::draw_text(a_center.x, a_center.y,
 		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,
-		this->_obj->GetName(), 255, 255, 255, 255,
+		this->_obj->GetName(),
+		_testInterpolator.GetRed(), 
+		_testInterpolator.GetBlue(),
+		_testInterpolator.GetGreen(),
+		_testInterpolator.GetAlpha(),
 		Config::Styling::Item::Highlight::Text::Size);
 	Drawer::draw_texture(_texture.texture,
 		ImVec2(a_center.x, a_center.y),
@@ -79,11 +84,13 @@ WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon, uint16_t a_uniqueI
 
 void WheelItemWeapon::ActivateItemLeft()
 {
+	_testInterpolator.InterpolateTo(C_SKYRIMWHITE, 0.5);
 	equipItem(false);
 }
 
 void WheelItemWeapon::ActivateItemRight()
 {
+	_testInterpolator.InterpolateTo(C_VOID, 0.5);
 	equipItem(true);
 }
 
