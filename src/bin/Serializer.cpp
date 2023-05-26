@@ -1,6 +1,6 @@
 #include "Serializer.h"
 #include "Wheeler.h"
-#include "WheelItems/WheelEntry.h"
+#include "WheelEntry.h"
 #include "nlohmann/json.hpp"
 #include "WheelItems/WheelItem.h"
 #include "WheelItems/WheelItemFactory.h"
