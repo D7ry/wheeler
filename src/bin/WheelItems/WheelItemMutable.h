@@ -1,5 +1,26 @@
 #pragma once
 #include "WheelItem.h"
+/**
+ * WheelItemMutable is a special parent class for WheelItemWeapon and WheelItemArmor.
+ * Weapons and armors in player's inventory cannot be stored through their formID, as 
+ * once the player "mutates" them through tempering/enchanting/poisoning, each instance
+ * of them become unique.
+ * 
+ * For example, and iron sword and a tempered iron sword cannot be treated as the same item,
+ * and when they both reside in the player's inventory, having only the formID is not
+ * enough to distinguish them; the wheel won't know which one to equip/unequip.
+ * 
+ * Therefore, all subclasses of WheelItemMutable are tracked through an uniqueID, a 16-bit unsigned int,
+ * tagged to their extraDataList. The uniqueIDs are also updated by WheelItemMutableManager if the game or 
+ * other mods decide to change their uniqueIDs. 
+ * 
+ * Not all instances of weapons or armors come with an uniqueID. Therefore it's our responsibity to
+ * assign them one, through the following:
+ * 
+ * 1. Hooking into the PickUpItem and AddToInventory event, and add uniqueIDs to the extraDataList of the added item, if it's a weapon or armor.
+ * 2. Doing a full scan of the player's inventory every time the player loads and adding uniqueIDs to entries that are missing, in case the player uses the mod for the first time.
+ * 
+ */
 class WheelItemMutable : public WheelItem
 {
 public:
