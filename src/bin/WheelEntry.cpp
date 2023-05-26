@@ -1,7 +1,6 @@
 #include "WheelEntry.h"
 #include "include/lib/Drawer.h"
 #include "WheelItemFactory.h"
-#include "WheelItemMutableManager.h"
 #include "WheelItemMutable.h"
 #include "include/lib/Drawer.h"
 
@@ -127,10 +126,6 @@ void WheelEntry::ActivateItemLeft(bool editMode)
 	} else {
 		// remove selected item
 		std::shared_ptr<WheelItem> itemToDelete = _items[_selectedItem];
-		if (itemToDelete->IsMutable()) {
-			std::shared_ptr<WheelItemMutable> mutableItem = std::dynamic_pointer_cast<WheelItemMutable>(itemToDelete);
-			WheelItemMutableManager::GetSingleton()->UnTrack(mutableItem);
-		}
 		_items.erase(_items.begin() + _selectedItem);
 		// move _selecteditem to the item immediately before the erased item
 		if (_selectedItem > 0) {
@@ -208,12 +203,6 @@ void WheelEntry::PushItem(std::shared_ptr<WheelItem> item)
 
 WheelEntry::~WheelEntry()
 {
-	for (auto& item : _items) {
-		if (item->IsMutable()) {
-			std::shared_ptr<WheelItemMutable> mutableItem = std::dynamic_pointer_cast<WheelItemMutable>(item);
-			WheelItemMutableManager::GetSingleton()->UnTrack(mutableItem);
-		}
-	}
 	_items.clear();
 }
 

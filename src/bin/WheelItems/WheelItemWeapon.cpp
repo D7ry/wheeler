@@ -46,7 +46,7 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 		{ a_center.x + 5, a_center.y + 5 }, _testInterpolator.GetColor());
 }
 
-WheelItemWeapon::WheelItemWeapon(RE::TESObjectWEAP* a_weapon, uint16_t a_uniqueID)
+WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID)
 {
 	this->_obj = a_weapon;
 	this->SetUniqueID(a_uniqueID);

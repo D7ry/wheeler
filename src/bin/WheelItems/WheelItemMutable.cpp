@@ -1,4 +1,13 @@
 #include "WheelItemMutable.h"
+#include "WheelItemMutableManager.h"
+
+WheelItemMutable()
+{
+}
+~WheelItemMutable()
+{
+	WheelItemMutableManager::GetSingleton()->UnTrack(this->shared_from_this());
+}
 uint16_t WheelItemMutable::GetUniqueID()
 {
 	std::lock_guard<std::mutex> lock(_uniqueIDLock);

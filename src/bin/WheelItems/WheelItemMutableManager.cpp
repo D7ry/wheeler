@@ -2,14 +2,9 @@
 #include "WheelItemMutable.h"
 using EventResult = RE::BSEventNotifyControl;
 
-void WheelItemMutableManager::Track(std::shared_ptr<WheelItemMutable> a_mutable)
+void WheelItemMutableManager::Track(std::weak_ptr<WheelItemMutable> a_mutable)
 {
 	this->_mutables.insert(a_mutable);
-}
-
-void WheelItemMutableManager::UnTrack(std::shared_ptr<WheelItemMutable> a_mutable)
-{
-	this->_mutables.erase(a_mutable);
 }
 
 void WheelItemMutableManager::UnTrack(std::weak_ptr<WheelItemMutable> a_mutable)
@@ -38,6 +33,9 @@ EventResult WheelItemMutableManager::ProcessEvent(const RE::TESUniqueIDChangeEve
 	uint16_t oldUniqueID = a_event->oldUniqueID;
 	uint16_t newUniqueID = a_event->newUniqueID;
 	for (auto item : this->_mutables) {
+		if (!item) {
+			continue;
+		}
 		if (item->GetFormID() == form->GetFormID()) {
 			if (item->GetUniqueID() == oldUniqueID) {
 				INFO("{}'s new unique id changed from {} to {} due to external changes.", form->GetName(), oldUniqueID, newUniqueID);

@@ -14,7 +14,6 @@
 #include "WheelItems/WheelItemSpell.h"
 #include "WheelItems/WheelItemWeapon.h"
 #include "WheelEntry.h"
-#include "WheelItems/WheelItemMutableManager.h"
 #include "include/lib/Drawer.h"
 #include "Controls.h"
 
@@ -250,7 +249,6 @@ void Wheeler::Clear()
 		exitEditMode();
 	}
 	_activeEntryIdx = -1;
-	WheelItemMutableManager::GetSingleton()->Clear();
 	// clean up old wheels
 	for (Wheel* wheel : _wheels) {
 		for (WheelEntry* e : wheel->entries) {

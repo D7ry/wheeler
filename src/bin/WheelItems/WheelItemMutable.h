@@ -29,8 +29,18 @@ public:
 	RE::FormID GetFormID();
 	bool IsMutable() override;
 
+	template <class T>
+	static WheelItemMutable* Create<T>(RE::TESBoundObject* a_obj, uint16_t a_uniqueID) {
+		WheelItemMutable* ret = new T(a_obj, a_uniqueID);
+		WheelItemMutableManager::GetSingleton()->Track(ret->shared_from_this());
+		return ret;
+	}
+
+
 protected:
 
+	WheelItemMutable();
+	~WheelItemMutable();
 	/// <summary>
 	/// Returns the count and extradatalist of a THIS item in the inventory. 
 	/// Count is 0 if this item do not exist.

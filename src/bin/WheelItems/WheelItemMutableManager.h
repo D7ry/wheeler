@@ -19,11 +19,9 @@ public:
 	/// <summary>
 	/// Track a mutable wheel item. Must be called following initialization of a WheelItemMutable
 	/// </summary>
-	void Track(std::shared_ptr<WheelItemMutable> a_mutable);
+	void Track(std::weak_ptr<WheelItemMutable> a_mutable);
 
-	void UnTrack(std::shared_ptr<WheelItemMutable> a_mutable);
 	void UnTrack(std::weak_ptr<WheelItemMutable> a_mutable);
-
 
 	/// <summary>
 	/// Clear the tracked items. Right before reloading the wheels.
@@ -31,7 +29,7 @@ public:
 	void Clear();
 	
 private:
-	std::unordered_set<std::shared_ptr<WheelItemMutable>> _mutables = {};
+	std::unordered_set<std::weak_ptr<WheelItemMutable>> _mutables = {};
 	
 	using EventResult = RE::BSEventNotifyControl;
 	virtual EventResult ProcessEvent(const RE::TESUniqueIDChangeEvent* a_event, RE::BSTEventSource<RE::TESUniqueIDChangeEvent>* a_dispatcher) override;

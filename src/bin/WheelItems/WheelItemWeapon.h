@@ -10,8 +10,12 @@ public:
 	void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap) override;
 	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
 	bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
-	WheelItemWeapon(RE::TESObjectWEAP* a_weapon, uint16_t a_uniqueID);
+	WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID);
 
+	~WheelItemWeapon()
+	{
+		// wheelitemmutable's destructor will remove it from the manager
+	};
 	void ActivateItemLeft() override;
 	void ActivateItemRight() override;
 	
