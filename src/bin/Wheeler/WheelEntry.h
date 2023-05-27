@@ -3,7 +3,7 @@
 #include "nlohmann/json.hpp"
 #include "imgui.h"
 
-#include "Animation/TimeInterpolator/TimeFloatInterpolator.h"
+#include "bin/Animation/TimeInterpolator/TimeFloatInterpolator.h"
 class WheelItem;
 class WheelEntry
 {

@@ -1,6 +1,6 @@
 #include "WheelItemWeapon.h"
-#include "include/lib/Drawer.h"
-#include "bin/Utils.h"
+#include "bin/Rendering/Drawer.h"
+#include "bin/Utilities/Utils.h"
 
 void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "bin/Texture.h"
+#include "bin/Rendering/TextureManager.h"
 #include "bin/Config.h"
 #include "nlohmann/json.hpp"
 class ImVec2;

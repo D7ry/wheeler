@@ -1,12 +1,16 @@
-#include "Input.h"
-#include "Renderer.h"
+#include "UserInput/Input.h"
+#include "UserInput/Controls.h"
+
+#include "Rendering/RenderManager.h"
+#include "Rendering/TextureManager.h"
+
 #include "Hooks.h"
-#include "Wheeler.h"
-#include "Texture.h"
-#include "Controls.h"
-#include "UniqueIDHandler.h"
-#include "bin/WheelItems/WheelItemMutableManager.h"
-#include "Serializer.h"
+
+#include "Wheeler/WheelItems/WheelItemMutableManager.h"
+#include "Wheeler/Wheeler.h"
+#include "Utilities/UniqueIDHandler.h"
+#include "Serialization/SerializationEntry.h"
+
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {

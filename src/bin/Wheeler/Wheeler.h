@@ -4,7 +4,7 @@
 #include "nlohmann/json.hpp"
 #include "imgui.h"
 
-#include "Config.h"
+#include "bin/Config.h"
 #include "Wheel.h"
 class Wheeler
 {
@@ -19,7 +19,7 @@ public:
 	/// Update wheeler, calling draw function etc...
 	/// This function can only be invoked by the renderer.
 	/// </summary>
-	static void Update();
+	static void Update(float a_deltaTime);
 	
 	/// <summary>
 	/// Resets everything, must be called prior to reloading the wheels.

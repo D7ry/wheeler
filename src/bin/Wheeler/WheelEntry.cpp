@@ -1,10 +1,9 @@
-#include "WheelEntry.h"
+#include "bin/Rendering/Drawer.h"
 
-#include "include/lib/Drawer.h"
 #include "WheelItems/WheelItem.h"
 #include "WheelItems/WheelItemFactory.h"
 #include "WheelItems/WheelItemMutable.h"
-#include "include/lib/Drawer.h"
+#include "WheelEntry.h"
 
 void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
  float entryInnerAngleMin, 

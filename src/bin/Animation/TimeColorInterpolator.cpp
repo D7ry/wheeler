@@ -1,5 +1,4 @@
 #include "TimeColorInterpolator.h"
-#include "bin/Animation/TimeInterpolator/TimeUIntInterpolator.h"
 TimeColorInterpolator::TimeColorInterpolator() :
 	redInterpolator(0),
 	greenInterpolator(0),

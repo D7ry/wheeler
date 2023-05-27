@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "RenderManager.h"
 
 #include <d3d11.h>
 
@@ -12,8 +12,10 @@
 // stole this from MaxSu's detection meter
 #include "include/lib/imgui_freetype.h"
 
-#include "Wheeler.h"
-#include "Texture.h"
+#include "bin/Wheeler/Wheeler.h"
+#include "bin/Rendering/TextureManager.h"
+
+#include "bin/Animation/TimeInterpolator/TimeInterpolatorManager.h"
 
 
 namespace stl
@@ -188,6 +190,8 @@ void Renderer::draw()
 
 	// Add UI elements here
 	//ImGui::Text("sizeX: %f, sizeYL %f", screenSizeX, screenSizeY);
-	Wheeler::Update();
+	float deltaTime = ImGui::GetIO().DeltaTime;
+	Wheeler::Update(deltaTime);
+	TimeFloatInterpolatorManager::Update(deltaTime);
 
 }

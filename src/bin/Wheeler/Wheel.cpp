@@ -1,8 +1,8 @@
-#include "include/lib/Drawer.h"
+#include "bin/Rendering/Drawer.h"
 
 #include "Wheel.h"
 #include "WheelEntry.h"
-#include "Config.h"
+#include "bin/Config.h"
 
 Wheel::Wheel() {}
 Wheel::~Wheel() 

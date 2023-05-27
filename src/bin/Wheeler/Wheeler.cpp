@@ -1,31 +1,27 @@
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 
-#include "Serializer.h"
 #include "Wheel.h"
 #include "Wheeler.h"
 
-#include "Input.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "imgui.h"
 #include "imgui_internal.h"
 
-#include "Controls.h"
+#include "bin/Rendering/Drawer.h"
+#include "bin/Utilities/Utils.h"
+
 #include "WheelItems/WheelItem.h"
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelItems/WheelItemSpell.h"
 #include "WheelItems/WheelItemWeapon.h"
-#include "include/lib/Drawer.h"
 
-#include "Utils.h"
+
 static float _alphaMult = 1.f;
 
-#include "Animation/TimeInterpolator/TimeInterpolatorManager.h"
-void Wheeler::Update()
+void Wheeler::Update(float a_deltaTime)
 {
-	float deltaTime = ImGui::GetIO().DeltaTime;
-	TimeFloatInterpolatorManager::Update(deltaTime);
 	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
 	using namespace Config::Styling::Wheel;
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
@@ -123,7 +119,7 @@ void Wheeler::Update()
 
 		
 		// update fade timer, alpha and wheel state.
-		_openTimer += deltaTime;
+		_openTimer += a_deltaTime;
 
 		float alphaMult = 1.0f;
 		switch (_state) {
@@ -135,7 +131,7 @@ void Wheeler::Update()
 			}
 			break;
 		case WheelState::KClosing:
-			_closeTimer += deltaTime;
+			_closeTimer += a_deltaTime;
 			if (_closeTimer >= Config::Styling::Wheel::FadeTime) {
 				CloseWheeler();
 				_closeTimer = 0;

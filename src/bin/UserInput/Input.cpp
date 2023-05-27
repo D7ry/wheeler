@@ -6,9 +6,8 @@
 
 #include <imgui.h>
 
-#include "Renderer.h"
 
-#include "Wheeler.h"
+#include "bin/Wheeler/Wheeler.h"
 #include "Controls.h"
 #define IM_VK_KEYPAD_ENTER (VK_RETURN + 256)
 static ImGuiKey ImGui_ImplWin32_VirtualKeyToImGuiKey(WPARAM wParam)
