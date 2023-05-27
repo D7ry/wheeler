@@ -164,7 +164,7 @@ void WheelEntry::PrevItem()
 		}
 	}
 	if (Config::Sound::ItemSwitchSound && _items.size() > 1) {
-		RE::PlaySoundRE(SD_ITEMSWITCH);
+		RE::PlaySoundRE(Config::Sound::SD_ITEMSWITCH);
 	}
 }
 
@@ -177,7 +177,7 @@ void WheelEntry::NextItem()
 		_selectedItem = 0;
 	}
 	if (Config::Sound::ItemSwitchSound && _items.size() > 1) {
-		RE::PlaySoundRE(SD_ITEMSWITCH);
+		RE::PlaySoundRE(Config::Sound::SD_ITEMSWITCH);
 	}
 }
 
@@ -215,9 +215,31 @@ int WheelEntry::GetSelectedItem()
 	return this->_selectedItem;
 }
 
-void WheelEntry::SerializeIntoJsonObj(nlohmann::json& a_json)
+void WheelEntry::SerializeIntoJsonObj(nlohmann::json& j_entry)
 {
+	// setup for entry
+	j_entry["items"] = nlohmann::json::array();
+	for (std::shared_ptr<WheelItem> item : this->_items) {
+		nlohmann::json j_item;
+		item->SerializeIntoJsonObj(j_item);
+		j_entry["items"].push_back(j_item);
+	}
+	j_entry["selecteditem"] = this->_selectedItem;
+}
 
+std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::json& j_entry, SKSE::SerializationInterface* a_intfc)
+{
+	std::unique_ptr<WheelEntry> entry = std::make_unique<WheelEntry>();
+	entry->SetSelectedItem(j_entry["selecteditem"]);
+
+	nlohmann::json j_items = j_entry["items"];
+	for (const auto& j_item : j_items) {
+		std::shared_ptr<WheelItem> item = WheelItemFactory::MakeWheelItemFromJsonObject(j_item, a_intfc);
+		if (item) {
+			entry->PushItem(std::move(item));
+		}
+	}
+	return std::move(entry);
 }
 
 

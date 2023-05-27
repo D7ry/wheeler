@@ -52,7 +52,7 @@ WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_unique
 	this->SetUniqueID(a_uniqueID);
 	// get weapon's texture
 	// TODO: add support for animated armory/2h mace
-	switch (a_weapon->GetWeaponType()) {
+	switch (a_weapon->As<RE::TESObjectWEAP>()->GetWeaponType()) {
 	case RE::WEAPON_TYPE::kBow:
 		_texture = Texture::GetIconImage(Texture::icon_image_type::bow);
 		break;

@@ -4,7 +4,7 @@ using EventResult = RE::BSEventNotifyControl;
 
 void WheelItemMutableManager::Track(std::weak_ptr<WheelItemMutable> a_mutable)
 {
-	if (!a_mutable) {
+	if (a_mutable.expired()) {
 		ERROR("WheelItemMutableManager::Track: a_mutable is null");
 		return;
 	}
@@ -37,13 +37,13 @@ EventResult WheelItemMutableManager::ProcessEvent(const RE::TESUniqueIDChangeEve
 	uint16_t oldUniqueID = a_event->oldUniqueID;
 	uint16_t newUniqueID = a_event->newUniqueID;
 	for (auto item : this->_mutables) {
-		if (!item) {
+		if (item.expired()) {
 			continue; // this should never happen because object removes itself from manager when it's destroyed
 		}
-		if (item->GetFormID() == form->GetFormID()) {
-			if (item->GetUniqueID() == oldUniqueID) {
+		if (item.lock()->GetFormID() == form->GetFormID()) {
+			if (item.lock()->GetUniqueID() == oldUniqueID) {
 				INFO("{}'s new unique id changed from {} to {} due to external changes.", form->GetName(), oldUniqueID, newUniqueID);
-				item->SetUniqueID(newUniqueID); // update the uniqueID of the item
+				item.lock()->SetUniqueID(newUniqueID);  // update the uniqueID of the item
 			}
 		}
 	}

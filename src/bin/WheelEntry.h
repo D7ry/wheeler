@@ -1,4 +1,7 @@
 #pragma once
+#include "nlohmann/json.hpp"
+#include <shared_mutex>
+
 #include "WheelItems/WheelItem.h"
 #include "bin/Animation/TimeTrapezoidInterpolator.h"
 
@@ -58,13 +61,12 @@ public:
 	void SetSelectedItem(int a_selected);
 
     void SerializeIntoJsonObj(nlohmann::json& a_json);
-	static std::unique_ptr<WheelEntry*> SerializeFromJsonObj(nlohmann::json& a_json);
+	static std::unique_ptr<WheelEntry> SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
 
 private:
 	bool _prevHovered = false;  // used to detect when the mouse enters the entry
 	int _selectedItem;
 	std::shared_mutex _lock;
-	static inline const char* SD_ITEMSWITCH = "UIMenuPrevNextSD"; // sound descriptor id
 	std::vector<std::shared_ptr<WheelItem>> _items;
 	TimeFloatInterpolator _arcRadiusIncInterpolator;  // for animating the arc radius's increase when the entry is hovered
 	TimeFloatInterpolator _arcInnerAngleIncInterpolator;   // for animating the arc's angle increase when the entry is hovered

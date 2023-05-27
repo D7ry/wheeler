@@ -1,10 +1,97 @@
+#include "include/lib/Drawer.h"
+
 #include "Wheel.h"
 #include "WheelEntry.h"
+#include "Config.h"
 
 Wheel::Wheel() {}
 Wheel::~Wheel() 
 {
     this->Clear();
+}
+void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentered, RE::TESObjectREFR::InventoryItemMap& a_imap)
+{
+	using namespace Config::Styling::Wheel;
+	if (this->Empty()) {
+		Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, 0, 0, "Empty Wheel", 255, 255, 255, 255, 40.f);
+		return; // nothing more to draw
+	}
+
+	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
+		// fancy math begin
+
+		const float entryArcSpan = 2 * IM_PI;
+
+		const float innerSpacing = InnerSpacing / InnerCircleRadius / 2;
+		float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing + IM_PI / 2;
+		float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacing + IM_PI / 2;
+
+		float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+		float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacing * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+
+		if (entryInnerAngleMax > IM_PI * 2) {
+			entryInnerAngleMin -= IM_PI * 2;
+			entryInnerAngleMax -= IM_PI * 2;
+		}
+
+		if (entryOuterAngleMax > IM_PI * 2) {
+			entryOuterAngleMin -= IM_PI * 2;
+			entryOuterAngleMax -= IM_PI * 2;
+		}
+
+		// update hovered item
+		if (a_cursorCentered) {
+			bool updatedActiveEntry = false;
+			float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
+			Drawer::draw_arc(a_wheelCenter,
+				cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
+				cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
+				a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
+				a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
+				CursorIndicatorColor,
+				32);
+			ImVec2 cursorIndicatorTriPts[3] = {
+				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
+				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
+				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
+			};
+			for (ImVec2& pos : cursorIndicatorTriPts) {
+				pos = ImRotate(pos, cos(a_cursorAngle), sin(a_cursorAngle));
+			}
+			Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor);
+			if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
+				if (a_cursorAngle < entryInnerAngleMax) {
+					if (entryIdx != _hoveredEntryIdx) {
+						_hoveredEntryIdx = entryIdx;
+						updatedActiveEntry = true;
+					}
+				}
+			} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
+				if (entryIdx != _hoveredEntryIdx) {
+					_hoveredEntryIdx = entryIdx;
+					updatedActiveEntry = true;
+				}
+			}
+			if (Config::Sound::EntrySwitchSound && updatedActiveEntry) {
+				RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
+			}
+		}
+		bool hovered = _hoveredEntryIdx == entryIdx;
+
+		// calculate wheel center
+		float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
+		float t2 = InnerCircleRadius + t1;
+		float rad = (entryInnerAngleMax - entryInnerAngleMin) / 2 + entryInnerAngleMin;
+		ImVec2 itemCenter = ImVec2(
+			a_wheelCenter.x + t2 * cosf(rad),
+			a_wheelCenter.y + t2 * sinf(rad));
+
+		int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
+
+		_entries[entryIdx]->Draw(a_wheelCenter, innerSpacing,
+			entryInnerAngleMin, entryInnerAngleMax,
+			entryOuterAngleMin, entryOuterAngleMax, itemCenter, hovered, numArcSegments, a_imap);
+	}
 }
 void Wheel::PushEntry(std::unique_ptr<WheelEntry> a_entry) 
 {
@@ -29,62 +116,90 @@ void Wheel::Clear()
     this->_entries.clear();
 }
 
-void Wheel::PrevItemInEntry(int a_entryIdx)
+void Wheel::PrevItemInHoveredEntry()
 {
-    if (a_entryIdx < 0 || a_entryIdx >= this->_entries.size()) {
+	if (_hoveredEntryIdx < 0 || _hoveredEntryIdx >= this->_entries.size()) {
         return;
     }
-    this->_entries[a_entryIdx]->PrevItem();
+	this->_entries[_hoveredEntryIdx]->PrevItem();
 }
 
-void Wheel::NextItemInEntry(int a_entryIdx)
+void Wheel::NextItemInHoveredEntry()
 {
-    if (a_entryIdx < 0 || a_entryIdx >= this->_entries.size()) {
+	if (_hoveredEntryIdx < 0 || _hoveredEntryIdx >= this->_entries.size()) {
         return;
     }
-    this->_entries[a_entryIdx]->NextItem();
+	this->_entries[_hoveredEntryIdx]->NextItem();
 
 }
 
-void Wheel::ActivateEntryPrimary(int a_entryIdx, bool a_editMode)
+void Wheel::ActivateHoveredEntryPrimary(bool a_editMode)
 {
 	std::shared_lock<std::shared_mutex> lock(_lock);  // might involve editing the wheel, so unique lock
-    if (a_entryIdx < 0 || a_entryIdx >= this->_entries.size()) {
+	if (_hoveredEntryIdx < 0 || _hoveredEntryIdx >= this->_entries.size()) {
         return;
     }
-	this->_entries[a_entryIdx]->ActivateItemPrimary(a_editMode);
+	this->_entries[_hoveredEntryIdx]->ActivateItemPrimary(a_editMode);
 }
 
-bool Wheel::ActivateEntrySecondary(int a_entryIdx, bool a_editMode)
+void Wheel::ActivateHoveredEntrySecondary(bool a_editMode)
 {
 	std::unique_lock<std::shared_mutex> lock(_lock); // might involve editing the wheel, so unique lock
-    if (a_entryIdx < 0 || a_entryIdx >= this->_entries.size()) {
+	if (_hoveredEntryIdx < 0 || _hoveredEntryIdx >= this->_entries.size()) {
         return;
     }
-	std::unique_ptr<WheelEntry>& entry = this->_entries[a_entryIdx];
+	std::unique_ptr<WheelEntry>& entry = this->_entries[_hoveredEntryIdx];
 	if (entry->IsEmpty()) { // remove the entry if it's empty
-		this->_entries.erase(this->_entries.begin() + a_entryIdx);
+		this->_entries.erase(this->_entries.begin() + _hoveredEntryIdx);
 		return;
 	}
-	this->_entries[a_entryIdx]->ActivateItemSecondary(a_editMode);
+	this->_entries[_hoveredEntryIdx]->ActivateItemSecondary(a_editMode);
 }
 
-void Wheel::MoveEntryForward(int a_entryIdx)
+void Wheel::MoveHoveredEntryForward()
 {
 	std::unique_lock<std::shared_mutex> lock(_lock);  // might involve editing the wheel, so unique lock
-	if (a_entryIdx < 0 || this->Empty()) {
+	if (_hoveredEntryIdx < 0 || this->Empty()) {
 		return;
 	}
-	int target = a_entryIdx == this->_entries.size() - 1 ? 0 : a_entryIdx + 1;  // wrap around
-	std::swap(this->_entries[a_entryIdx], this->_entries[target]);
+	int target = _hoveredEntryIdx == this->_entries.size() - 1 ? 0 : _hoveredEntryIdx + 1;  // wrap around
+	std::swap(this->_entries[_hoveredEntryIdx], this->_entries[target]);
 }
 
-void Wheel::MoveEntryBack(int a_entryIdx)
+void Wheel::MoveHoveredEntryBack()
 {
 	std::unique_lock<std::shared_mutex> lock(_lock);  // might involve editing the wheel, so unique loc
-	if (a_entryIdx < 0 || this->Empty()) {
+	if (_hoveredEntryIdx < 0 || this->Empty()) {
 		return;
 	}
-	int target = a_entryIdx == 0 ? this->_entries.size() - 1 : a_entryIdx - 1;  // wrap around
-	std::swap(this->_entries[a_entryIdx], this->_entries[target]);
+	int target = _hoveredEntryIdx == 0 ? this->_entries.size() - 1 : _hoveredEntryIdx - 1;  // wrap around
+	std::swap(this->_entries[_hoveredEntryIdx], this->_entries[target]);
+}
+
+void Wheel::SerializeIntoJsonObj(nlohmann::json& j_wheel)
+{
+	j_wheel["entries"] = nlohmann::json::array();
+	for (const std::unique_ptr<WheelEntry>& entry : this->_entries) {
+		nlohmann::json j_entry;
+		// setup for entry
+		entry->SerializeIntoJsonObj(j_entry);
+
+		j_wheel["entries"].push_back(j_entry);
+	}
+}
+
+std::unique_ptr<Wheel> Wheel::SerializeFromJsonObj(const nlohmann::json& j_wheel, SKSE::SerializationInterface* a_intfc)
+{
+	std::unique_ptr<Wheel> wheel = std::make_unique<Wheel>();
+	nlohmann::json j_entries = j_wheel["entries"];
+	for (const auto& j_entry : j_entries) {
+		std::unique_ptr<WheelEntry> entry = WheelEntry::SerializeFromJsonObj(j_entry, a_intfc);
+		wheel->PushEntry(std::move(entry));
+	}
+	return std::move(wheel);
+}
+
+void Wheel::SetHoveredEntryIndex(int a_index)
+{
+	this->_hoveredEntryIdx = a_index;
 }

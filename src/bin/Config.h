@@ -12,7 +12,14 @@ static ImU32 C_VOID = IM_COL32(255, 255, 255, 0);
 
 namespace Config
 {
-	
+	namespace Sound
+	{
+		static inline const char* SD_WHEELSWITCH = "UIFavorite";
+		static inline const char* SD_ENTRYSWITCH = "UIMenuFocus";
+		static inline const char* SD_WHEELERTOGGLE = "UIInventoryOpenSD";
+		static inline const char* SD_ITEMSWITCH = "UIMenuPrevNextSD";
+
+	}
 	namespace Control
 	{
 		namespace Wheel

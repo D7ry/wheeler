@@ -1,9 +1,10 @@
 #pragma once
-#include "Config.h"
-#include "imgui.h"
 #include <mutex>
 #include <shared_mutex>
+#include "nlohmann/json.hpp"
+#include "imgui.h"
 
+#include "Config.h"
 class WheelItem;
 class WheelItemMutable;
 class WheelEntry;
@@ -14,7 +15,7 @@ public:
 	static void Init()
 	{
 		// insert an empty wheel
-		_wheels.emplace_back(new Wheel());
+		_wheels.emplace_back(std::make_unique<Wheel>());
 	}
 
 	/// <summary>
@@ -54,13 +55,13 @@ public:
 	///		- otherwise, the function invokes the entry's ActivateItemSecondary(true) function, which handles deletion of entry's inner items.
 	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemSecondary()
 	/// </summary>
-	static void ActivateEntrySecondary();
+	static void ActivateHoveredEntrySecondary();
 
 	/// <summary>
 	/// Activate the currently active entry with primary (right) input, which corresponds to left mouse click or right controller trigger,
 	/// The function simply invokes current entry's ActivateItemPrimary(), which either handles activation of items or addition of items, if in edit mode.
 	/// </summary>
-	static void ActivateEntryPrimary();
+	static void ActivateHoveredEntryPrimary();
 
 	/// <summary>
 	/// Push an empty entry to the current wheel.
@@ -81,13 +82,12 @@ public:
 	static int GetActiveWheelIndex();
 	static void SetActiveWheelIndex(int a_index);
 	
-	static inline const char* SD_WHEELSWITCH = "UIFavorite";
-	static inline const char* SD_ENTRYSWITCH = "UIMenuFocus";
-	static inline const char* SD_WHEELERTOGGLE = "UIInventoryOpenSD";
 
-	static std::vector<Wheel*>& GetWheels();
 
 	static bool IsInEditMode() { return _editMode; };
+
+	static void SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
+	static void SerializeIntoJsonObj(nlohmann::json& a_json);
 
 private:
 	enum class WheelState
@@ -111,9 +111,6 @@ private:
 	static inline std::vector<std::unique_ptr<Wheel>> _wheels;
 	static inline int _activeWheelIdx = 0;
 
-
-	// currently active item, will be highlighted. Gets reset every time wheel reopens.
-	static inline int _activeEntryIdx = -1; 
 	
 	// if the user presses longer than this(without sending close), the wheel will close on release
 	// the the user presses shorter than this, the wheel will close on a second press.
@@ -133,7 +130,5 @@ private:
 	
 	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
 	static void exitEditMode();
-
-
 };
 

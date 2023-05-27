@@ -46,7 +46,7 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 		
 		RE::FormType formType = boundObj->GetFormType();
 		if (formType == RE::FormType::Weapon) {
-			std::shared_ptr<WheelItemWeapon> wheelItemweap = WheelItemMutable::Create<WheelItemWeapon>(boundObj, uniqueID);
+			std::shared_ptr<WheelItemWeapon> wheelItemweap = WheelItemMutable::CreateWheelItemMutable<WheelItemWeapon>(boundObj, uniqueID);
 			//std::shared_ptr<WheelItemWeapon> wheelItemweap = std::make_shared<WheelItemWeapon>(boundObj->As<RE::TESObjectWEAP>(), uniqueID);
 			return wheelItemweap;
 		} else if (formType == RE::FormType::Armor) {
@@ -89,7 +89,7 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 			return nullptr;
 		}
 		uint16_t uniqueID = a_json["uniqueID"].get<uint16_t>();
-		std::shared_ptr<WheelItemWeapon> wheelItemweap = WheelItemMutable::Create<WheelItemWeapon>(weap, uniqueID);
+		std::shared_ptr<WheelItemWeapon> wheelItemweap = WheelItemMutable::CreateWheelItemMutable<WheelItemWeapon>(weap, uniqueID);
 		return wheelItemweap;
 	} else if (type == WheelItemSpell::ITEM_TYPE_STR) {
 		RE::FormID formID = a_json["formID"].get<RE::FormID>();

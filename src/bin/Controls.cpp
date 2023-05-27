@@ -10,8 +10,8 @@ void Controls::Init()
 			{ 58, &Wheeler::CloseWheeler },        // caps lock
 			{ 264, &Wheeler::PrevItemInEntry }, // mouse wheel up
 			{ 265, &Wheeler::NextItemInEntry }, // mouse wheel down
-			{ 256, &Wheeler::ActivateEntryPrimary}, // mouse left
-			{ 257, &Wheeler::ActivateEntrySecondary}, // mouse right
+			{ 256, &Wheeler::ActivateHoveredEntryPrimary}, // mouse left
+			{ 257, &Wheeler::ActivateHoveredEntrySecondary}, // mouse right
 			{ 49, &Wheeler::AddWheel }, // N
 			{ 50, &Wheeler::AddEmptyEntryToCurrentWheel }, // M
 			{ 200, &Wheeler::MoveEntryForwardInCurrentWheel }, // up arrow

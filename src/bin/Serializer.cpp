@@ -57,35 +57,37 @@ void Serializer::Save(SKSE::SerializationInterface* a_intfc)
 		INFO("Failed to open record");
 		return;
 	}
-	auto wheels = Wheeler::GetWheels();
 	nlohmann::json j_wheeler;
-	
-	nlohmann::json j_wheels = nlohmann::json::array();
-	for (Wheeler::Wheel* wheel : wheels) {
-		nlohmann::json j_wheel;
-		j_wheel["entries"] = nlohmann::json::array();
-		for (WheelEntry* entry : wheel->entries) {
-			nlohmann::json j_entry;
-			
-			// setup for entry
-			j_entry["items"] = nlohmann::json::array();
-			for (std::shared_ptr<WheelItem> item : entry->GetItems()) { 
-				nlohmann::json j_item;
-				item->SerializeIntoJsonObj(j_item);
-				j_entry["items"].push_back(j_item);
-			}
-			j_entry["selecteditem"] = entry->GetSelectedItem();
+	Wheeler::SerializeIntoJsonObj(j_wheeler);
+	//nlohmann::json j_wheeler;
+	//Wheeler::SerializeIntoJsonObj(j_wheeler);
+	//
+	//nlohmann::json j_wheels = nlohmann::json::array();
+	//for (Wheeler::Wheel* wheel : wheels) {
+	//	nlohmann::json j_wheel;
+	//	j_wheel["entries"] = nlohmann::json::array();
+	//	for (WheelEntry* entry : wheel->entries) {
+	//		nlohmann::json j_entry;
+	//		
+	//		// setup for entry
+	//		j_entry["items"] = nlohmann::json::array();
+	//		for (std::shared_ptr<WheelItem> item : entry->GetItems()) { 
+	//			nlohmann::json j_item;
+	//			item->SerializeIntoJsonObj(j_item);
+	//			j_entry["items"].push_back(j_item);
+	//		}
+	//		j_entry["selecteditem"] = entry->GetSelectedItem();
 
-			j_wheel["entries"].push_back(j_entry);
-		}
-		j_wheels.push_back(j_wheel);
-	}
-	j_wheeler["wheels"] = j_wheels;
-	j_wheeler["activewheel"] = Wheeler::GetActiveWheelIndex();
-	std::string j_string = j_wheeler.dump();
-	INFO("Serializing following record: {}", j_string);
+	//		j_wheel["entries"].push_back(j_entry);
+	//	}
+	//	j_wheels.push_back(j_wheel);
+	//}
+	//j_wheeler["wheels"] = j_wheels;
+	//j_wheeler["activewheel"] = Wheeler::GetActiveWheelIndex();
+	//std::string j_string = j_wheeler.dump();
+	INFO("Serializing following record: {}", j_wheeler);
 	
-	Serial::Write(a_intfc, j_string);
+	Serial::Write(a_intfc, j_wheeler);
 
 }
 
@@ -104,46 +106,20 @@ void Serializer::Load(SKSE::SerializationInterface* a_intfc)
 		INFO("Load: wrong version, abort loading");
 		return;
 	}
-	std::string j_string;
+	std::string readBuf;
 
-	Serial::Read(a_intfc, j_string);
-	INFO("Read str: {}", j_string);
-	
-	Wheeler::Clear();
-
-	std::vector<Wheeler::Wheel*> wheels;
+	Serial::Read(a_intfc, readBuf);
+	INFO("Read str: {}", readBuf);
 	try {
-		nlohmann::json j_wheeler = nlohmann::json::parse(j_string);
-
-		nlohmann::json j_wheels = j_wheeler["wheels"];
-		std::vector<Wheeler::Wheel*> wheels;
-		for (const auto& j_wheel : j_wheels) {
-			Wheeler::Wheel* wheel = new Wheeler::Wheel();
-
-			nlohmann::json j_entries = j_wheel["entries"];
-			for (const auto& j_entry : j_entries) {
-				WheelEntry* entry = new WheelEntry();
-
-				nlohmann::json j_items = j_entry["items"];
-				for (const auto& j_item : j_items) {
-					std::shared_ptr<WheelItem> item = WheelItemFactory::MakeWheelItemFromJsonObject(j_item, a_intfc);
-					if (item) {
-						entry->PushItem(item);
-					}
-				}
-				entry->SetSelectedItem(j_entry["selecteditem"]);
-				wheel->entries.push_back(entry);
-			}
-			wheels.push_back(wheel);
-		}
-		
-		Wheeler::SetWheels(wheels);
-		Wheeler::SetActiveWheelIndex(j_wheeler["activewheel"]);
-	} catch (const std::exception& e) {
-		INFO("Failed to deserialize wheel: {}", e.what());
+		nlohmann::json j_wheeler = nlohmann::json::parse(readBuf);
 		Wheeler::Clear();
-		Wheeler::AddWheel(); // make a new wheel in case of serialization failure
+		Wheeler::SerializeFromJsonObj(j_wheeler, a_intfc);
+	} catch (const std::exception& e) {
+		INFO("Failed to parse json: {}", e.what());
+		return;
 	}
+
+
 }
 
 
