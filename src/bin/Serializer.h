@@ -1,5 +1,4 @@
 #pragma once
-#include "WheelItems/WheelItem.h"
 constexpr std::uint32_t WHEELER_SERIALIZATION_ID = 'WHLR';
 constexpr std::uint32_t WHEELER_JSON_STRING_TYPE = 'WJSN';
 constexpr std::uint32_t SERIALIZER_VERSION = 2;

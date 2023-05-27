@@ -1,8 +1,11 @@
+#include "nlohmann/json.hpp"
+
 #include "WheelItemFactory.h"
 #include "bin/Utils.h"
 #include "WheelItem.h"
 #include "WheelItemSpell.h"
 #include "WheelItemWeapon.h"
+
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
 	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();

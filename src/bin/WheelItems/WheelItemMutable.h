@@ -38,7 +38,7 @@ public:
 	template <typename T, typename... Args>
 	static std::shared_ptr<T>CreateWheelItemMutable(RE::TESBoundObject* a_obj, uint16_t a_uniqueID)
 	{
-		std::shared_ptr<WheelItemMutable> ret = std::make_shared<T>(a_obj, a_uniqueID);
+		std::shared_ptr<T> ret = std::make_shared<T>(a_obj, a_uniqueID);
 		WheelItemMutableManager::GetSingleton()->Track(ret->shared_from_this());
 		return ret;
 	}

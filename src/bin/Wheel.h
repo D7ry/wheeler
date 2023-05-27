@@ -1,8 +1,8 @@
 #pragma once
 #include <shared_mutex>
 #include "nlohmann/json.hpp"
+#include "WheelEntry.h"
 
-class WheelEntry;
 class Wheel
 {
 public:

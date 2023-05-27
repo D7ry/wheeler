@@ -1,4 +1,5 @@
 #pragma once
+#include <shared_mutex>
 #include <unordered_set>
 class WheelItemMutable;
 class WheelItemMutableManager : public RE::BSTEventSink<RE::TESUniqueIDChangeEvent>
@@ -29,8 +30,9 @@ public:
 	void Clear();
 	
 private:
-	std::unordered_set<std::weak_ptr<WheelItemMutable>> _mutables = {};
+	std::vector<std::weak_ptr<WheelItemMutable>> _mutables = {};
 	
 	using EventResult = RE::BSEventNotifyControl;
 	virtual EventResult ProcessEvent(const RE::TESUniqueIDChangeEvent* a_event, RE::BSTEventSource<RE::TESUniqueIDChangeEvent>* a_dispatcher) override;
+	std::shared_mutex _lock;
 };

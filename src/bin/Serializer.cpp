@@ -1,9 +1,7 @@
+#include "nlohmann/json.hpp"
+
 #include "Serializer.h"
 #include "Wheeler.h"
-#include "WheelEntry.h"
-#include "nlohmann/json.hpp"
-#include "WheelItems/WheelItem.h"
-#include "WheelItems/WheelItemFactory.h"
 
 namespace Serial
 {
@@ -59,32 +57,7 @@ void Serializer::Save(SKSE::SerializationInterface* a_intfc)
 	}
 	nlohmann::json j_wheeler;
 	Wheeler::SerializeIntoJsonObj(j_wheeler);
-	//nlohmann::json j_wheeler;
-	//Wheeler::SerializeIntoJsonObj(j_wheeler);
-	//
-	//nlohmann::json j_wheels = nlohmann::json::array();
-	//for (Wheeler::Wheel* wheel : wheels) {
-	//	nlohmann::json j_wheel;
-	//	j_wheel["entries"] = nlohmann::json::array();
-	//	for (WheelEntry* entry : wheel->entries) {
-	//		nlohmann::json j_entry;
-	//		
-	//		// setup for entry
-	//		j_entry["items"] = nlohmann::json::array();
-	//		for (std::shared_ptr<WheelItem> item : entry->GetItems()) { 
-	//			nlohmann::json j_item;
-	//			item->SerializeIntoJsonObj(j_item);
-	//			j_entry["items"].push_back(j_item);
-	//		}
-	//		j_entry["selecteditem"] = entry->GetSelectedItem();
-
-	//		j_wheel["entries"].push_back(j_entry);
-	//	}
-	//	j_wheels.push_back(j_wheel);
-	//}
-	//j_wheeler["wheels"] = j_wheels;
-	//j_wheeler["activewheel"] = Wheeler::GetActiveWheelIndex();
-	//std::string j_string = j_wheeler.dump();
+	
 	INFO("Serializing following record: {}", j_wheeler);
 	
 	Serial::Write(a_intfc, j_wheeler);

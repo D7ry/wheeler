@@ -1,4 +1,4 @@
-#include "WheelItem.h"
+class WheelItem;
 class WheelItemFactory
 {
 public:

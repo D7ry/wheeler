@@ -12,7 +12,6 @@
 #include "imgui_internal.h"
 
 #include "Controls.h"
-#include "WheelEntry.h"
 #include "WheelItems/WheelItem.h"
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelItems/WheelItemSpell.h"

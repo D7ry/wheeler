@@ -1,25 +1,19 @@
 #pragma once
-#include "nlohmann/json.hpp"
 #include <shared_mutex>
+#include "nlohmann/json.hpp"
+#include "imgui.h"
 
-#include "WheelItems/WheelItem.h"
-#include "bin/Animation/TimeTrapezoidInterpolator.h"
-
+#include "Animation/TimeInterpolator/TimeFloatInterpolator.h"
+class WheelItem;
 class WheelEntry
 {
 	// this don't inherit WheelItem because it is a container of that
 public:
-	/**
-			entry->Draw(
-				entryInnerAngleMin, entryInnerAngleMax, 
-				entryOuterAngleMin, entryOuterAngleMax,
-				itemCenter, hovered, numArcSegments
-			)
-			*/
 	void Draw(const ImVec2 wheelCenter, float innerSpacing,
- float entryInnerAngleMin, float entryInnerAngleMax,
- float entryOuterAngleMin, float entryOuterAngleMax,
+		float entryInnerAngleMin, float entryInnerAngleMax,
+		float entryOuterAngleMin, float entryOuterAngleMax,
 		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap);
+	
 	void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap);
 	
 	void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap);
@@ -65,7 +59,7 @@ public:
 
 private:
 	bool _prevHovered = false;  // used to detect when the mouse enters the entry
-	int _selectedItem;
+	int _selectedItem = -1;
 	std::shared_mutex _lock;
 	std::vector<std::shared_ptr<WheelItem>> _items;
 	TimeFloatInterpolator _arcRadiusIncInterpolator;  // for animating the arc radius's increase when the entry is hovered

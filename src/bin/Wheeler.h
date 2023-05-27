@@ -5,10 +5,7 @@
 #include "imgui.h"
 
 #include "Config.h"
-class WheelItem;
-class WheelItemMutable;
-class WheelEntry;
-class Wheel;
+#include "Wheel.h"
 class Wheeler
 {
 public:
