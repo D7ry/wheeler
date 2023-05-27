@@ -82,6 +82,10 @@ namespace Config
 			inline float SlowTimeScale = .1f;
 
 			inline float FadeTime = 0.08f;  // time it takes to fade in/out, set to 0 to disable.
+			
+			// offset of wheel center, to which everything else is relative to
+			inline float CenterOffsetX = 450.f;
+			inline float CenterOffsetY = 0.f;
 		}
 
 		namespace Entry

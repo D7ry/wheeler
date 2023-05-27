@@ -26,7 +26,6 @@ void Wheeler::Update()
 {
 	float deltaTime = ImGui::GetIO().DeltaTime;
 	TimeFloatInterpolatorManager::Update(deltaTime);
-	TimeUintInterpolatorManager::Update(deltaTime);
 	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
 	using namespace Config::Styling::Wheel;
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
@@ -517,7 +516,8 @@ void Wheeler::SerializeIntoJsonObj(nlohmann::json& j_wheeler)
 
 inline ImVec2 Wheeler::getWheelCenter()
 {
-	return ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2);
+	using namespace Config::Styling::Wheel;
+	return ImVec2(ImGui::GetIO().DisplaySize.x / 2 + CenterOffsetX, ImGui::GetIO().DisplaySize.y / 2 + CenterOffsetY);
 }
 
 bool Wheeler::shouldBeInEditMode(RE::UI* a_ui)
