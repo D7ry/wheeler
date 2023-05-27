@@ -9,7 +9,8 @@ public:
     Wheel();
     ~Wheel();
 
-	void Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentered, RE::TESObjectREFR::InventoryItemMap& a_imap);
+	void Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentered, RE::TESObjectREFR::InventoryItemMap& a_imap, 
+		float a_alphaMult = 1.0f, float a_scaleMult = 1.0f, float a_rotationMult = 1.0f);
 		
 
     void Clear();

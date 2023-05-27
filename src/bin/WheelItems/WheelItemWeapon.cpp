@@ -2,48 +2,45 @@
 #include "include/lib/Drawer.h"
 #include "bin/Utils.h"
 
-void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
 {
 	std::string text = this->_obj->GetName();
 	int itemCount = this->GetItemData(a_imap).first;
 	if (itemCount > 1) {
 		text += " (" + std::to_string(itemCount) + ")";
 	} 
-	Drawer::draw_text(a_center.x, a_center.y, 
-		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
-		text.data(), 255, 255, 255, 255,
-		Config::Styling::Item::Slot::Text::Size);
-	Drawer::draw_texture(_texture.texture, 
-		ImVec2(a_center.x, a_center.y),
-		Config::Styling::Item::Slot::Texture::OffsetX,
-		Config::Styling::Item::Slot::Texture::OffsetY,
-		ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale), 
-		0);
+	{
+		using namespace Config::Styling::Item::Slot;
+		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
+			text.data(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+		Drawer::draw_texture(_texture.texture,
+			ImVec2(a_center.x, a_center.y),
+			Config::Styling::Item::Slot::Texture::OffsetX,
+			Config::Styling::Item::Slot::Texture::OffsetY,
+			ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
+			0, a_alphaMult);
+	}
+
 
 
 
 	//PieMenu::PieMenuItem("one weapon");
 }
 
-void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
 {
-	Drawer::draw_text(a_center.x, a_center.y,
-		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,
-		this->_obj->GetName(),
-		_testInterpolator.GetRed(), 
-		_testInterpolator.GetBlue(),
-		_testInterpolator.GetGreen(),
-		_testInterpolator.GetAlpha(),
-		Config::Styling::Item::Highlight::Text::Size, false);
+	{
+		using namespace Config::Styling::Item::Highlight;
+		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
+			this->_obj->GetName(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+	}
+	
 	Drawer::draw_texture(_texture.texture,
 		ImVec2(a_center.x, a_center.y),
 		Config::Styling::Item::Highlight::Texture::OffsetX,
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		0);
-	ImGui::GetWindowDrawList()->AddRectFilled(
-		{ a_center.x - 5, a_center.y - 5 },
-		{ a_center.x + 5, a_center.y + 5 }, _testInterpolator.GetColor());
+		0, a_alphaMult);
 }
 
 WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID)

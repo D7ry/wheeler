@@ -1,25 +1,26 @@
 #include "Drawer.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
-static float AlphaMult = 1.0f;
 
-void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y, const char* a_text, UINT32 a_alpha, UINT32 a_red, UINT32 a_green, UINT32 a_blue, float a_font_size, bool add_shadow, bool a_center_text, bool a_deduct_text_x, bool a_deduct_text_y, bool a_add_text_x, bool a_add_text_y)
+#include "bin/Utils.h"
+void Drawer::draw_text(float a_x,
+		float a_y,
+		const char* a_text,
+		ImU32 a_color,
+		float a_font_size,
+		bool add_shadow, float alphaMult, float rotation, float scale)
 {
 	auto* font = ImGui::GetDefaultFont();  // TODO: add custom font support
-	if (!font) {
-		font = ImGui::GetDefaultFont();
-	}
 
 	//it should center the text, it kind of does
 	auto text_x = 0.f;
 	auto text_y = 0.f;
-	a_alpha *= AlphaMult;
 
-	if (!a_text || !*a_text || a_alpha == 0) {
+	if (!a_text || !*a_text) {
 		return;
 	}
 
-	const ImU32 color = IM_COL32(a_red, a_green, a_blue, a_alpha);
+	Utils::Color::MultAlpha(a_color, alphaMult);
 
 	float currFontSize = ImGui::GetFontSize();
 
@@ -27,25 +28,12 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 	text_size.x *= a_font_size / currFontSize;
 	text_size.y *= a_font_size / currFontSize;
 	
-	if (a_center_text) {
-		text_x = -text_size.x * 0.5f;
-		text_y = -text_size.y * 0.5f;
-	}
-	if (a_deduct_text_x) {
-		text_x = text_x - text_size.x;
-	}
-	if (a_deduct_text_y) {
-		text_y = text_y - text_size.y;
-	}
-	if (a_add_text_x) {
-		text_x = text_x + text_size.x;
-	}
-	if (a_add_text_y) {
-		text_y = text_y + text_size.y;
-	}
+	text_x = -text_size.x * 0.5f;
+	text_y = -text_size.y * 0.5f;
+	
 
 	const auto position =
-		ImVec2(a_x + a_offset_x + text_x, a_y + a_offset_y + text_y);
+		ImVec2(a_x + text_x, a_y + text_y);
 
 	auto drawList = ImGui::GetWindowDrawList();
 	if (add_shadow) {
@@ -68,10 +56,11 @@ void Drawer::draw_text(float a_x, float a_y, float a_offset_x, float a_offset_y,
 		drawList->AddText(font, a_font_size, shadowPos4, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
 	}
 	
-	drawList->AddText(font, a_font_size, position, color, a_text, nullptr, 0.0f, nullptr);
+	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);
 }
 
-void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, float a_offset_x, float a_offset_y, ImVec2 a_size, float a_angle, ImU32 a_color)
+
+void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, float a_offset_x, float a_offset_y, ImVec2 a_size, float a_angle, float alphaMult, ImU32 a_color)
 {
 	a_center = ImVec2(a_center.x + a_offset_x, a_center.y + a_offset_y);
 	const float cos_a = cosf(a_angle);
@@ -84,13 +73,12 @@ void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture, ImVec2 a_center, 
 	};
 	ImVec2 uvs[4] = { ImVec2(0.0f, 0.0f), ImVec2(1.0f, 0.0f), ImVec2(1.0f, 1.0f), ImVec2(0.0f, 1.0f) };
 
-	ImColor color = a_color;
-	color.Value.w *= AlphaMult;
+	Utils::Color::MultAlpha(a_color, alphaMult);
 	ImGui::GetWindowDrawList()
-		->AddImageQuad(a_texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], color);
+		->AddImageQuad(a_texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], a_color);
 }
 
-void Drawer::draw_arc(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 a_color, uint32_t segments)
+void Drawer::draw_arc(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 a_color, uint32_t segments, float alphaMult)
 {
 	auto drawList = ImGui::GetWindowDrawList();
 
@@ -100,7 +88,7 @@ void Drawer::draw_arc(ImVec2 center, float radius_min, float radius_max, float i
 	const ImVec2& vTexUvWhitePixel = ImGui::GetDrawListSharedData()->TexUvWhitePixel;
 	// draw an arc for the current item
 	ImColor color = a_color;
-	color.Value.w *= AlphaMult;
+	Utils::Color::MultAlpha(a_color, alphaMult);
 
 	drawList->PrimReserve(segments * 6, (segments + 1) * 2);
 	for (int iSeg = 0; iSeg <= segments; ++iSeg) {
@@ -129,7 +117,7 @@ static inline uint32_t bigLerp(uint32_t a, uint32_t b, double t)
 }
 
 
-void Drawer::draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 a_color_start, ImU32 a_color_end, uint32_t segments)
+void Drawer::draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 a_color_start, ImU32 a_color_end, uint32_t segments, float alphaMult)
 {
 	const float fAngleStepInner = (inner_ang_max - inner_ang_min) / segments;
 	const float fAngleStepOuter = (outer_ang_max - outer_ang_min) / segments;
@@ -153,9 +141,9 @@ void Drawer::draw_arc_gradient(ImVec2 center, float radius_min, float radius_max
 			drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + 1);
 		}
 		
-		ImColor color_start = a_color_start, color_end = a_color_end;
-		color_start.Value.w *= AlphaMult;
-		color_end.Value.w *= AlphaMult;
+		ImU32 color_start = a_color_start, color_end = a_color_end;
+		Utils::Color::MultAlpha(color_start, alphaMult);
+		Utils::Color::MultAlpha(color_end, alphaMult);
 
 		// Interpolate between the start and end colors for inner vertex
 		ImU32 colorInner = bigLerp(color_start, color_end, 0);
@@ -167,22 +155,15 @@ void Drawer::draw_arc_gradient(ImVec2 center, float radius_min, float radius_max
 	}
 }
 
-void Drawer::draw_circle_filled(const ImVec2& center, float radius, ImU32 color, int segments)
+void Drawer::draw_circle_filled(const ImVec2& center, float radius, ImU32 color, int segments, float alphaMult)
 {
-	ImColor c = color;
-	c.Value.w *= AlphaMult;
-	ImGui::GetWindowDrawList()->AddCircleFilled(center, radius, c, segments);
+	Utils::Color::MultAlpha(color, alphaMult);
+	ImGui::GetWindowDrawList()->AddCircleFilled(center, radius, color, segments);
 }
 
-void Drawer::draw_triangle_filled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col)
+void Drawer::draw_triangle_filled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col, float alphaMult)
 {
-	ImColor c = col;
-	c.Value.w *= AlphaMult;
-	ImGui::GetWindowDrawList()->AddTriangleFilled(p1, p2, p3, c);
-}
-
-void Drawer::set_alpha_mult(float a_in)
-{
-	AlphaMult = a_in;
+	Utils::Color::MultAlpha(col, alphaMult);
+	ImGui::GetWindowDrawList()->AddTriangleFilled(p1, p2, p3, col);
 }
 

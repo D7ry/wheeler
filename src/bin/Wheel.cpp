@@ -9,11 +9,12 @@ Wheel::~Wheel()
 {
     this->Clear();
 }
-void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentered, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentered, RE::TESObjectREFR::InventoryItemMap& a_imap,
+	float a_alphaMult, float a_scaleMult, float a_rotationMult)
 {
 	using namespace Config::Styling::Wheel;
 	if (this->Empty()) {
-		Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, 0, 0, "Empty Wheel", 255, 255, 255, 255, 40.f);
+		Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, "Empty Wheel", C_SKYRIMWHITE, 40.f, true, a_alphaMult, a_rotationMult, a_scaleMult);
 		return; // nothing more to draw
 	}
 
@@ -39,6 +40,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 			entryOuterAngleMax -= IM_PI * 2;
 		}
 
+		
 		// update hovered item
 		if (!a_cursorCentered) {
 			bool updatedActiveEntry = false;
@@ -49,7 +51,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 				a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
 				a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
 				CursorIndicatorColor,
-				32);
+				32, a_alphaMult);
 			ImVec2 cursorIndicatorTriPts[3] = {
 				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
 				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
@@ -58,7 +60,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 			for (ImVec2& pos : cursorIndicatorTriPts) {
 				pos = ImRotate(pos, cos(a_cursorAngle), sin(a_cursorAngle));
 			}
-			Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor);
+			Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_alphaMult);
 			if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
 				if (a_cursorAngle < entryInnerAngleMax) {
 					if (entryIdx != _hoveredEntryIdx) {
@@ -90,7 +92,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 
 		_entries[entryIdx]->Draw(a_wheelCenter, innerSpacing,
 			entryInnerAngleMin, entryInnerAngleMax,
-			entryOuterAngleMin, entryOuterAngleMax, itemCenter, hovered, numArcSegments, a_imap);
+			entryOuterAngleMin, entryOuterAngleMax, itemCenter, hovered, numArcSegments, a_imap, a_alphaMult);
 	}
 }
 void Wheel::PushEntry(std::unique_ptr<WheelEntry> a_entry) 

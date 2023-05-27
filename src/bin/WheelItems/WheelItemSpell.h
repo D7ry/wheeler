@@ -4,8 +4,8 @@ class WheelItemSpell : public WheelItem // spell AND power
 {
 public:
 	WheelItemSpell(RE::SpellItem* a_spell);
-	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap) override;
-	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap) override;
+	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.0f) override;
+	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.0f) override;
 	virtual bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
 	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
 	virtual void ActivateItemSecondary() override;

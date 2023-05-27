@@ -45,41 +45,38 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 	this->_texture = Texture::GetIconImage(iconType);
 }
 
-void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
 {
-	Drawer::draw_text(a_center.x, a_center.y,
-		Config::Styling::Item::Slot::Text::OffsetX, Config::Styling::Item::Slot::Text::OffsetY,
-		_spell->GetName(), 255, 255, 255, 255,
-		Config::Styling::Item::Slot::Text::Size);
+	{
+		using namespace Config::Styling::Item::Slot;
+		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
+			this->_spell->GetName(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+	}
+
 	Drawer::draw_texture(_texture.texture,
 		ImVec2(a_center.x, a_center.y),
 		Config::Styling::Item::Slot::Texture::OffsetX,
 		Config::Styling::Item::Slot::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-		0);
+		0,
+		a_alphaMult);
 }
 
-void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
+void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
 {
-	Drawer::draw_text(a_center.x, a_center.y,
-		Config::Styling::Item::Highlight::Text::OffsetX, Config::Styling::Item::Highlight::Text::OffsetY,
-		_spell->GetName(), 255, 255, 255, 255,
-		Config::Styling::Item::Highlight::Text::Size);
+	{
+		using namespace Config::Styling::Item::Highlight;
+		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
+			_spell->GetName(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+	}
+	
 	Drawer::draw_texture(_texture.texture,
 		ImVec2(a_center.x, a_center.y),
 		Config::Styling::Item::Highlight::Texture::OffsetX,
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		0);
-	{
-		// debug: trying to use inventory3Dmanager
-		auto inv3d = RE::Inventory3DManager::GetSingleton();
-		if (inv3d) {
-			//inv3d->UpdateItem3D()
-			inv3d->UpdateMagic3D(this->_spell, 0);
-			//inv3d->Render();
-		}
-	}
+		0,
+		a_alphaMult);
 }
 
 bool WheelItemSpell::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)

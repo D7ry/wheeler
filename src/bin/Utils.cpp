@@ -242,4 +242,3 @@ namespace Utils
 					if (list->HasType(RE::ExtraDataType::kPoison)) {
 						auto xPoison = static_cast<RE::ExtraPoison*>(list->GetByType<RE::ExtraPoison>());
 					}*/
-

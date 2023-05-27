@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <PCH.h>
+#include "imgui.h"
 namespace Utils
 {
 	namespace Slot
@@ -60,4 +61,11 @@ namespace Utils
 		}
 	}
 
+	namespace Color
+	{
+		inline void MultAlpha(ImU32& a_u32, double a_mult)
+		{
+			a_u32 = (a_u32 & 0x00FFFFFF) | (static_cast<ImU32>(static_cast<double>(a_u32 >> 24) * a_mult) << 24);
+		}
+	};
 }

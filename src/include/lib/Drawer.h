@@ -15,38 +15,28 @@ namespace Drawer
 {
 	void draw_text(float a_x,
 		float a_y,
-		float a_offset_x,
-		float a_offset_y,
 		const char* a_text,
-		UINT32 a_alpha,
-		UINT32 a_red,
-		UINT32 a_green,
-		UINT32 a_blue,
+		ImU32 a_color,
 		float a_font_size = 20.f,
-		bool add_shadow = true,
-		bool a_center_text = true,
-		bool a_deduct_text_x = false,
-		bool a_deduct_text_y = false,
-		bool a_add_text_x = false,
-		bool a_add_text_y = false);
+		bool add_shadow = true, float alphaMult = 1.f, float rotation = 0.f, float scale = 1.f);
+	
+	
 	void draw_texture(ID3D11ShaderResourceView* a_texture,
 		ImVec2 a_center,
 		float a_offset_x, 
 		float a_offset_y,
 		ImVec2 a_size,
 		float a_angle,
-		ImU32 a_color = IM_COL32_WHITE);
+		float alphaMult = 1.f, ImU32 a_color = IM_COL32_WHITE);
 	void draw_arc(
 		ImVec2 center,
 		float radius_min, float radius_max,
 		float inner_ang_min, float inner_ang_max,
 		float outer_ang_min, float outer_ang_max,
-		ImU32 color, uint32_t segments);
-	void draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 color_start, ImU32 color_end, uint32_t segments);
+		ImU32 color, uint32_t segments, float alphaMult);
+	void draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, float inner_ang_min, float inner_ang_max, float outer_ang_min, float outer_ang_max, ImU32 color_start, ImU32 color_end, uint32_t segments, float alphaMult = 1.f);
 
-	void draw_circle_filled(const ImVec2& center, float radius, ImU32 color, int segments = 0);
+	void draw_circle_filled(const ImVec2& center, float radius, ImU32 color, int segments, float alphaMult = 1.f);
 
-	void draw_triangle_filled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col);
-
-	void set_alpha_mult(float a_in);
+	void draw_triangle_filled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, ImU32 col, float alphaMult = 1.f);
 };

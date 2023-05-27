@@ -7,17 +7,23 @@ TimeColorInterpolator::TimeColorInterpolator() :
 	alphaInterpolator(0) {}
 
 TimeColorInterpolator::TimeColorInterpolator(const ImU32& targetColor) :
-	redInterpolator((targetColor >> 24) & 0xFF),
-	greenInterpolator((targetColor >> 16) & 0xFF),
-	blueInterpolator((targetColor >> 8) & 0xFF),
-	alphaInterpolator(targetColor & 0xFF) {}
+	redInterpolator((targetColor >> IM_COL32_R_SHIFT) & 0xFF),
+	greenInterpolator((targetColor >> IM_COL32_G_SHIFT) & 0xFF),
+	blueInterpolator((targetColor >> IM_COL32_B_SHIFT) & 0xFF),
+	alphaInterpolator((targetColor >> IM_COL32_A_SHIFT) & 0xFF) {}
 
 void TimeColorInterpolator::InterpolateTo(const ImU32& targetColor, float duration)
 {
-	redInterpolator.InterpolateTo((targetColor >> 24) & 0xFF, duration);
-	greenInterpolator.InterpolateTo((targetColor >> 16) & 0xFF, duration);
-	blueInterpolator.InterpolateTo((targetColor >> 8) & 0xFF, duration);
-	alphaInterpolator.InterpolateTo(targetColor & 0xFF, duration);
+	// assuming the targetColor is in ARGB format
+	uint32_t a = (targetColor >> IM_COL32_A_SHIFT) & 0xFF;
+	uint32_t b = (targetColor >> IM_COL32_B_SHIFT) & 0xFF;
+	uint32_t g = (targetColor >> IM_COL32_G_SHIFT) & 0xFF;
+	uint32_t r = (targetColor >> IM_COL32_R_SHIFT) & 0xFF;
+
+	redInterpolator.InterpolateTo(r, duration);
+	greenInterpolator.InterpolateTo(g, duration);
+	blueInterpolator.InterpolateTo(b, duration);
+	alphaInterpolator.InterpolateTo(a, duration);
 }
 
 uint32_t TimeColorInterpolator::GetRed()
@@ -42,9 +48,9 @@ uint32_t TimeColorInterpolator::GetAlpha()
 
 uint32_t TimeColorInterpolator::GetColor()
 {
-	uint32_t red = redInterpolator.GetValue() << 24;
-	uint32_t green = greenInterpolator.GetValue() << 16;
-	uint32_t blue = blueInterpolator.GetValue() << 8;
-	uint32_t alpha = alphaInterpolator.GetValue();
-	return red | green | blue | alpha;
+	uint32_t a = GetAlpha();
+	uint32_t r = GetRed();
+	uint32_t g = GetGreen();
+	uint32_t b = GetBlue();
+	return IM_COL32(r, g, b, a);
 }

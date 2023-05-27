@@ -19,6 +19,7 @@
 #include "include/lib/Drawer.h"
 
 #include "Utils.h"
+static float _alphaMult = 1.f;
 
 #include "Animation/TimeInterpolator/TimeInterpolatorManager.h"
 void Wheeler::Update()
@@ -90,21 +91,22 @@ void Wheeler::Update()
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		drawList->PushClipRectFullScreen();
 		
+		
+		
+		// get ready to draw the wheel
 		const ImVec2 wheelCenter = getWheelCenter();
 		RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
 
 		float cursorAngle = atan2f(_cursorPos.y, _cursorPos.x);  // where the cursor is pointing to
 
 		if (_wheels.empty()) {
-			Drawer::draw_text(wheelCenter.x, wheelCenter.y, 0, 0, "No Wheel Present", 255, 255, 255, 255, 40.f);
+			Drawer::draw_text(wheelCenter.x, wheelCenter.y, "No Wheel Present", C_SKYRIMWHITE, 40.F, true, _alphaMult);
 		} else {
 			bool isCursorCentered = _cursorPos.x == 0 && _cursorPos.y == 0;
-			_wheels[_activeWheelIdx]->Draw(wheelCenter, cursorAngle, isCursorCentered, inv);
+			_wheels[_activeWheelIdx]->Draw(wheelCenter, cursorAngle, isCursorCentered, inv, _alphaMult);
 		}
 
 
-		// draw cursor indicator
-		//drawList->AddCircleFilled(_cursorPos + wheelCenter, 10, ImGui::GetColorU32(ImGuiCol_Border), 10);
 		// draw wheel indicator
 		for (int i = 0; i < _wheels.size(); i++) {
 			if (i == _activeWheelIdx) {
@@ -120,6 +122,7 @@ void Wheeler::Update()
 			}
 		}
 
+		
 		// update fade timer, alpha and wheel state.
 		_openTimer += deltaTime;
 
@@ -142,8 +145,7 @@ void Wheeler::Update()
 			}
 			break;
 		}
-
-		Drawer::set_alpha_mult(alphaMult);
+		_alphaMult = alphaMult;
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -444,16 +446,18 @@ void Wheeler::MoveWheelForward()
 		return;
 	}
 	if (_wheels.size() > 1) {
+		int targetIdx;
 		if (_activeWheelIdx == _wheels.size() - 1) {
 			// Move the current wheel to the very front
+			targetIdx = 0;
 			auto currentWheel = std::move(_wheels.back());
 			_wheels.pop_back();
 			_wheels.insert(_wheels.begin(), std::move(currentWheel));
 		} else {
-			int targetIdx = _activeWheelIdx + 1;
+			targetIdx = _activeWheelIdx + 1;
 			std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
-			_activeWheelIdx = targetIdx;
 		}
+		_activeWheelIdx = targetIdx;
 	}
 }
 
@@ -464,17 +468,19 @@ void Wheeler::MoveWheelBack()
 		return;
 	}
 	if (_wheels.size() > 1) {
+		int targetIdx;
 		if (_activeWheelIdx == 0) {
 			// Move the current wheel to the very end
+			targetIdx = _wheels.size() - 1;
 			auto currentWheel = std::move(_wheels.front());
 			_wheels.erase(_wheels.begin());
 			_wheels.push_back(std::move(currentWheel));
 			_activeWheelIdx = _wheels.size() - 1;
 		} else {
-			int targetIdx = _activeWheelIdx - 1;
+			targetIdx = _activeWheelIdx - 1;
 			std::swap(_wheels[_activeWheelIdx], _wheels[targetIdx]);
-			_activeWheelIdx = targetIdx;
 		}
+		_activeWheelIdx = targetIdx;
 	}
 }
 
