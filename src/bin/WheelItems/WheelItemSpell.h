@@ -8,8 +8,8 @@ public:
 	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap) override;
 	virtual bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
 	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
-	virtual void ActivateItemLeft() override;
-	virtual void ActivateItemRight() override;
+	virtual void ActivateItemSecondary() override;
+	virtual void ActivateItemPrimary() override;
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 	
 

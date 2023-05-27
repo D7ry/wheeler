@@ -17,32 +17,32 @@ public:
  float entryInnerAngleMin, float entryInnerAngleMax,
  float entryOuterAngleMin, float entryOuterAngleMax,
 		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap);
-	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap);
+	void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap);
 	
-	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap);
+	void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap);
 
-	virtual bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
-	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
 	/// <summary>
 	/// Activate the item with secondary (left) input, which corresponds to right mouse click or left controller trigger.
 	/// If we're in edit mode, the entry deletes the currently selected item until there are no items left.
-	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemLeft().
+	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemSecondary().
 	/// </summary>
 	/// <param name="editMode">Whether the wheel is in edit mode.</param>
-	virtual void ActivateItemLeft(bool editMode = false);
+	void ActivateItemSecondary(bool editMode = false);
 
 	/// <summary>
 	/// Activate the item with primary(right) input, which corresponds to left mouse click or right controller trigger.
 	/// If we're in edit mode, the entry queries WheelItemFactory for a new item (the item that the cursor is hovering over in either inventory or magic menu)
 	/// and pushes it to the entry's front.
-	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemRight().
+	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemPrimary().
 	/// </summary>
 	/// <param name="editMode">Whether the wheel is in edit mode.</param>
-	virtual void ActivateItemRight(bool editMode = false);
+	void ActivateItemPrimary(bool editMode = false);
 
-	virtual void PrevItem();
-	virtual void NextItem();
+	void PrevItem();
+	void NextItem();
 
 	bool IsEmpty();
 

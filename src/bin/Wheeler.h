@@ -28,24 +28,22 @@ public:
 	/// </summary>
 	static void Clear();
 
-	static void SetWheels(std::vector<Wheel*> a_wheels);
-
 	static void UpdateCursorPosMouse(float a_deltaX, float a_deltaY);
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
-	static void ToggleWheel();
-	static void CloseWheelIfOpenedLongEnough();
+	static void ToggleWheeler();
+	static void CloseWheelerIfOpenedLongEnough();
 	
-	static void TryOpenWheel();
-	static void TryCloseWheel();
+	static void TryOpenWheeler();
+	static void TryCloseWheeler();
 
-	static void OpenWheel();
-	static void CloseWheel();
+	static void OpenWheeler();
+	static void CloseWheeler();
 	
 	static void NextWheel();
 	static void PrevWheel();
-	static void PrevItem();
-	static void NextItem();
+	static void PrevItemInEntry();
+	static void NextItemInEntry();
 
 	/// <summary>
 	/// Activate the currently active entry with secondary (left) input, which corresponds to right mouse click or left controller trigger.
@@ -53,21 +51,21 @@ public:
 	///  - the function first checks if there's any entry left. If not, the function calls DeleteCurrentWheel(), given there are more than 1 wheel present(must have at least 1 wheel on stack).
 	///  - if there's some entry left, the function checks if the entry is empty.
 	///		- If yes, we delete the current entry.
-	///		- otherwise, the function invokes the entry's ActivateItemLeft(true) function, which handles deletion of entry's inner items.
-	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemLeft()
+	///		- otherwise, the function invokes the entry's ActivateItemSecondary(true) function, which handles deletion of entry's inner items.
+	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemSecondary()
 	/// </summary>
-	static void ActivateEntryLeft();
+	static void ActivateEntrySecondary();
 
 	/// <summary>
 	/// Activate the currently active entry with primary (right) input, which corresponds to left mouse click or right controller trigger,
-	/// The function simply invokes current entry's ActivateItemRight(), which either handles activation of items or addition of items, if in edit mode.
+	/// The function simply invokes current entry's ActivateItemPrimary(), which either handles activation of items or addition of items, if in edit mode.
 	/// </summary>
-	static void ActivateEntryRight();
+	static void ActivateEntryPrimary();
 
 	/// <summary>
 	/// Push an empty entry to the current wheel.
 	/// </summary>
-	static void AddEntryToCurrentWheel();
+	static void AddEmptyEntryToCurrentWheel();
 
 	/// <summary>
 	/// Deletes the currently active entry.
@@ -79,15 +77,14 @@ public:
 	// Delete the current wheel
 	static void DeleteCurrentWheel();
 
-	static void MoveEntryForward();
-	static void MoveEntryBack();
+	static void MoveEntryForwardInCurrentWheel();
+	static void MoveEntryBackInCurrentWheel();
 
 	static void MoveWheelForward();
 	static void MoveWheelBack();
 	
 	static int GetActiveWheelIndex();
 	static void SetActiveWheelIndex(int a_index);
-	static int GetActiveEntry();
 	
 	static inline const char* SD_WHEELSWITCH = "UIFavorite";
 	static inline const char* SD_ENTRYSWITCH = "UIMenuFocus";

@@ -114,7 +114,7 @@ bool WheelEntry::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	return _items[_selectedItem]->IsAvailable(a_inv);
 }
 
-void WheelEntry::ActivateItemLeft(bool editMode)
+void WheelEntry::ActivateItemSecondary(bool editMode)
 {
 	std::lock_guard<std::mutex> lock(this->_lock);
 
@@ -122,7 +122,7 @@ void WheelEntry::ActivateItemLeft(bool editMode)
 		return;
 	}
 	if (!editMode) {
-		_items[_selectedItem]->ActivateItemLeft();
+		_items[_selectedItem]->ActivateItemSecondary();
 	} else {
 		// remove selected item
 		std::shared_ptr<WheelItem> itemToDelete = _items[_selectedItem];
@@ -134,7 +134,7 @@ void WheelEntry::ActivateItemLeft(bool editMode)
 	}
 }
 
-void WheelEntry::ActivateItemRight(bool editMode)
+void WheelEntry::ActivateItemPrimary(bool editMode)
 {
 	std::lock_guard<std::mutex> lock(this->_lock);
 
@@ -142,7 +142,7 @@ void WheelEntry::ActivateItemRight(bool editMode)
 		if (_items.size() == 0) {
 			return;  // nothing to erase
 		}
-		_items[_selectedItem]->ActivateItemRight();
+		_items[_selectedItem]->ActivateItemPrimary();
 	} else {// append item to after _selectedItem index
 		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromMenuHovered();
 		if (newItem) {

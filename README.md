@@ -11,22 +11,17 @@ Pipeline:
 - `Controls`: input mapping
 
 To-dos:
-- [ ] multi-wheel
-	- [ ] data structure
-	- [ ] UI
-- [ ] in-game wheel editing
-- [ ] add config in DMenu
-- [ ] framework texture styling
-- [ ] Scaling
-	- [ ] Support magic
-	- [ ] Support shout
-	- [ ] Support power
-- [ ] animated armoury support
-Nice-to-haves:
-- [ ] block only used inputs(input hooking)
-- [ ] multi-lingual and custom font
-- [ ] theme
-
+Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
+- [ ] Refactor project structure
+  - [x] Move `WheelItem` to `Wheeler`
+  - [x] Manage `WheelItemMutable` automatically in `WheelItemMutableManager` through automatic constructor insertion and destructor removal
+  - [x] Move `Wheel` to a separate class
+  - [ ] `Wheeler` only manages `Wheel` instead of `WheelEntry` that is now `Wheel`'s responsibility to manage
+  - [ ] `Wheel` manages `WheelEntry`
+  - [ ] `WheelEntry` manages all subclasses of `WheelItem`
+  - [ ] Refactor functions so they reach correct objects
+  - [ ] Change all storage to `std::unique_ptr` instead of raw pointer, except for `WheelItem` which is stored as a `shared_ptr` in the entry vector, and a `weak_ptr` for `WheelItemMutable` in `WheelItemMutableManager`
+  - [ ] Refactor serialization for this hierarchy
 
 References:
 

@@ -16,8 +16,8 @@ public:
 	{
 		// wheelitemmutable's destructor will remove it from the manager
 	};
-	void ActivateItemLeft() override;
-	void ActivateItemRight() override;
+	void ActivateItemSecondary() override;
+	void ActivateItemPrimary() override;
 	
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 

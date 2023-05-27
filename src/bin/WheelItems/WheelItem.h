@@ -23,8 +23,8 @@ public:
 	/// </summary>
 	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
-	virtual void ActivateItemLeft();
-	virtual void ActivateItemRight();
+	virtual void ActivateItemSecondary();
+	virtual void ActivateItemPrimary();
 
 	virtual bool IsMutable();
 

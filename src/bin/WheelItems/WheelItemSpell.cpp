@@ -105,7 +105,7 @@ bool WheelItemSpell::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	return pc && pc->HasSpell(this->_spell);
 }
 
-void WheelItemSpell::ActivateItemLeft()
+void WheelItemSpell::ActivateItemSecondary()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
@@ -113,7 +113,7 @@ void WheelItemSpell::ActivateItemLeft()
 	}
 }
 
-void WheelItemSpell::ActivateItemRight()
+void WheelItemSpell::ActivateItemPrimary()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {

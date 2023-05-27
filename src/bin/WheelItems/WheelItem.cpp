@@ -21,11 +21,11 @@ bool WheelItem::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	return false;
 }
 
-void WheelItem::ActivateItemLeft()
+void WheelItem::ActivateItemSecondary()
 {
 }
 
-void WheelItem::ActivateItemRight()
+void WheelItem::ActivateItemPrimary()
 {
 }
 
