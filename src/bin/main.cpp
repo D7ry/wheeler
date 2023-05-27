@@ -33,13 +33,13 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 void onSKSEInit()
 {
-	Renderer::Install();
+	RenderManager::Install();
 	Controls::Init();
 	Wheeler::Init();
 	Hooks::Install();
 	auto serialization = SKSE::GetSerializationInterface();
 	serialization->SetUniqueID(WHEELER_SERIALIZATION_ID);
-	Serializer::BindSerializationCallbacks(serialization);
+	SerializationEntry::BindSerializationCallbacks(serialization);
 }
 
 namespace

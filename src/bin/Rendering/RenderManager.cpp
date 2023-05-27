@@ -32,7 +32,7 @@ namespace stl
 }
 
 
-LRESULT Renderer::WndProcHook::thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT RenderManager::WndProcHook::thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	auto& io = ImGui::GetIO();
 	if (uMsg == WM_KILLFOCUS) {
@@ -43,7 +43,7 @@ LRESULT Renderer::WndProcHook::thunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	return func(hWnd, uMsg, wParam, lParam);
 }
 
-void Renderer::D3DInitHook::thunk()
+void RenderManager::D3DInitHook::thunk()
 {
 	func();
 
@@ -96,18 +96,16 @@ void Renderer::D3DInitHook::thunk()
 			reinterpret_cast<LONG_PTR>(WndProcHook::thunk)));
 	if (!WndProcHook::func)
 		ERROR("SetWindowLongPtrA failed!");
-#ifdef IMGUI_ENABLE_FREETYPE
 	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
-	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_Bold | ImGuiFreeTypeBuilderFlags_LightHinting;
-	std::string path = R"(Data\SKSE\Plugins\wheeler\fonts\Futura Condensed Regular.ttf)";
+	atlas->FontBuilderFlags =  ImGuiFreeTypeBuilderFlags_LightHinting;
+	std::string path = R"(Data\SKSE\Plugins\wheeler\resources\fonts\SovngardeLight.ttf)";
 	auto file_path = std::filesystem::path(path);
 	ImGui::GetIO().Fonts->AddFontFromFileTTF(file_path.string().c_str(), 64.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
 
-#endif
 }
 
-void Renderer::DXGIPresentHook::thunk(std::uint32_t a_p1)
+void RenderManager::DXGIPresentHook::thunk(std::uint32_t a_p1)
 {
 	func(a_p1);
 
@@ -120,7 +118,7 @@ void Renderer::DXGIPresentHook::thunk(std::uint32_t a_p1)
 	ImGui::NewFrame();
 
 	// do stuff
-	Renderer::draw();
+	RenderManager::draw();
 
 	// epilogue
 	ImGui::EndFrame();
@@ -136,7 +134,7 @@ struct ImageSet
 };
 
 
-void Renderer::MessageCallback(SKSE::MessagingInterface::Message* msg)  //CallBack & LoadTextureFromFile should called after resource loaded.
+void RenderManager::MessageCallback(SKSE::MessagingInterface::Message* msg)  //CallBack & LoadTextureFromFile should called after resource loaded.
 {
 	if (msg->type == SKSE::MessagingInterface::kDataLoaded && D3DInitHook::initialized) {
 		// Read Texture only after game engine finished load all it renderer resource.
@@ -146,7 +144,7 @@ void Renderer::MessageCallback(SKSE::MessagingInterface::Message* msg)  //CallBa
 	}
 }
 
-bool Renderer::Install()
+bool RenderManager::Install()
 {
 	auto g_message = SKSE::GetMessagingInterface();
 	if (!g_message) {
@@ -167,29 +165,21 @@ bool Renderer::Install()
 
 
 
-float Renderer::GetResolutionScaleWidth()
+float RenderManager::GetResolutionScaleWidth()
 {
 	return ImGui::GetIO().DisplaySize.x / 1920.f;
 }
 
-float Renderer::GetResolutionScaleHeight()
+float RenderManager::GetResolutionScaleHeight()
 {
 	return ImGui::GetIO().DisplaySize.y / 1080.f;
 }
 
 
-void Renderer::draw()
+void RenderManager::draw()
 {
-	//static constexpr ImGuiWindowFlags windowFlag = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration;
-
-	
-	// resize window
-	//ImGui::SetNextWindowPos(ImVec2(0, 0));
-	//ImGui::SetNextWindowSize(ImVec2(screenSizeX, screenSizeY));
-
 
 	// Add UI elements here
-	//ImGui::Text("sizeX: %f, sizeYL %f", screenSizeX, screenSizeY);
 	float deltaTime = ImGui::GetIO().DeltaTime;
 	Wheeler::Update(deltaTime);
 	TimeFloatInterpolatorManager::Update(deltaTime);

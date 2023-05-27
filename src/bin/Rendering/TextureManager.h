@@ -131,8 +131,8 @@ private:
 		}
 	}
 
-	static inline std::string icon_directory = R"(.\Data\SKSE\Plugins\resources\icons)";
-	static inline std::string img_directory = R"(.\Data\SKSE\Plugins\resources\img)";
+	static inline std::string icon_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\icons)";
+	static inline std::string img_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\img)";
 
 	
 

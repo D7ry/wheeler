@@ -42,13 +42,13 @@ namespace Serial
 		return true;
 	}
 }
-void Serializer::BindSerializationCallbacks(const SKSE::SerializationInterface* a_in)
+void SerializationEntry::BindSerializationCallbacks(const SKSE::SerializationInterface* a_in)
 {
-	a_in->SetLoadCallback(Serializer::Load);
-	a_in->SetSaveCallback(Serializer::Save);
-	a_in->SetRevertCallback(Serializer::Revert);
+	a_in->SetLoadCallback(SerializationEntry::Load);
+	a_in->SetSaveCallback(SerializationEntry::Save);
+	a_in->SetRevertCallback(SerializationEntry::Revert);
 }
-void Serializer::Save(SKSE::SerializationInterface* a_intfc)
+void SerializationEntry::Save(SKSE::SerializationInterface* a_intfc)
 {
 	INFO("Serializing wheel into save...");
 	if (!a_intfc->OpenRecord(WHEELER_JSON_STRING_TYPE, SERIALIZER_VERSION)) {
@@ -65,7 +65,7 @@ void Serializer::Save(SKSE::SerializationInterface* a_intfc)
 
 }
 
-void Serializer::Load(SKSE::SerializationInterface* a_intfc)
+void SerializationEntry::Load(SKSE::SerializationInterface* a_intfc)
 {
 	std::uint32_t type, version, length;
 	if (!a_intfc->GetNextRecordInfo(type, version, length)) {
@@ -120,7 +120,7 @@ void Serializer::Load(SKSE::SerializationInterface* a_intfc)
 	//Wheeler::SetWheels(wheels);
 
 
-void Serializer::Revert(SKSE::SerializationInterface* a_intfc)
+void SerializationEntry::Revert(SKSE::SerializationInterface* a_intfc)
 {
 	Wheeler::Clear();
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 
-class Renderer
+class RenderManager
 {
 	struct WndProcHook
 	{
@@ -31,7 +31,7 @@ class Renderer
 
 
 private:
-	Renderer() = delete;
+	RenderManager() = delete;
 
 	static void draw();  //Rendering Meters.
 	static void MessageCallback(SKSE::MessagingInterface::Message* msg);
