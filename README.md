@@ -22,7 +22,7 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [ ] Refactor functions so they reach correct objects
   - [ ] Change all storage to `std::unique_ptr` instead of raw pointer, except for `WheelItem` which is stored as a `shared_ptr` in the entry vector, and a `weak_ptr` for `WheelItemMutable` in `WheelItemMutableManager`
   - [ ] Refactor serialization for this hierarchy
-
+  - [ ] Move render function into wheelentry, wheel, and wheelitem; add locking
 References:
 
 https://gist.github.com/thennequin/64b4b996ec990c6ddc13a48c6a0ba68c

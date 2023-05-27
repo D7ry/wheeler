@@ -67,11 +67,6 @@ public:
 	/// </summary>
 	static void AddEmptyEntryToCurrentWheel();
 
-	/// <summary>
-	/// Deletes the currently active entry.
-	/// </summary>
-	static void DeleteCurrentEntry();
-
 	// Add a new wheel
 	static void AddWheel();
 	// Delete the current wheel
@@ -91,6 +86,8 @@ public:
 	static inline const char* SD_WHEELERTOGGLE = "UIInventoryOpenSD";
 
 	static std::vector<Wheel*>& GetWheels();
+
+	static bool IsInEditMode() { return _editMode; };
 
 private:
 	enum class WheelState

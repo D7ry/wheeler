@@ -1,7 +1,7 @@
 #include "WheelEntry.h"
 #include "include/lib/Drawer.h"
-#include "WheelItemFactory.h"
-#include "WheelItemMutable.h"
+#include "WheelItems/WheelItemFactory.h"
+#include "WheelItems/WheelItemMutable.h"
 #include "include/lib/Drawer.h"
 
 void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
@@ -65,7 +65,7 @@ void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
 
 void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return; // nothing to draw
@@ -75,7 +75,7 @@ void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::In
 
 void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap)
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return;  // nothing to draw
@@ -96,7 +96,7 @@ void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItem
 
 bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return false;  // nothing to draw
@@ -106,7 +106,7 @@ bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 
 bool WheelEntry::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return false;  // nothing to draw
@@ -116,7 +116,7 @@ bool WheelEntry::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 
 void WheelEntry::ActivateItemSecondary(bool editMode)
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return;
@@ -136,7 +136,7 @@ void WheelEntry::ActivateItemSecondary(bool editMode)
 
 void WheelEntry::ActivateItemPrimary(bool editMode)
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
 
 	if (!editMode) { 
 		if (_items.size() == 0) {
@@ -153,7 +153,7 @@ void WheelEntry::ActivateItemPrimary(bool editMode)
 
 void WheelEntry::PrevItem()
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
 
 	_selectedItem--;
 	if (_selectedItem < 0) {
@@ -170,7 +170,7 @@ void WheelEntry::PrevItem()
 
 void WheelEntry::NextItem()
 {
-	std::lock_guard<std::mutex> lock(this->_lock);
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
 
 	_selectedItem++;
 	if (_selectedItem >= _items.size()) {
@@ -183,11 +183,13 @@ void WheelEntry::NextItem()
 
 bool WheelEntry::IsEmpty()
 {
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 	return this->_items.empty();
 }
 
 std::vector<std::shared_ptr<WheelItem>>& WheelEntry::GetItems()
 {
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 	return this->_items;
 }
 
@@ -198,6 +200,7 @@ WheelEntry::WheelEntry()
 
 void WheelEntry::PushItem(std::shared_ptr<WheelItem> item)
 {
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
 	this->_items.push_back(item);
 }
 
@@ -208,6 +211,7 @@ WheelEntry::~WheelEntry()
 
 int WheelEntry::GetSelectedItem()
 {
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
 	return this->_selectedItem;
 }
 
@@ -219,6 +223,7 @@ void WheelEntry::SerializeIntoJsonObj(nlohmann::json& a_json)
 
 void WheelEntry::SetSelectedItem(int a_selected)
 {
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
 	this->_selectedItem = a_selected;
 }
 
