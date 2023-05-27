@@ -2,26 +2,19 @@
 #include "WheelItemMutable.h"
 using EventResult = RE::BSEventNotifyControl;
 
-void WheelItemMutableManager::Track(std::weak_ptr<WheelItemMutable> a_mutable)
+void WheelItemMutableManager::Track(WheelItemMutable* a_mutable)
 {
 	std::unique_lock<std::shared_mutex> lock(this->_lock);
 	this->_mutables.push_back(a_mutable);
 }
 
-void WheelItemMutableManager::UnTrack(std::weak_ptr<WheelItemMutable> a_mutable)
+void WheelItemMutableManager::UnTrack(WheelItemMutable* a_mutable)
 {
 	std::unique_lock<std::shared_mutex> lock(this->_lock);
-	if (a_mutable.expired()) {
-		ERROR("WheelItemMutableManager::UnTrack: a_mutable is null");
-		return;
-	}
 	for (auto it = this->_mutables.begin(); it != this->_mutables.end(); ++it) {
-		if (it->expired()) {
-			continue;
-		}
-		if (it->lock() == a_mutable.lock()) {
+		if (*it == a_mutable) {
 			this->_mutables.erase(it);
-			return;
+			break;
 		}
 	}
 }
@@ -49,13 +42,10 @@ EventResult WheelItemMutableManager::ProcessEvent(const RE::TESUniqueIDChangeEve
 	uint16_t oldUniqueID = a_event->oldUniqueID;
 	uint16_t newUniqueID = a_event->newUniqueID;
 	for (auto& item : this->_mutables) {
-		if (item.expired()) {
-			continue; // this should never happen because object removes itself from manager when it's destroyed
-		}
-		if (item.lock()->GetFormID() == form->GetFormID()) {
-			if (item.lock()->GetUniqueID() == oldUniqueID) {
+		if (item->GetFormID() == form->GetFormID()) {
+			if (item->GetUniqueID() == oldUniqueID) {
 				INFO("{}'s new unique id changed from {} to {} due to external changes.", form->GetName(), oldUniqueID, newUniqueID);
-				item.lock()->SetUniqueID(newUniqueID);  // update the uniqueID of the item
+				item->SetUniqueID(newUniqueID);  // update the uniqueID of the item
 			}
 		}
 	}

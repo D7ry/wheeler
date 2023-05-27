@@ -7,7 +7,7 @@ WheelItemMutable::WheelItemMutable()
 }
 WheelItemMutable::~WheelItemMutable()
 {
-	WheelItemMutableManager::GetSingleton()->UnTrack(this->shared_from_this());
+	WheelItemMutableManager::GetSingleton()->UnTrack(this);
 }
 uint16_t WheelItemMutable::GetUniqueID()
 {

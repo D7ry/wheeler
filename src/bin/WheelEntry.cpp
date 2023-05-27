@@ -19,10 +19,10 @@ void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
 	float mainArcOuterBoundRadius = OuterCircleRadius - InnerSpacing;
 	mainArcOuterBoundRadius += _arcRadiusIncInterpolator.GetValue();
 
-	float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue();
-	float entryInnerAngleMaxUpdated = entryInnerAngleMax + _arcInnerAngleIncInterpolator.GetValue();
-	float entryOuterAngleMinUpdated = entryOuterAngleMin - _arcOuterAngleIncInterpolator.GetValue();
-	float entryOuterAngleMaxUpdated = entryOuterAngleMax + _arcOuterAngleIncInterpolator.GetValue();
+	float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue() * 2;
+	float entryInnerAngleMaxUpdated = entryInnerAngleMax + _arcInnerAngleIncInterpolator.GetValue() * 2;
+	float entryOuterAngleMinUpdated = entryOuterAngleMin - _arcOuterAngleIncInterpolator.GetValue() * 2;
+	float entryOuterAngleMaxUpdated = entryOuterAngleMax + _arcOuterAngleIncInterpolator.GetValue() * 2;
 	
 	Drawer::draw_arc_gradient(wheelCenter,
 		InnerCircleRadius + InnerSpacing,
@@ -57,10 +57,12 @@ void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
 			_prevHovered = true;
 		}
 	} else {
-		_prevHovered = false;
-		_arcRadiusIncInterpolator.InterpolateTo(0, 0.2f);
-		_arcOuterAngleIncInterpolator.InterpolateTo(0, 0.2f);
-		_arcInnerAngleIncInterpolator.InterpolateTo(0, 0.2f);
+		if (_prevHovered != false) {
+			_prevHovered = false;
+			_arcRadiusIncInterpolator.InterpolateTo(0, 0.1f);
+			_arcOuterAngleIncInterpolator.InterpolateTo(0, 0.1f);
+			_arcInnerAngleIncInterpolator.InterpolateTo(0, 0.1f);
+		}
 	}
 	this->DrawSlot(itemCenter, hovered, inv);
 }

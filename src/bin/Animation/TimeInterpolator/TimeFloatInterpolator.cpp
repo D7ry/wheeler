@@ -38,3 +38,22 @@ double TimeFloatInterpolator::GetValue() const
 {
 	return value;
 }
+
+void TimeFloatInterpolator::ForceFinish()
+{
+	this->elapsedTime = duration;
+	this->value = this->target;
+}
+
+void TimeFloatInterpolator::SetValue(double value)
+{
+	this->value = value;
+}
+
+void TimeFloatInterpolator::ForceValue(double value)
+{
+	this->target = value;
+	this->value = value;
+	this->duration = 0;
+	this->elapsedTime = 0;
+}

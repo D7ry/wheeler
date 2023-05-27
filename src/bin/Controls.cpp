@@ -7,7 +7,7 @@ void Controls::Init()
 		{
 			{ 0x12, &Wheeler::NextWheel }, // e
 			{ 0x10, &Wheeler::PrevWheel }, // q
-			{ 58, &Wheeler::CloseWheeler },        // caps lock
+			{ 58, &Wheeler::ToggleWheeler },  // caps lock
 			{ 264, &Wheeler::PrevItemInEntry }, // mouse wheel up
 			{ 265, &Wheeler::NextItemInEntry }, // mouse wheel down
 			{ 256, &Wheeler::ActivateHoveredEntryPrimary}, // mouse left

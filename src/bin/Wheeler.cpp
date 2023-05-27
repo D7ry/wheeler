@@ -242,6 +242,9 @@ void Wheeler::CloseWheeler()
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->DecrementBlurCount();
 		}
+		if (_activeWheelIdx >= 0 && _activeWheelIdx < _wheels.size()) {
+			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry on close
+		}
 		_openTimer = 0;
 		_closeTimer = 0;
 	}

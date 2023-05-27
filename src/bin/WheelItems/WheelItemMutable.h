@@ -22,7 +22,7 @@
  * 2. Doing a full scan of the player's inventory every time the player loads and adding uniqueIDs to entries that are missing, in case the player uses the mod for the first time.
  * 
  */
-class WheelItemMutable : public WheelItem, public std::enable_shared_from_this<WheelItemMutable>
+class WheelItemMutable : public WheelItem
 {
 public:
 	uint16_t GetUniqueID();
@@ -39,7 +39,7 @@ public:
 	static std::shared_ptr<T>CreateWheelItemMutable(RE::TESBoundObject* a_obj, uint16_t a_uniqueID)
 	{
 		std::shared_ptr<T> ret = std::make_shared<T>(a_obj, a_uniqueID);
-		WheelItemMutableManager::GetSingleton()->Track(ret->shared_from_this());
+		WheelItemMutableManager::GetSingleton()->Track(ret.get());
 		return ret;
 	}
 

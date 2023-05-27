@@ -20,7 +20,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
 		// fancy math begin
 
-		const float entryArcSpan = 2 * IM_PI;
+		const float entryArcSpan = 2 * IM_PI / _entries.size();
 
 		const float innerSpacing = InnerSpacing / InnerCircleRadius / 2;
 		float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing + IM_PI / 2;
@@ -40,7 +40,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		}
 
 		// update hovered item
-		if (a_cursorCentered) {
+		if (!a_cursorCentered) {
 			bool updatedActiveEntry = false;
 			float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
 			Drawer::draw_arc(a_wheelCenter,

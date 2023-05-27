@@ -58,9 +58,10 @@ void Serializer::Save(SKSE::SerializationInterface* a_intfc)
 	nlohmann::json j_wheeler;
 	Wheeler::SerializeIntoJsonObj(j_wheeler);
 	
-	INFO("Serializing following record: {}", j_wheeler);
+	std::string writeBuffer = j_wheeler.dump();
+	INFO("Serializing following record: {}", writeBuffer);
 	
-	Serial::Write(a_intfc, j_wheeler);
+	Serial::Write(a_intfc, writeBuffer);
 
 }
 
@@ -79,12 +80,12 @@ void Serializer::Load(SKSE::SerializationInterface* a_intfc)
 		INFO("Load: wrong version, abort loading");
 		return;
 	}
-	std::string readBuf;
+	std::string readBuffer;
 
-	Serial::Read(a_intfc, readBuf);
-	INFO("Read str: {}", readBuf);
+	Serial::Read(a_intfc, readBuffer);
+	INFO("Read str: {}", readBuffer);
 	try {
-		nlohmann::json j_wheeler = nlohmann::json::parse(readBuf);
+		nlohmann::json j_wheeler = nlohmann::json::parse(readBuffer);
 		Wheeler::Clear();
 		Wheeler::SerializeFromJsonObj(j_wheeler, a_intfc);
 	} catch (const std::exception& e) {

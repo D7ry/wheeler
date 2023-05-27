@@ -10,10 +10,10 @@
 class TimeFloatInterpolator
 {
 private:
-	double value;
-	double target;
-	double duration;
-	double elapsedTime;
+	std::atomic<double> value;
+	std::atomic<double> target;
+	std::atomic<double> duration;
+	std::atomic<double> elapsedTime;
 
 public:
 	TimeFloatInterpolator(double initialValue);
@@ -26,6 +26,12 @@ public:
 	void Update(double dt);
 
 	double GetValue() const;
+
+	void ForceFinish();
+
+	void SetValue(double value);
+
+	void ForceValue(double value);
 };
 
 ////PROMPT:
