@@ -222,6 +222,10 @@ void Wheeler::OpenWheeler()
 		if (Config::Styling::Wheel::BlurOnOpen) {
 			RE::UIBlurManager::GetSingleton()->IncrementBlurCount();
 		}
+		if (_activeWheelIdx >= 0 && _activeWheelIdx < _wheels.size()) {
+			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry on OPEN
+			_wheels[_activeWheelIdx]->ResetAnimation();
+		}
 		_state = Config::Styling::Wheel::FadeTime > 0 ? WheelState::KOpening : WheelState::KOpened;
 		_openTimer = 0;
 		RE::PlaySoundRE(Config::Sound::SD_WHEELERTOGGLE);
@@ -244,6 +248,7 @@ void Wheeler::CloseWheeler()
 		}
 		if (_activeWheelIdx >= 0 && _activeWheelIdx < _wheels.size()) {
 			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry on close
+			_wheels[_activeWheelIdx]->ResetAnimation();
 		}
 		_openTimer = 0;
 		_closeTimer = 0;
@@ -288,14 +293,19 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 void Wheeler::NextWheel()
 {
 	if (_state == WheelState::KOpened) {
+		if (_wheels.empty()) {
+			return;
+		}
 		_cursorPos = { 0, 0 };
 		if (_activeWheelIdx >= 0) {
+			_wheels[_activeWheelIdx]->ResetAnimation();
 			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1); // reset active entry for current wheel
 		}
 		_activeWheelIdx += 1;
 		if (_activeWheelIdx >= _wheels.size()) {
 			_activeWheelIdx = 0;
 		}
+		_wheels[_activeWheelIdx]->ResetAnimation();
 		_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry for new wheel
 		if (Config::Sound::WheelSwitchSound && _wheels.size() > 1) {
 			RE::PlaySoundRE(Config::Sound::SD_WHEELSWITCH);
@@ -306,14 +316,19 @@ void Wheeler::NextWheel()
 void Wheeler::PrevWheel()
 {
 	if (_state == WheelState::KOpened) {
+		if (_wheels.empty()) {
+			return;
+		}
 		_cursorPos = { 0, 0 };
 		if (_activeWheelIdx >= 0) {
+			_wheels[_activeWheelIdx]->ResetAnimation();
 			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1); // reset active entry for current wheel
 		}
 		_activeWheelIdx -= 1;
 		if (_activeWheelIdx < 0) {
 			_activeWheelIdx = _wheels.size() - 1;
 		}
+		_wheels[_activeWheelIdx]->ResetAnimation();
 		_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry for new wheel
 		if (Config::Sound::WheelSwitchSound && _wheels.size() > 1) {
 			RE::PlaySoundRE(Config::Sound::SD_WHEELSWITCH);

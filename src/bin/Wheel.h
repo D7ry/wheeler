@@ -20,6 +20,8 @@ public:
 
     void PrevItemInHoveredEntry();
     void NextItemInHoveredEntry();
+	
+	void ResetAnimation();
 
     void ActivateHoveredEntryPrimary(bool a_editMode);
 

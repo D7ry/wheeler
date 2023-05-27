@@ -41,8 +41,8 @@ double TimeFloatInterpolator::GetValue() const
 
 void TimeFloatInterpolator::ForceFinish()
 {
-	this->elapsedTime = duration;
-	this->value = this->target;
+	this->elapsedTime.store(this->duration);
+	this->value.store(this->target);
 }
 
 void TimeFloatInterpolator::SetValue(double value)

@@ -246,6 +246,13 @@ std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::jso
 	return std::move(entry);
 }
 
+void WheelEntry::ResetAnimation()
+{
+	_arcInnerAngleIncInterpolator.ForceValue(0);
+	_arcOuterAngleIncInterpolator.ForceValue(0);
+	_arcRadiusIncInterpolator.ForceValue(0);
+}
+
 
 void WheelEntry::SetSelectedItem(int a_selected)
 {

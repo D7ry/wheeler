@@ -133,6 +133,14 @@ void Wheel::NextItemInHoveredEntry()
 
 }
 
+void Wheel::ResetAnimation()
+{
+	std::shared_lock<std::shared_mutex> lock(_lock);
+	for (auto& entry : this->_entries) {
+		entry->ResetAnimation();
+	}
+}
+
 void Wheel::ActivateHoveredEntryPrimary(bool a_editMode)
 {
 	std::shared_lock<std::shared_mutex> lock(_lock);  // might involve editing the wheel, so unique lock
@@ -159,7 +167,7 @@ void Wheel::ActivateHoveredEntrySecondary(bool a_editMode)
 void Wheel::MoveHoveredEntryForward()
 {
 	std::unique_lock<std::shared_mutex> lock(_lock);  // might involve editing the wheel, so unique lock
-	if (_hoveredEntryIdx < 0 || this->Empty()) {
+	if (_hoveredEntryIdx < 0 || this->_entries.empty()) {
 		return;
 	}
 	int target = _hoveredEntryIdx == this->_entries.size() - 1 ? 0 : _hoveredEntryIdx + 1;  // wrap around
@@ -169,7 +177,7 @@ void Wheel::MoveHoveredEntryForward()
 void Wheel::MoveHoveredEntryBack()
 {
 	std::unique_lock<std::shared_mutex> lock(_lock);  // might involve editing the wheel, so unique loc
-	if (_hoveredEntryIdx < 0 || this->Empty()) {
+	if (_hoveredEntryIdx < 0 || this->_entries.empty()) {
 		return;
 	}
 	int target = _hoveredEntryIdx == 0 ? this->_entries.size() - 1 : _hoveredEntryIdx - 1;  // wrap around
