@@ -34,7 +34,8 @@ public:
 	/// <param name="a_editMode">Whether we're in edit mode, which prompts us to deletion.</param>
 	void ActivateHoveredEntrySecondary(bool a_editMode);
 
-
+	void ActivateHoveredEntrySpecial(bool a_editMode);
+	
 	void MoveHoveredEntryForward();
 	void MoveHoveredEntryBack();
 

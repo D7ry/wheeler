@@ -38,6 +38,13 @@ public:
 	/// <param name="editMode">Whether the wheel is in edit mode.</param>
 	void ActivateItemPrimary(bool editMode = false);
 
+	/// <summary>
+	/// Activate the item with special(middle) input, which corresponds to a middle mouse click or a controller thumbstick press.
+	/// </summary>
+	/// <param name="editMode"></param>
+	void ActivateItemSpecial(bool editMode = false);
+
+
 	void PrevItem();
 	void NextItem();
 

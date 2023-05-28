@@ -11,6 +11,7 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 		actorValue = effect->data.primaryAV;
 	}
 	Texture::icon_image_type iconType;
+
 	switch (actorValue) {
 	case RE::ActorValue::kAlteration:
 		iconType = Texture::icon_image_type::alteration;
@@ -42,6 +43,12 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 		break;
 	default:
 		iconType = Texture::icon_image_type::spell_default;
+	}
+	if (iconType == Texture::icon_image_type::spell_default) { // haven't found spell icon yet, maybe a power
+		if (a_spell->data.spellType == RE::MagicSystem::SpellType::kPower ||
+			a_spell->data.spellType == RE::MagicSystem::SpellType::kLesserPower) {
+			iconType = Texture::icon_image_type::power;
+		}
 	}
 	this->_texture = Texture::GetIconImage(iconType);
 }
@@ -118,6 +125,32 @@ void WheelItemSpell::ActivateItemPrimary()
 		RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
 	}
 }
+
+
+void WheelItemSpell::ActivateItemSpecial()
+{
+	auto pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc) {
+		return;
+	}
+	if (this->_spell->data.flags.any(RE::SpellItem::SpellFlag::kInstantCast)
+		|| this->_spell->GetSpellType() == RE::MagicSystem::SpellType::kPower 
+		|| this->_spell->GetSpellType() == RE::MagicSystem::SpellType::kLesserPower) { // insta cast the spell or power
+		
+		auto selfTargeting = this->_spell->GetDelivery() == RE::MagicSystem::Delivery::kSelf;
+		RE::TESObjectREFR* target = selfTargeting ? pc : pc->GetActorRuntimeData().currentCombatTarget.get().get();
+		float castMagnitude = _spell->GetCostliestEffectItem() ? _spell->GetCostliestEffectItem()->GetMagnitude() : 1.f;
+		
+		RE::MagicCaster* caster = pc->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+		float strength = 0;
+		RE::MagicSystem::CannotCastReason reason = RE::MagicSystem::CannotCastReason::kOK;
+		caster->CheckCast(this->_spell, false, &strength, &reason, false);
+		if (reason == RE::MagicSystem::CannotCastReason::kOK) {
+			caster->CastSpellImmediate(this->_spell, false, target, 1.f, false, castMagnitude, selfTargeting ? nullptr : pc);
+		}
+	} 
+}
+
 
 void WheelItemSpell::SerializeIntoJsonObj(nlohmann::json& a_json)
 {

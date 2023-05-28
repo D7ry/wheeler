@@ -6,7 +6,7 @@
 #include "WheelEntry.h"
 
 void WheelEntry::Draw(
-	const ImVec2 wheelCenter, float innerSpacing, 
+	const ImVec2 wheelCenter, float innerSpacingRad, 
 	float entryInnerAngleMin, float entryInnerAngleMax,
 	float entryOuterAngleMin, float entryOuterAngleMax, 
 	const ImVec2 itemCenter, bool hovered, 
@@ -14,7 +14,7 @@ void WheelEntry::Draw(
 {
 	using namespace Config::Styling::Wheel;
 
-	float mainArcOuterBoundRadius = OuterCircleRadius - InnerSpacing;
+	float mainArcOuterBoundRadius = OuterCircleRadius;
 	mainArcOuterBoundRadius += _arcRadiusIncInterpolator.GetValue();
 
 	float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue() * 2;
@@ -23,7 +23,7 @@ void WheelEntry::Draw(
 	float entryOuterAngleMaxUpdated = entryOuterAngleMax + _arcOuterAngleIncInterpolator.GetValue() * 2;
 	
 	Drawer::draw_arc_gradient(wheelCenter,
-		InnerCircleRadius + InnerSpacing,
+		InnerCircleRadius,
 		mainArcOuterBoundRadius,
 		entryInnerAngleMinUpdated, entryInnerAngleMaxUpdated,
 		entryOuterAngleMinUpdated, entryOuterAngleMaxUpdated,
@@ -50,8 +50,8 @@ void WheelEntry::Draw(
 		this->drawHighlight(wheelCenter, inv, a_drawARGS);
 		if (!_prevHovered) {
 			_arcRadiusIncInterpolator.InterpolateTo(20, 0.2f);
-			_arcOuterAngleIncInterpolator.InterpolateTo(innerSpacing * (InnerCircleRadius / OuterCircleRadius), 0.2f);
-			_arcInnerAngleIncInterpolator.InterpolateTo(innerSpacing, 0.2f);
+			_arcOuterAngleIncInterpolator.InterpolateTo(innerSpacingRad * (InnerCircleRadius / OuterCircleRadius), 0.2f);
+			_arcInnerAngleIncInterpolator.InterpolateTo(innerSpacingRad, 0.2f);
 			_prevHovered = true;
 		}
 	} else {
@@ -150,6 +150,15 @@ void WheelEntry::ActivateItemPrimary(bool editMode)
 			_items.insert(_items.begin() + _selectedItem, newItem);
 		}
 	}
+}
+
+void WheelEntry::ActivateItemSpecial(bool editMode)
+{
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
+	if (editMode || _items.size() == 0) {
+		return; // nothing to do
+	}
+	_items[_selectedItem]->ActivateItemSpecial();
 }
 
 void WheelEntry::PrevItem()

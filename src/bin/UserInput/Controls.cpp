@@ -18,6 +18,7 @@ void Controls::Init()
 			{ 208, &Wheeler::MoveEntryBackInCurrentWheel }, // down arrow
 			{ 203, &Wheeler::MoveWheelBack },          // left arrow
 			{ 205, &Wheeler::MoveWheelForward },       // right arrow
+			{ 258, &Wheeler::ActivateHoveredEntrySpecial }      // mouse middle
 		}
 		) {
 		BindInput(pair.first, pair.second, true, false);

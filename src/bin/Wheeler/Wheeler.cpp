@@ -375,6 +375,16 @@ void Wheeler::ActivateHoveredEntryPrimary()
 	}
 }
 
+void Wheeler::ActivateHoveredEntrySpecial()
+{
+	if (_wheels.empty()) {
+		return;
+	}
+	if (_state == WheelState::KOpened) {
+		_wheels[_activeWheelIdx]->ActivateHoveredEntrySpecial(_editMode);
+	}
+}
+
 void Wheeler::AddEmptyEntryToCurrentWheel()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);

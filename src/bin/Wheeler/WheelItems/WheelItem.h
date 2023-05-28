@@ -25,6 +25,7 @@ public:
 
 	virtual void ActivateItemSecondary();
 	virtual void ActivateItemPrimary();
+	virtual void ActivateItemSpecial();
 
 	virtual bool IsMutable();
 

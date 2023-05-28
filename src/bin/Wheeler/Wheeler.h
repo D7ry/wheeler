@@ -60,6 +60,8 @@ public:
 	/// </summary>
 	static void ActivateHoveredEntryPrimary();
 
+	static void ActivateHoveredEntrySpecial();
+
 	/// <summary>
 	/// Push an empty entry to the current wheel.
 	/// </summary>

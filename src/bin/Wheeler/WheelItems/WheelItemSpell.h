@@ -11,7 +11,7 @@ public:
 	virtual void ActivateItemSecondary() override;
 	virtual void ActivateItemPrimary() override;
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
-	
+	virtual void ActivateItemSpecial() override;
 
 	static inline const char* ITEM_TYPE_STR = "WheelItemSpell";
 

@@ -23,12 +23,12 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 
 		const float entryArcSpan = 2 * IM_PI / _entries.size();
 
-		const float innerSpacing = InnerSpacing / InnerCircleRadius / 2;
-		float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing + IM_PI / 2;
-		float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacing + IM_PI / 2;
+		const float innerSpacingRad = InnerSpacing / InnerCircleRadius / 2;
+		float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacingRad + IM_PI / 2;
+		float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacingRad + IM_PI / 2;
 
-		float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacing * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
-		float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacing * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+		float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacingRad * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+		float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacingRad * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
 
 		if (entryInnerAngleMax > IM_PI * 2) {
 			entryInnerAngleMin -= IM_PI * 2;
@@ -90,7 +90,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 
 		int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
 
-		_entries[entryIdx]->Draw(a_wheelCenter, innerSpacing,
+		_entries[entryIdx]->Draw(a_wheelCenter, innerSpacingRad,
 			entryInnerAngleMin, entryInnerAngleMax,
 			entryOuterAngleMin, entryOuterAngleMax, itemCenter, hovered, numArcSegments, a_imap, a_drawArgs);
 	}
@@ -164,6 +164,15 @@ void Wheel::ActivateHoveredEntrySecondary(bool a_editMode)
 		return;
 	}
 	this->_entries[_hoveredEntryIdx]->ActivateItemSecondary(a_editMode);
+}
+
+void Wheel::ActivateHoveredEntrySpecial(bool a_editMode)
+{
+	std::shared_lock<std::shared_mutex> lock(_lock);
+	if (_hoveredEntryIdx < 0 || _hoveredEntryIdx >= this->_entries.size() || a_editMode) {  // don't do anything if in edit mode
+		return;
+	}
+	this->_entries[_hoveredEntryIdx]->ActivateItemSpecial(a_editMode);
 }
 
 void Wheel::MoveHoveredEntryForward()

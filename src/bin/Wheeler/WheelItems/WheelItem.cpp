@@ -28,6 +28,10 @@ void WheelItem::ActivateItemPrimary()
 {
 }
 
+void WheelItem::ActivateItemSpecial()
+{
+}
+
 bool WheelItem::IsMutable()
 {
 	return false;
