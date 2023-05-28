@@ -1,11 +1,11 @@
 #include "WheelItem.h"
 #include "bin/Rendering/Drawer.h"
-void WheelItem::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelItem::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	//Drawer::draw_element(_texture, ImVec2(0, 0), ImVec2(100, 100), 0);
 }
 
-void WheelItem::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelItem::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 }
 

@@ -86,7 +86,8 @@ void Wheeler::Update(float a_deltaTime)
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		drawList->PushClipRectFullScreen();
 		
-		
+		DrawArgs drawArgs;
+		drawArgs.alphaMult = _alphaMult;
 		
 		// get ready to draw the wheel
 		const ImVec2 wheelCenter = getWheelCenter();
@@ -95,10 +96,10 @@ void Wheeler::Update(float a_deltaTime)
 		float cursorAngle = atan2f(_cursorPos.y, _cursorPos.x);  // where the cursor is pointing to
 
 		if (_wheels.empty()) {
-			Drawer::draw_text(wheelCenter.x, wheelCenter.y, "No Wheel Present", C_SKYRIMWHITE, 40.F, true, _alphaMult);
+			Drawer::draw_text(wheelCenter.x, wheelCenter.y, "No Wheel Present", C_SKYRIMWHITE, 40.F, drawArgs);
 		} else {
 			bool isCursorCentered = _cursorPos.x == 0 && _cursorPos.y == 0;
-			_wheels[_activeWheelIdx]->Draw(wheelCenter, cursorAngle, isCursorCentered, inv, _alphaMult);
+			_wheels[_activeWheelIdx]->Draw(wheelCenter, cursorAngle, isCursorCentered, inv, drawArgs);
 		}
 
 
@@ -108,12 +109,12 @@ void Wheeler::Update(float a_deltaTime)
 				Drawer::draw_circle_filled(
 					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
-					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10);
+					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10, drawArgs);
 			} else {
 				Drawer::draw_circle_filled(
 					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
-					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10);
+					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10, drawArgs);
 			}
 		}
 

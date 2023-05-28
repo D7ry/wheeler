@@ -23,8 +23,8 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [x] Change all storage to `std::unique_ptr` instead of raw pointer, except for `WheelItem` which is stored as a `shared_ptr` in the entry vector, and a `weak_ptr` for `WheelItemMutable` in `WheelItemMutableManager`
   - [x] Refactor serialization for this hierarchy
   - [x] Move render function into wheelentry, wheel, and wheelitem; add locking
-- [ ] Establish rendering pipeline: each level in the hierarchy(Wheeler, Wheel, WheelEntry, WheelItem) call the lower hierarchy's Draw() function, passing its own alpha, scale, rotation, and translation mult
-  - [ ] Change existing rendering functions to work with alpha, scale, rotation, and translation
+- [x] Establish rendering pipeline: each level in the hierarchy(Wheeler, Wheel, WheelEntry, WheelItem) call the lower hierarchy's Draw() function, passing its own alpha, scale, rotation, and translation mult
+  - [x] Change existing rendering functions to work with alpha, scale, rotation, and translation
 - [ ] Input prompts
 - [ ] L/R hand equipped indicator
 - [ ] Steal Ersh's input hook once OAR releases

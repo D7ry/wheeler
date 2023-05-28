@@ -12,9 +12,9 @@ public:
 		_texture = tex;
 	}
 	// draw the item on the wheel's slot
-	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.0f);
+	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 	// draw the item on the wheel's highlight region(given the item is highlighted) e.g. the center of the wheel(GTA-V ish)
-	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.0f);
+	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 	virtual bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
 	/// <summary>

@@ -45,4 +45,13 @@ namespace std
 #include "Plugin.h"
 #include <d3d11.h>
 #include <dxgi.h>
+#include "imgui.h"
 #define IM_PI 3.14159265358979323846f
+
+struct DrawArgs
+{
+	double alphaMult = 1.0f;
+	float scaleMult = 1.0f;
+	float rotationOffset = 0.0f;
+	ImVec2 translationOffset = ImVec2(0.0f, 0.0f);
+};

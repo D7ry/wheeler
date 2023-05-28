@@ -2,7 +2,7 @@
 #include "bin/Rendering/Drawer.h"
 #include "bin/Utilities/Utils.h"
 
-void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	std::string text = this->_obj->GetName();
 	int itemCount = this->GetItemData(a_imap).first;
@@ -12,13 +12,13 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREF
 	{
 		using namespace Config::Styling::Item::Slot;
 		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			text.data(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+			text.data(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
 		Drawer::draw_texture(_texture.texture,
 			ImVec2(a_center.x, a_center.y),
 			Config::Styling::Item::Slot::Texture::OffsetX,
 			Config::Styling::Item::Slot::Texture::OffsetY,
 			ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-			0, a_alphaMult);
+			C_SKYRIMWHITE, a_drawArgs);
 	}
 
 
@@ -27,12 +27,12 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREF
 	//PieMenu::PieMenuItem("one weapon");
 }
 
-void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	{
 		using namespace Config::Styling::Item::Highlight;
 		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			this->_obj->GetName(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+			this->_obj->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
 	}
 	
 	Drawer::draw_texture(_texture.texture,
@@ -40,7 +40,7 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 		Config::Styling::Item::Highlight::Texture::OffsetX,
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		0, a_alphaMult);
+		C_SKYRIMWHITE, a_drawArgs);
 }
 
 WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID)

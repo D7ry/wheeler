@@ -12,11 +12,11 @@ public:
 	void Draw(const ImVec2 wheelCenter, float innerSpacing,
 		float entryInnerAngleMin, float entryInnerAngleMax,
 		float entryOuterAngleMin, float entryOuterAngleMax,
-		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.f);
+		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);
 	
-	void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.f);
-	
-	void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult = 1.f);
+
+
+	void DrawControlPrompt(ImVec2 a_center, DrawArgs a_drawArgs);
 
 	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
 	bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
@@ -60,6 +60,10 @@ public:
 	void ResetAnimation();
 
 private:
+	void drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
+
+	void drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
+	
 	bool _prevHovered = false;  // used to detect when the mouse enters the entry
 	int _selectedItem = -1;
 	std::shared_mutex _lock;

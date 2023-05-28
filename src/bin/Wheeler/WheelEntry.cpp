@@ -5,13 +5,12 @@
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelEntry.h"
 
-void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
- float entryInnerAngleMin, 
-	float entryInnerAngleMax,
- float entryOuterAngleMin, 
-	float entryOuterAngleMax, const ImVec2 itemCenter,
- bool hovered, 
-	int numArcSegments, RE::TESObjectREFR::InventoryItemMap& inv, float a_alphaMult)
+void WheelEntry::Draw(
+	const ImVec2 wheelCenter, float innerSpacing, 
+	float entryInnerAngleMin, float entryInnerAngleMax,
+	float entryOuterAngleMin, float entryOuterAngleMax, 
+	const ImVec2 itemCenter, bool hovered, 
+	int numArcSegments, RE::TESObjectREFR::InventoryItemMap& inv, DrawArgs a_drawARGS)
 {
 	using namespace Config::Styling::Wheel;
 
@@ -30,7 +29,7 @@ void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
 		entryOuterAngleMinUpdated, entryOuterAngleMaxUpdated,
 		hovered ? HoveredColorBegin : UnhoveredColorBegin,
 		hovered ? HoveredColorEnd : UnhoveredColorEnd,
-		numArcSegments, a_alphaMult);
+		numArcSegments, a_drawARGS);
 
 	bool active = this->IsActive(inv);
 	ImU32 arcColorBegin = active ? ActiveArcColorBegin : InActiveArcColorBegin;
@@ -45,10 +44,10 @@ void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
 		entryOuterAngleMaxUpdated,
 		arcColorBegin,
 		arcColorEnd,
-		numArcSegments, a_alphaMult);
+		numArcSegments, a_drawARGS);
 
 	if (hovered) {
-		this->DrawHighlight(wheelCenter, inv, a_alphaMult);
+		this->drawHighlight(wheelCenter, inv, a_drawARGS);
 		if (!_prevHovered) {
 			_arcRadiusIncInterpolator.InterpolateTo(20, 0.2f);
 			_arcOuterAngleIncInterpolator.InterpolateTo(innerSpacing * (InnerCircleRadius / OuterCircleRadius), 0.2f);
@@ -63,27 +62,27 @@ void WheelEntry::Draw(const ImVec2 wheelCenter, float innerSpacing,
 			_arcInnerAngleIncInterpolator.InterpolateTo(0, 0.1f);
 		}
 	}
-	this->DrawSlot(itemCenter, hovered, inv, a_alphaMult);
+	this->drawSlot(itemCenter, hovered, inv, a_drawARGS);
 }
 
-void WheelEntry::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelEntry::drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return; // nothing to draw
 	}
-	_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap, a_alphaMult);
+	_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap, a_drawArgs);
 }
 
-void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelEntry::drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 	if (_items.size() == 0) {
 		return;  // nothing to draw
 	}
-	_items[_selectedItem]->DrawHighlight(a_center, a_imap, a_alphaMult);
+	_items[_selectedItem]->DrawHighlight(a_center, a_imap, a_drawArgs);
 	if (_items.size() > 1) {
 		Drawer::draw_text(
 			a_center.x + Config::Styling::Entry::Highlight::Text::OffsetX,
@@ -91,8 +90,7 @@ void WheelEntry::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItem
 			fmt::format("{} / {}", _selectedItem + 1, _items.size()).data(),
 			C_SKYRIMWHITE,
 			Config::Styling::Entry::Highlight::Text::Size,
-			true,
-			a_alphaMult
+			a_drawArgs
 			);
 	}
 }

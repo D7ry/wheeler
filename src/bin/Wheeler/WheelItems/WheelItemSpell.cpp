@@ -46,12 +46,12 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 	this->_texture = Texture::GetIconImage(iconType);
 }
 
-void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	{
 		using namespace Config::Styling::Item::Slot;
 		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			this->_spell->GetName(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+			this->_spell->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
 	}
 
 	Drawer::draw_texture(_texture.texture,
@@ -59,16 +59,16 @@ void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR
 		Config::Styling::Item::Slot::Texture::OffsetX,
 		Config::Styling::Item::Slot::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-		0,
-		a_alphaMult);
+		C_SKYRIMWHITE,
+		a_drawArgs);
 }
 
-void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, float a_alphaMult)
+void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	{
 		using namespace Config::Styling::Item::Highlight;
 		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			_spell->GetName(), C_SKYRIMWHITE, Text::Size, true, a_alphaMult);
+			_spell->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
 	}
 	
 	Drawer::draw_texture(_texture.texture,
@@ -76,8 +76,8 @@ void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		Config::Styling::Item::Highlight::Texture::OffsetX,
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		0,
-		a_alphaMult);
+		C_SKYRIMWHITE,
+		a_drawArgs);
 }
 
 bool WheelItemSpell::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
