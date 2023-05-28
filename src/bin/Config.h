@@ -8,9 +8,21 @@ static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
 static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
 static ImU32 C_TRIQUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .75));
 static ImU32 C_VOID = IM_COL32(255, 255, 255, 0);
+using EventResult = RE::BSEventNotifyControl;
 
 namespace Config
 {
+
+	void ReadConfig();
+
+	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
+	{
+	public:
+
+		virtual EventResult ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>* a_eventSource);
+
+		static bool Register();
+	};
 	namespace Sound
 	{
 		static inline const char* SD_WHEELSWITCH = "UIFavorite";
@@ -29,14 +41,7 @@ namespace Config
 		}
 
 	}
-	namespace Sound
-	{
-		inline bool ItemSwitchSound = true;
-		inline bool EntrySwitchSound = true;
-		inline bool WheelSwitchSound = true;
-		inline bool WheelToggleSound = true;
 
-	}
 	namespace Styling
 	{
 		namespace Wheel
@@ -54,13 +59,10 @@ namespace Config
 			inline ImU32 WheelIndicatorActiveColor = C_SKYRIMWHITE;
 			inline ImU32 WheelIndicatorInactiveColor = C_SKYRIMGREY;
 
-			inline float RADIUS_SELECT_MIN = pow(60.f, 2);
 			inline float InnerCircleRadius = 220.0f;
 			inline float OuterCircleRadius = 360.0f;
-			inline int ITEMS_MIN = 1;
 			inline float InnerSpacing = 10.f;
 
-			inline ImU32 BackGroundColor = ImColor(0.0f, 0.0f, 0.0f, 0.5f);
 			inline ImU32 HoveredColorBegin = C_QUARTERTRANSPARENT;
 			inline ImU32 HoveredColorEnd = C_HALFTRANSPARENT;
 
@@ -74,8 +76,6 @@ namespace Config
 			inline ImU32 InActiveArcColorEnd = C_SKYRIMGREY;
 
 			inline float ActiveArcWidth = 7.f;
-
-			inline uint32_t NumWheels = 3;  // # of wheels
 			
 			inline bool BlurOnOpen = true;
 			inline float SlowTimeScale = .1f;
@@ -93,9 +93,9 @@ namespace Config
 			{
 				namespace Text
 				{
-					const inline float OffsetX = 0;
-					const inline float OffsetY = -130;
-					const inline float Size = 27;
+					inline float OffsetX = 0;
+					inline float OffsetY = -130;
+					inline float Size = 27;
 				}
 			}
 		}
@@ -106,47 +106,41 @@ namespace Config
 			{
 				namespace Texture
 				{
-					const inline float OffsetX = 0;
-					const inline float OffsetY = -50;
-					const inline float Scale = .2f;
+					inline float OffsetX = 0;
+					inline float OffsetY = -50;
+					inline float Scale = .2f;
 				}
 
 				namespace Text
 				{
-					const inline float OffsetX = 0;
-					const inline float OffsetY = 20;
-					const inline float Size = 35;
+					inline float OffsetX = 0;
+					inline float OffsetY = 20;
+					inline float Size = 35;
 				}
 
 				namespace Desc
 				{
-					const inline float OffsetX = 0;
-					const inline float OffsetY = 30;
-					const inline float Size = 15;
+					inline float OffsetX = 0;
+					inline float OffsetY = 30;
+					inline float Size = 15;
 				}
 			}
 			namespace Slot
 			{
 				namespace Texture
 				{
-					const inline float OffsetX = 0;
-					const inline float OffsetY = -25;
-					const inline float Scale = .1f;
+					inline float OffsetX = 0;
+					inline float OffsetY = -25;
+					inline float Scale = .1f;
 				}
 
 				namespace Text
 				{
-					const inline float OffsetX = 0;
-					const inline float OffsetY = 10;
-					const inline float Size = 30;
+					inline float OffsetX = 0;
+					inline float OffsetY = 10;
+					inline float Size = 30;
 				}
 
-				namespace Desc
-				{
-					const inline float OffsetX = 0;
-					const inline float OFfsetY = 30;
-					const inline float Size = 20;
-				}
 			}
 			
 		}

@@ -74,7 +74,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 					updatedActiveEntry = true;
 				}
 			}
-			if (Config::Sound::EntrySwitchSound && updatedActiveEntry) {
+			if (updatedActiveEntry) {
 				RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
 			}
 		}

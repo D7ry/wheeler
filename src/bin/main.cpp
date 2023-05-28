@@ -11,12 +11,16 @@
 #include "Utilities/UniqueIDHandler.h"
 #include "Serialization/SerializationEntry.h"
 
+#include "Config.h"
+
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
 		RE::BSInputDeviceManager::GetSingleton()->AddEventSink(Input::GetSingleton());
 		WheelItemMutableManager::GetSingleton()->Register();
+		Config::ReadConfig();
+		Config::UpdateHandler::Register();
 		Texture::Init();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
