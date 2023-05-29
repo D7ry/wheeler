@@ -23,10 +23,12 @@ void Drawer::draw_text(float a_x,
 	Utils::Color::MultAlpha(a_color, a_drawArgs.alphaMult);
 
 	float currFontSize = ImGui::GetFontSize();
+	
+	float fontRatio = a_font_size / currFontSize;
 
 	ImVec2 text_size = ImGui::CalcTextSize(a_text);
-	text_size.x *= a_font_size / currFontSize;
-	text_size.y *= a_font_size / currFontSize;
+	text_size.x *= fontRatio;
+	text_size.y *= fontRatio;
 	
 	text_x = -text_size.x * 0.5f;
 	text_y = -text_size.y * 0.5f;
@@ -39,10 +41,10 @@ void Drawer::draw_text(float a_x,
 	
 
 	ImVec2 shadowPos(position);
-	auto offset = a_font_size * 0.08f;
+	float shadowOffset = a_font_size * 0.05f;
 
-	shadowPos.x += offset;
-	shadowPos.y += offset;
+	shadowPos.x += shadowOffset;
+	shadowPos.y += shadowOffset;
 	drawList->AddText(font, a_font_size, shadowPos, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
 	
 	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);

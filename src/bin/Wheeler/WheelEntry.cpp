@@ -49,17 +49,18 @@ void WheelEntry::Draw(
 	if (hovered) {
 		this->drawHighlight(wheelCenter, inv, a_drawARGS);
 		if (!_prevHovered) {
-			_arcRadiusIncInterpolator.InterpolateTo(20, 0.2f);
-			_arcOuterAngleIncInterpolator.InterpolateTo(innerSpacingRad * (InnerCircleRadius / OuterCircleRadius), 0.2f);
-			_arcInnerAngleIncInterpolator.InterpolateTo(innerSpacingRad, 0.2f);
+			float expandSize = Config::Animation::EntryHighlightExpandScale * (OuterCircleRadius - InnerCircleRadius);
+			_arcRadiusIncInterpolator.InterpolateTo(expandSize, Config::Animation::EntryHighlightExpandTime);
+			_arcOuterAngleIncInterpolator.InterpolateTo(innerSpacingRad * (InnerCircleRadius / OuterCircleRadius), Config::Animation::EntryHighlightExpandTime);
+			_arcInnerAngleIncInterpolator.InterpolateTo(innerSpacingRad, Config::Animation::EntryHighlightExpandTime);
 			_prevHovered = true;
 		}
 	} else {
 		if (_prevHovered != false) {
 			_prevHovered = false;
-			_arcRadiusIncInterpolator.InterpolateTo(0, 0.1f);
-			_arcOuterAngleIncInterpolator.InterpolateTo(0, 0.1f);
-			_arcInnerAngleIncInterpolator.InterpolateTo(0, 0.1f);
+			_arcRadiusIncInterpolator.InterpolateTo(0, Config::Animation::EntryHighlightRetractTime);
+			_arcOuterAngleIncInterpolator.InterpolateTo(0, Config::Animation::EntryHighlightRetractTime);
+			_arcInnerAngleIncInterpolator.InterpolateTo(0, Config::Animation::EntryHighlightRetractTime);
 		}
 	}
 	this->drawSlot(itemCenter, hovered, inv, a_drawARGS);

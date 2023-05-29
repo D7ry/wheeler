@@ -42,6 +42,13 @@ namespace Config
 
 	}
 
+	namespace Animation
+	{
+		inline float EntryHighlightExpandTime = 0.2f;
+		inline float EntryHighlightRetractTime = 0.2f;
+		inline float EntryHighlightExpandScale = 0.15f;
+	}
+
 	namespace Styling
 	{
 		namespace Wheel
@@ -98,6 +105,7 @@ namespace Config
 					inline float Size = 27;
 				}
 			}
+
 		}
 		
 		namespace Item

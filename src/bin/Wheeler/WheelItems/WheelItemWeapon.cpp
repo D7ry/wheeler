@@ -5,7 +5,7 @@
 void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	std::string text = this->_obj->GetName();
-	int itemCount = this->GetItemData(a_imap).first;
+	int itemCount = this->GetItemExtraDataAndCount(a_imap).first;
 	if (itemCount > 1) {
 		text += " (" + std::to_string(itemCount) + ")";
 	} 
@@ -21,10 +21,7 @@ void WheelItemWeapon::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREF
 			C_SKYRIMWHITE, a_drawArgs);
 	}
 
-
-
-
-	//PieMenu::PieMenuItem("one weapon");
+	
 }
 
 void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
@@ -41,6 +38,22 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE, a_drawArgs);
+	
+	std::string descriptionBuf = "";
+	// first check if description is empty, if not we just show the description itself, weapon's sepcial description is probably more important.
+	if (!this->_description.empty()) {  // non-empty description, weapon's main description takes priority(it's probably a special weapon)
+		descriptionBuf = this->_description;
+	} else {
+		// try to get enchant of this weapon
+		std::vector<RE::EnchantmentItem*> enchants;
+		this->GetItemEnchantment(a_imap, enchants);
+		if (!enchants.empty()) {
+			// take 1st item for now.
+			Utils::Magic::GetMagicItemDescription(enchants[0], descriptionBuf);
+		}
+	}
+	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
+		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 
 }
 
@@ -113,7 +126,7 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 		return;
 	}
 	RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
-	auto itemData = this->GetItemData(inv);
+	auto itemData = this->GetItemExtraDataAndCount(inv);
 	int count = itemData.first;
 	RE::ExtraDataList* extraData = itemData.second;
 	if (count <= 0) { // nothing to equip
@@ -145,7 +158,7 @@ bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	if (!pc) {
 		return false;
 	}
-	if (this->GetItemData(a_inv).first >= 2) {
+	if (this->GetItemExtraDataAndCount(a_inv).first >= 2) {
 		return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true) != Utils::Inventory::Hand::None;
 	} else {
 		return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID()) != Utils::Inventory::Hand::None;
@@ -155,7 +168,7 @@ bool WheelItemWeapon::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 
-	auto itemData = this->GetItemData(a_inv);
+	auto itemData = this->GetItemExtraDataAndCount(a_inv);
 
 	return itemData.first > 0;
 }

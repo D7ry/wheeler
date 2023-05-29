@@ -61,7 +61,10 @@ protected:
 	/// </summary>
 	/// <param name="a_inv"></param>
 	/// <returns>The # of available items with functionally identical extralists in the inventory.</returns>
-	std::pair<int, RE::ExtraDataList*> GetItemData(RE::TESObjectREFR::InventoryItemMap& a_inv);
+	std::pair<int, RE::ExtraDataList*> GetItemExtraDataAndCount(RE::TESObjectREFR::InventoryItemMap& a_inv);
+
+	void GetItemEnchantment(RE::TESObjectREFR::InventoryItemMap& a_invMap, std::vector<RE::EnchantmentItem*>& r_enchantments);
+
 
 	RE::TESBoundObject* _obj; // TESObjectWEAP or TESObjectARMO
 

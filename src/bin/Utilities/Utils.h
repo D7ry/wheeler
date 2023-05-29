@@ -56,6 +56,7 @@ namespace Utils
 			ptr = sub_1401d5ba0(ptr, a_obj, 1);
 			return ptr;
 		}
+
 	}
 	
 	namespace Workaround

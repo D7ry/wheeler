@@ -27,5 +27,4 @@ public:
 
 private:
 	void equipItem(bool a_toRight = true);
-	TimeColorInterpolator _testInterpolator;
 };
