@@ -68,4 +68,5 @@ namespace Utils
 			a_u32 = (a_u32 & 0x00FFFFFF) | (static_cast<ImU32>(static_cast<double>(a_u32 >> 24) * a_mult) << 24);
 		}
 	};
+
 }

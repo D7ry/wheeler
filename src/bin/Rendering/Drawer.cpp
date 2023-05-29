@@ -37,26 +37,59 @@ void Drawer::draw_text(float a_x,
 
 	auto drawList = ImGui::GetWindowDrawList();
 	
-	ImVec2 shadowPos1(position);
-	ImVec2 shadowPos2(position);
-	ImVec2 shadowPos3(position);
-	ImVec2 shadowPos4(position);
+
+	ImVec2 shadowPos(position);
 	auto offset = a_font_size * 0.08f;
-	shadowPos1.x -= offset;
-	shadowPos1.y -= offset;
-	//drawList->AddText(font, a_font_size, shadowPos1, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-	shadowPos2.x -= offset;
-	shadowPos2.y += offset;
-	//drawList->AddText(font, a_font_size, shadowPos2, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-	shadowPos3.x += offset;
-	shadowPos3.y -= offset;
-	//drawList->AddText(font, a_font_size, shadowPos3, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-	shadowPos4.x += offset;
-	shadowPos4.y += offset;
-	drawList->AddText(font, a_font_size, shadowPos4, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+
+	shadowPos.x += offset;
+	shadowPos.y += offset;
+	drawList->AddText(font, a_font_size, shadowPos, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
 	
 	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);
 }
+
+void split_text_lines(const std::string& a_text, float a_max_width, float a_font_size, std::vector<std::string>& r_text_lines)
+{
+	float raw_length = ImGui::CalcTextSize(a_text.c_str()).x * (a_font_size / ImGui::GetFontSize()); // raw length of text in pixels
+	int num_lines = ceil(raw_length / a_max_width);
+	int line_length = ceil(a_text.length() / num_lines);
+	int curr = 0;
+	for (int i = 0; i < num_lines; i++) {
+		if (i == num_lines - 1) { // last line, push everything
+			if (curr >= a_text.length()) {
+				break;
+			}
+			r_text_lines.push_back(a_text.substr(curr));
+		} else {
+			int last_space = a_text.rfind(' ', curr + line_length);
+			if (last_space != std::string::npos) {
+				r_text_lines.push_back(a_text.substr(curr, last_space - curr));
+				curr = last_space + 1;
+			} else {
+				r_text_lines.push_back(a_text.substr(curr, line_length));
+				curr += line_length;
+			}
+		}
+	}
+}
+
+
+void Drawer::draw_text_block(float a_x, float a_y, std::string& a_text, ImU32 a_color, float a_font_size, float a_line_spacing, float a_line_length, DrawArgs a_drawArgs)
+{
+	if (a_text.empty()) {
+		return;
+	}
+	std::vector<std::string> text_lines;
+	split_text_lines(a_text, a_line_length, a_font_size, text_lines);
+
+	float font_height = ImGui::CalcTextSize("t").y * a_font_size / ImGui::GetFontSize();
+	float line_y = a_y;
+	for (const auto& line : text_lines) {
+		draw_text(a_x, line_y, line.c_str(), a_color, a_font_size, a_drawArgs);
+		line_y += (font_height + a_line_spacing);
+	}
+}
+
 
 
 void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture,

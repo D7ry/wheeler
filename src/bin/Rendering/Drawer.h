@@ -9,8 +9,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
-// stole from Lama's tiny hud
-
+// stole from Lama's tiny hud, plus some stuff I added
 
 namespace Drawer
 {
@@ -21,6 +20,14 @@ namespace Drawer
 		float a_font_size,
 		DrawArgs a_drawArgs);
 	
+	void draw_text_block(float a_x,
+		float a_y,
+		std::string& a_text,
+		ImU32 a_color,
+		float a_font_size,
+		float a_line_spacing,
+		float a_line_length,
+		DrawArgs a_drawArgs);
 	
 	void draw_texture(ID3D11ShaderResourceView* a_texture,
 		ImVec2 a_center,

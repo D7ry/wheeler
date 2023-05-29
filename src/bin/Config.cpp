@@ -93,6 +93,8 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "OffsetX", Config::Styling::Item::Highlight::Desc::OffsetX);
 	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "OffsetY", Config::Styling::Item::Highlight::Desc::OffsetY);
 	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "Size", Config::Styling::Item::Highlight::Desc::Size);
+	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "LineLength", Config::Styling::Item::Highlight::Desc::LineLength);
+	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "LineSpacing", Config::Styling::Item::Highlight::Desc::LineSpacing);
 
 	GetFloatValue(ini, "Styling.Item.Slot.Texture", "OffsetX", Config::Styling::Item::Slot::Texture::OffsetX);
 	GetFloatValue(ini, "Styling.Item.Slot.Texture", "OffsetY", Config::Styling::Item::Slot::Texture::OffsetY);

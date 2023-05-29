@@ -121,8 +121,10 @@ namespace Config
 				namespace Desc
 				{
 					inline float OffsetX = 0;
-					inline float OffsetY = 30;
-					inline float Size = 15;
+					inline float OffsetY = 50;
+					inline float Size = 30;
+					inline float LineLength = 500.f;
+					inline float LineSpacing = 5.f;
 				}
 
 				namespace Stat

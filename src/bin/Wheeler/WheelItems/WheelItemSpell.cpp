@@ -51,6 +51,7 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 		}
 	}
 	this->_texture = Texture::GetIconImage(iconType);
+	this->_spell->GetDescription(this->_description, nullptr);
 }
 
 void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
@@ -85,6 +86,10 @@ void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE,
 		a_drawArgs);
+	
+	std::string descriptionBuf = std::string(_description.c_str());
+	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
+		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 
 }
 
