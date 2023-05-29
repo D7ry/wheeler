@@ -1,10 +1,6 @@
 #include "WheelItemMutable.h"
 #include "WheelItemMutableManager.h"
 
-WheelItemMutable::WheelItemMutable()
-{
-	
-}
 WheelItemMutable::~WheelItemMutable()
 {
 	WheelItemMutableManager::GetSingleton()->UnTrack(this);

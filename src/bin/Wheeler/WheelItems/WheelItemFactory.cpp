@@ -5,6 +5,7 @@
 #include "WheelItem.h"
 #include "WheelItemSpell.h"
 #include "WheelItemWeapon.h"
+#include "WheelItemShout.h"
 
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
@@ -50,7 +51,6 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 		RE::FormType formType = boundObj->GetFormType();
 		if (formType == RE::FormType::Weapon) {
 			std::shared_ptr<WheelItemWeapon> wheelItemweap = WheelItemMutable::CreateWheelItemMutable<WheelItemWeapon>(boundObj, uniqueID);
-			//std::shared_ptr<WheelItemWeapon> wheelItemweap = std::make_shared<WheelItemWeapon>(boundObj->As<RE::TESObjectWEAP>(), uniqueID);
 			return wheelItemweap;
 		} else if (formType == RE::FormType::Armor) {
 		
@@ -66,8 +66,18 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 		}
 		switch (form->GetFormType()) {
 		case RE::FormType::Spell:
-			std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(form->As<RE::SpellItem>());
-			return wheelItemSpell;
+		{
+				std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(form->As<RE::SpellItem>());
+				return wheelItemSpell;
+				break;
+		}
+
+		case RE::FormType::Shout:
+		{
+				std::shared_ptr<WheelItemShout> wheelItemShout = std::make_shared<WheelItemShout>(form->As<RE::TESShout>());
+				return wheelItemShout;
+				break;
+		}
 		}
 	}
 	return nullptr;
@@ -107,6 +117,19 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 		}
 		std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(spell);
 		return wheelItemSpell;
+	} else if (type == WheelItemShout::ITEM_TYPE_STR) {
+		RE::FormID formID = a_json["formID"].get<RE::FormID>();
+		if (!a_intfc->ResolveFormID(formID, formID)) {
+			ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to resolve formID.");
+			return nullptr;
+		}
+		RE::TESShout* shout = static_cast<RE::TESShout*>(RE::TESForm::LookupByID(formID));
+		if (!shout) {
+			ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup shout.");
+			return nullptr;
+		}
+		std::shared_ptr<WheelItemShout> wheelItemShout = std::make_shared<WheelItemShout>(shout);
+		return wheelItemShout;
 	}
 	return nullptr;
 }

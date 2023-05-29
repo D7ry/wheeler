@@ -1,9 +1,10 @@
 #pragma once
 #include "WheelItem.h"
-class WheelItemShout : WheelItem
+class WheelItemShout : public WheelItem
 {
 public:
 	WheelItemShout() = delete;
+	
 	WheelItemShout(RE::TESShout* a_shout);
 	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs) override;
 	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs) override;
@@ -13,7 +14,9 @@ public:
 	virtual void ActivateItemPrimary() override;
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 	virtual void ActivateItemSpecial() override;
+	
+	static inline const char* ITEM_TYPE_STR = "WheelItemShout";
 
 private:
-	RE::TESShout* _shout;
+	RE::TESShout* _shout = nullptr;
 };

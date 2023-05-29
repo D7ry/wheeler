@@ -46,7 +46,7 @@ public:
 
 protected:
 
-	WheelItemMutable();
+	WheelItemMutable(){};
 	~WheelItemMutable();
 	/// <summary>
 	/// Returns the count and extradatalist of a THIS item in the inventory. 

@@ -7,10 +7,6 @@ class WheelItem
 {
 public:
 	WheelItem(){};
-	WheelItem(Texture::Image tex)
-	{
-		_texture = tex;
-	}
 	// draw the item on the wheel's slot
 	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 	// draw the item on the wheel's highlight region(given the item is highlighted) e.g. the center of the wheel(GTA-V ish)
