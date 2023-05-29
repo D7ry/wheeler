@@ -65,6 +65,11 @@ void WheelItemShout::ActivateItemSecondary()
 	if (!pc) {
 		return;
 	}
+	RE::ActorEquipManager* aeMan = RE::ActorEquipManager::GetSingleton();
+	if (!aeMan) {
+		return;
+	}
+	aeMan->EquipShout(pc, this->_shout);
 }
 
 void WheelItemShout::ActivateItemPrimary()
@@ -73,7 +78,17 @@ void WheelItemShout::ActivateItemPrimary()
 	if (!pc) {
 		return;
 	}
+	RE::ActorEquipManager* aeMan = RE::ActorEquipManager::GetSingleton();
+	if (!aeMan) {
+		return;
+	}
+	aeMan->EquipShout(pc, this->_shout);
 }
+
+void WheelItemShout::ActivateItemSpecial()
+{
+}
+
 
 void WheelItemShout::SerializeIntoJsonObj(nlohmann::json& a_json)
 {
@@ -81,6 +96,3 @@ void WheelItemShout::SerializeIntoJsonObj(nlohmann::json& a_json)
 	a_json["formID"] = this->_shout->GetFormID();
 }
 
-void WheelItemShout::ActivateItemSpecial()
-{
-}

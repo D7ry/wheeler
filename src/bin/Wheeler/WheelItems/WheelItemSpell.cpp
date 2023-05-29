@@ -95,14 +95,24 @@ bool WheelItemSpell::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	if (!pc) {
 		return false;
 	}
+	bool lhsEquipped = false;
+	bool rhsEquipped = false;
+	bool powerEquipped = false;
+	
+	if (this->isPower()) { // is power, meaning it can be equipped to shout slot
+		auto power = pc->GetActorRuntimeData().selectedPower;
+		if (power) {
+			powerEquipped = power->GetFormID() == this->_spell->GetFormID();
+		}
+	}
+	// power can also be equipped to lhs or rhs, so we're check them as well.
 	auto lhs = pc->GetEquippedObject(true);
-	bool lhsEquipped = lhs && lhs->GetFormID() == this->_spell->GetFormID();
-	
+	lhsEquipped = lhs && lhs->GetFormID() == this->_spell->GetFormID();
+
 	auto rhs = pc->GetEquippedObject(false);
-	bool rhsEquipped = rhs && rhs->GetFormID() == this->_spell->GetFormID();
-	
-	
-	return lhsEquipped || rhsEquipped;
+	rhsEquipped = rhs && rhs->GetFormID() == this->_spell->GetFormID();
+
+	return lhsEquipped || rhsEquipped || powerEquipped;
 }
 
 bool WheelItemSpell::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
@@ -115,6 +125,9 @@ void WheelItemSpell::ActivateItemSecondary()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
+		if (this->isPower()) {
+			RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, this->_spell->GetEquipSlot());
+		}
 		RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
 	}
 }
@@ -123,6 +136,9 @@ void WheelItemSpell::ActivateItemPrimary()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
+		if (this->isPower()) {
+			RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, this->_spell->GetEquipSlot());
+		}
 		RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
 	}
 }
@@ -151,6 +167,12 @@ void WheelItemSpell::ActivateItemSpecial()
 			caster->CastSpellImmediate(this->_spell, false, target, 1.f, false, castMagnitude, selfTargeting ? nullptr : pc);
 		}
 	} 
+}
+
+inline bool WheelItemSpell::isPower()
+{
+	auto spellType = this->_spell->GetSpellType();
+	return spellType == RE::MagicSystem::SpellType::kAbility || spellType == RE::MagicSystem::SpellType::kPower || spellType == RE::MagicSystem::SpellType::kLesserPower;
 }
 
 

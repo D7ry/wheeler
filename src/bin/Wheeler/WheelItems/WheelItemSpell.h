@@ -17,5 +17,6 @@ public:
 	static inline const char* ITEM_TYPE_STR = "WheelItemSpell";
 
 private:
+	bool isPower();
 	RE::SpellItem* _spell = nullptr;
 };
