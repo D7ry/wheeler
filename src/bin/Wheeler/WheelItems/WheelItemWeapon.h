@@ -6,6 +6,7 @@ class TimeColorInterpolator;
 class WheelItemWeapon : public WheelItemMutable 
 {
 public:
+	WheelItemWeapon() = delete;
 	void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs) override;
 	void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs) override;
 	bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv) override;
