@@ -51,7 +51,9 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 		}
 	}
 	this->_texture = Texture::GetIconImage(iconType);
-	this->_spell->GetDescription(this->_description, nullptr);
+	RE::BSString descriptionBuf = "";
+	this->_spell->GetDescription(descriptionBuf, nullptr);
+	this->_description = descriptionBuf.c_str();
 }
 
 void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
@@ -87,7 +89,13 @@ void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		C_SKYRIMWHITE,
 		a_drawArgs);
 	
-	std::string descriptionBuf = std::string(_description.c_str());
+	std::string descriptionBuf = "";
+	// for spell we show magic description, for power/lesser power we show item description
+	if (this->isPower()) {
+		descriptionBuf = this->_description;
+	} else {
+		Utils::Magic::GetMagicItemDescription(_spell, descriptionBuf);	
+	}
 	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
 		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 

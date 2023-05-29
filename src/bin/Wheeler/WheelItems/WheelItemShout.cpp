@@ -6,7 +6,9 @@ WheelItemShout::WheelItemShout(RE::TESShout* a_shout)
 {
 	this->_shout = a_shout;
 	this->_texture = Texture::GetIconImage(Texture::icon_image_type::shout);
-	this->_shout->GetDescription(this->_description, nullptr);
+	RE::BSString descriptionBuf = "";
+	this->_shout->GetDescription(descriptionBuf, nullptr);
+	this->_description = descriptionBuf.c_str();
 }
 
 void WheelItemShout::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
@@ -63,6 +65,7 @@ bool WheelItemShout::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 	return false;
 }
 
+//TODO: check if shout's been unlocked, block equipment if not unlocked.
 void WheelItemShout::ActivateItemSecondary()
 {
 	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();

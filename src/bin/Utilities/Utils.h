@@ -18,6 +18,13 @@ namespace Utils
 		void SGTM(float a_in);
 	}
 
+	namespace Magic
+	{
+		void GetMagicItemDescription(RE::ItemCard* a_itemCard, RE::MagicItem* a_magicItem, RE::BSString& a_str);
+
+		void GetMagicItemDescription(RE::MagicItem* a_magicItem, std::string& a_buf);
+	}
+
 	namespace Inventory
 	{
 		std::pair<RE::EnchantmentItem*, float> GetEntryEnchantAndHealth(const std::unique_ptr<RE::InventoryEntryData>& a_invEntry);

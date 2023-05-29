@@ -33,7 +33,7 @@ public:
 
 protected:
 	Texture::Image _texture;
-	RE::BSString _description = "";  // buffer for description.
+	std::string _description = "";  // buffer for description.
 	
 
 };

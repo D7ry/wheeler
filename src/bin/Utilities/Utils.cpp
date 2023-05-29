@@ -225,20 +225,42 @@ namespace Utils
 	}
 }
 
-//if (invEntry->extraLists) {
-//for (auto* list : *invEntry->extraLists) {
-//	if (list->HasType(RE::ExtraDataType::kUniqueID)) {
-//		auto xID = static_cast<RE::ExtraUniqueID*>(list->GetByType<RE::ExtraUniqueID>());
-//		INFO("{}", xID->uniqueID);
-//	}
-/*if (list->HasType(RE::ExtraDataType::kHealth)) {
-						auto xHealth = static_cast<RE::ExtraHealth*>(list->GetByType<RE::ExtraHealth>());
-					}
-					if (list->HasType(RE::ExtraDataType::kEnchantment)) {
-						auto xEnch = static_cast<RE::ExtraEnchantment*>(list->GetByType<RE::ExtraEnchantment>());
-						const char* enchName = xEnch->enchantment->GetFullName();
-						std::string name2 = enchName;
-					}
-					if (list->HasType(RE::ExtraDataType::kPoison)) {
-						auto xPoison = static_cast<RE::ExtraPoison*>(list->GetByType<RE::ExtraPoison>());
-					}*/
+void Utils::Magic::GetMagicItemDescription(RE::ItemCard* a_itemCard, RE::MagicItem* a_magicItem, RE::BSString& a_str)
+{
+	using func_t = void* (*)(RE::ItemCard*, RE::MagicItem*, RE::BSString&);
+	REL::Relocation<func_t> func{ RELOCATION_ID(51022, 51900) };
+	func(a_itemCard, a_magicItem, a_str);
+}
+
+static void stripMagicItemDescriptionFormatCode(std::string& a_description)
+{
+	if (a_description.empty()) {
+		return;
+	}
+	while (true) {
+		size_t bracketLhs = a_description.find_first_of('<');
+		if (bracketLhs == std::string::npos) {
+			break; // gtfo, no more format codes
+		}
+		// found '<', now to find '>'
+		size_t bracketRhs = a_description.find_first_of('>');
+		if (bracketRhs == std::string::npos) {
+			break; // shouldn't happen, an opening bracket without a closing one
+		}
+		size_t bracketSize = bracketRhs - bracketLhs + 1;
+		a_description.erase(bracketLhs, bracketSize); // get rid of bracket.
+	}
+
+}
+
+/// <summary>
+/// Get the description of the magic item without html formatting.
+/// </summary>
+void Utils::Magic::GetMagicItemDescription(RE::MagicItem* a_magicItem, std::string& a_buf)
+{
+	RE::ItemCard card;
+	RE::BSString buf;
+	GetMagicItemDescription(&card, a_magicItem, buf);
+	a_buf = buf.c_str();
+	stripMagicItemDescriptionFormatCode(a_buf);
+}

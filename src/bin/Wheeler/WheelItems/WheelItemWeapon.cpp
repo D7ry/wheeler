@@ -41,6 +41,7 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE, a_drawArgs);
+
 }
 
 WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID)
@@ -81,6 +82,9 @@ WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_unique
 		_texture = Texture::GetIconImage(Texture::icon_image_type::axe_two_handed);
 		break;
 	}
+	RE::BSString descriptionBuf = "";
+	a_weapon->As<RE::TESObjectWEAP>()->GetDescription(descriptionBuf, nullptr);
+	this->_description = descriptionBuf.c_str();
 }
 
 void WheelItemWeapon::ActivateItemSecondary()
