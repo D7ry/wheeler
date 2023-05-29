@@ -124,6 +124,12 @@ namespace Config
 					inline float OffsetY = 30;
 					inline float Size = 15;
 				}
+
+				namespace Stat
+				{
+					inline float OffsetX = 0;
+					inline float OffsetY = 0;
+				}
 			}
 			namespace Slot
 			{

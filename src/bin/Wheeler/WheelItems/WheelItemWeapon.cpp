@@ -85,13 +85,11 @@ WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_unique
 
 void WheelItemWeapon::ActivateItemSecondary()
 {
-	_testInterpolator.InterpolateTo(C_SKYRIMWHITE, 1);
 	equipItem(false);
 }
 
 void WheelItemWeapon::ActivateItemPrimary()
 {
-	_testInterpolator.InterpolateTo(C_VOID, 1);
 	equipItem(true);
 }
 

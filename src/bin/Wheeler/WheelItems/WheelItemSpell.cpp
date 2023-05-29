@@ -85,6 +85,7 @@ void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE,
 		a_drawArgs);
+
 }
 
 bool WheelItemSpell::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
@@ -129,6 +130,7 @@ void WheelItemSpell::ActivateItemPrimary()
 
 void WheelItemSpell::ActivateItemSpecial()
 {
+	return; // current don't do anything because I'm yet to figure out how to prevent the power from being casted when it shouldn't
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (!pc) {
 		return;
