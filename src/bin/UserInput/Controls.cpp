@@ -36,20 +36,20 @@ void Controls::Init()
 		std::vector<std::pair<KeyId, FunctionPtr>>{
 			{ 275, &Wheeler::NextWheel },  // right shoulder
 			//{ 0x10, &Wheeler::PrevWheel },                      // q
-			{ 274, &Wheeler::ToggleWheeler },                    // left shoulder
+			{ 280, &Wheeler::ToggleWheeler },                   // left trigger
 			{ 268, &Wheeler::PrevItemInEntry },                 // DPAD left
 			{ 269, &Wheeler::NextItemInEntry },                 // DPAD right
-			{ 281, &Wheeler::ActivateHoveredEntryPrimary },    // right trigger
-			{ 280, &Wheeler::ActivateHoveredEntrySecondary },  // left trigger
+			{ 275, &Wheeler::ActivateHoveredEntryPrimary },    // right shoulder
+			{ 274, &Wheeler::ActivateHoveredEntrySecondary },   // left shoulder
 			{ 273, &Wheeler::ActivateHoveredEntrySpecial }     // right thumb
 		}) {
-		BindInput(pair.first, pair.second, true, false);
+		BindInput(pair.first, pair.second, true, true);
 	}
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>{
 			{ 274, &Wheeler::CloseWheelerIfOpenedLongEnough },  // LEFT SHOULDER
 		}) {
-		BindInput(pair.first, pair.second, false, false);
+		BindInput(pair.first, pair.second, false, true);
 	}
 }
 void Controls::BindInput(KeyId key, FunctionPtr func, bool isDown, bool isGamePad)
