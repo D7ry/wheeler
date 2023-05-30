@@ -27,17 +27,19 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [x] Change existing rendering functions to work with alpha, scale, rotation, and translation
 - [ ] Input prompts
 - [ ] L/R hand equipped indicator
-- [ ] Steal Ersh's input hook once OAR releases
-  - [ ] Only hook inputs that are bound, let other inputs go so user can walk while selecting wheel items
+- [ ] Better input handling
+  - [x] Only hook inputs that are bound, let other inputs go so user can walk while selecting wheel items
+  - [ ] Disable some other inputs too(e.g. opening inventory) even though they're not bound they still affects the wheel.
 - [ ] Add other item types
-  - [ ] Power - they're the same as spell but stored in a different slot
-  - [ ] Shout - lmb -> equip; rmb -> release (same as power that are not equipped to hand)
+  - [x] Power - they're the same as spell but stored in a different slot
+  - [x] Shout - lmb -> equip; rmb -> release (same as power that are not equipped to hand)
   - [ ] Potion 
   - [ ] Arrow
 - [ ] Enchanting support
   - [ ] Enchanted items have enchanting bar display
   - [ ] Smart enchant refill
   - [ ] Special icon / text color for enchanted items
+  - [x] Enchanted item descriptions
 - [ ] Misc
   - [ ] Controller rumble
   - [ ] Custom font
