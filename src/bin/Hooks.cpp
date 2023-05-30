@@ -173,18 +173,18 @@ namespace Hooks
 		}
 
 	private:
-		static void DispatchInputEvent(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent* const* a_evns)
+		static void DispatchInputEvent(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent** a_evns)
 		{
-			static constexpr RE::InputEvent* dummy[] = { nullptr };
+			//static RE::InputEvent* dummy[] = { nullptr };
 
 			if (!a_evns) {
 				_DispatchInputEvent(a_dispatcher, a_evns);
 				return;
 			}
 
-			bool shouldDispatch = Input::GetSingleton()->ProcessAndDeny(a_evns);
+			Input::GetSingleton()->ProcessAndFilter(a_evns);
 			
-			_DispatchInputEvent(a_dispatcher, shouldDispatch ? a_evns : dummy);
+			_DispatchInputEvent(a_dispatcher, a_evns);
 		}
 		static inline REL::Relocation<decltype(DispatchInputEvent)> _DispatchInputEvent;
 	};

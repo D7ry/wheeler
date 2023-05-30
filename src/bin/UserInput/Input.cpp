@@ -87,14 +87,16 @@ static inline std::uint32_t GetGamepadIndex(RE::BSWin32GamepadDevice::Key a_key)
 
 	return index != kInvalid ? index + kGamepadOffset : kInvalid;
 }
-bool Input::ProcessAndDeny(RE::InputEvent* const* a_event)
+void Input::ProcessAndFilter(RE::InputEvent** a_event)
 {
 	if (!a_event) {
-		return true;
+		return;
 	}
-	bool shouldDispatch = true;
 	bool wheelerOpen = Wheeler::IsWheelerOpen();
-	for (auto event = *a_event; event; event = event->next) {
+	RE::InputEvent* event = *a_event;
+	RE::InputEvent* prev = nullptr;
+	while (event != nullptr) {
+		bool shouldDispatch = true;
 		auto eventType = event->eventType;
 		// update cursor pos only if the wheel is open, and hence block dispatch of thumbstick/mouse event to game
 		if (event->eventType == RE::INPUT_EVENT_TYPE::kMouseMove) {
@@ -113,43 +115,56 @@ bool Input::ProcessAndDeny(RE::InputEvent* const* a_event)
 			}
 		} else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
 			const auto button = static_cast<RE::ButtonEvent*>(event);
-			if (!button || (button->IsPressed() && !button->IsDown()))
-				continue;
-
-			auto scan_code = button->GetIDCode();
-
-			using DeviceType = RE::INPUT_DEVICE;
-			bool isGamePad = false;
-			auto input = scan_code;
-			switch (button->device.get()) {
-			case DeviceType::kMouse:
-				input += kMouseOffset;
-				break;
-			case DeviceType::kKeyboard:
-				input += kKeyboardOffset;
-				break;
-			case DeviceType::kGamepad:
-				input = GetGamepadIndex((RE::BSWin32GamepadDevice::Key)input);
-				isGamePad = true;
-				break;
-			default:
+			if (!button) {
+				event = event->next;
 				continue;
 			}
+			if (button->IsDown() || button->IsUp()) {
+				auto scan_code = button->GetIDCode();
 
-			// block button inputs to game when when the input is bound, and when the wheel is open.
-			if (button->IsDown()) {
-				if (Controls::Dispatch(input, true, isGamePad) && wheelerOpen) {
-					shouldDispatch = false;
+				using DeviceType = RE::INPUT_DEVICE;
+				bool isGamePad = false;
+				auto input = scan_code;
+				switch (button->device.get()) {
+				case DeviceType::kMouse:
+					input += kMouseOffset;
+					break;
+				case DeviceType::kKeyboard:
+					input += kKeyboardOffset;
+					break;
+				case DeviceType::kGamepad:
+					input = GetGamepadIndex((RE::BSWin32GamepadDevice::Key)input);
+					isGamePad = true;
+					break;
+				default:
+					continue;
 				}
-			} else if (button->IsUp()) {
-				if (Controls::Dispatch(input, false, isGamePad) && wheelerOpen) {
-					shouldDispatch = false;
+
+				// block button inputs to game when when the input is bound, and when the wheel is open.
+				if (button->IsDown()) {
+					if (Controls::Dispatch(input, true, isGamePad) && wheelerOpen) {
+						shouldDispatch = false;
+					}
+				} else if (button->IsUp()) {
+					if (Controls::Dispatch(input, false, isGamePad) && wheelerOpen) {
+						shouldDispatch = false;
+					}
 				}
 			}
 
 		}
+		
+		RE::InputEvent* nextEvent = event->next;
+		if (!shouldDispatch) {
+			if (prev != nullptr) {
+				prev->next = nextEvent;
+			} else {
+				*a_event = nextEvent;
+			}
+		} else {
+			prev = event;
+		}
+		event = nextEvent;
 	}
-
-	return shouldDispatch;
 }
 
