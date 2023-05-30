@@ -1,44 +1,11 @@
 #include "Hooks.h"
 #include "Utilities/UniqueIDHandler.h"
-#include "Animation/TimeInterpolator/TimeInterpolatorManager.h"
-//namespace RE
-//{
-//	BaseExtraList::~BaseExtraList()
-//	{
-//		while (data) {
-//			auto xData = data;
-//			data = xData->next;
-//			delete xData;
-//		}
-//		data = nullptr;
-//		free(presence);
-//		presence = nullptr;
-//
-//		BaseExtraListEx::Dtor(this);
-//		stl::memzero(this);
-//	}
-//}
+#include "bin/UserInput/Input.h"
 namespace Hooks
 {
 	namespace
 	{
 		////https://github.com/ahzaab/iEquipUtil/blob/master/src/BaseExtraListEX.cpp
-		//class BaseExtraListEx
-		//{
-		//public:
-		//	static void InstallHooks()
-		//	{
-		//		// Hook the Dtor that is now in the vtable and call that when the Dtor here is called
-		//		REL::Relocation<std::uintptr_t> vTable(IEquip::Offsets::BaseExtraListEx::Vtbl);
-		//		BaseExtraListEx::_Dtor = vTable.write_vfunc(0x0, &BaseExtraListEx::Dtor);
-		//	}
-		//	static void Dtor(RE::BaseExtraList* a)
-		//	{
-		//		BaseExtraListEx::_Dtor(a);
-		//	}
-		//	using Dtor_t = decltype(&BaseExtraListEx::Dtor);
-		//	static inline REL::Relocation<Dtor_t> _Dtor;
-		//};
 		
 		class PlayerCharacterEx : public RE::PlayerCharacter
 		{
@@ -175,10 +142,10 @@ namespace Hooks
 			}
 		};
 	}
-	class Hook_OnPlayerUpdate  //no longer used
+	class OnPlayerUpdate  //no longer used
 	{
 	public:
-		static void install()
+		static void Install()
 		{
 			REL::Relocation<std::uintptr_t> PlayerCharacterVtbl{ RE::VTABLE_PlayerCharacter[0] };
 
@@ -193,12 +160,41 @@ namespace Hooks
 		}
 		static inline REL::Relocation<decltype(Update)> _Update;
 	};
+
+	// https://github.com/SlavicPotato/ied-dev
+	class OnInputEventDispatch
+	{
+	public:
+		static void Install()
+		{
+			auto& trampoline = SKSE::GetTrampoline();
+			REL::Relocation<uintptr_t> caller{ RELOCATION_ID(67315, 68617) };
+			_DispatchInputEvent = trampoline.write_call<5>(caller.address() + RELOCATION_OFFSET(0x7B, 0x7B), DispatchInputEvent);
+		}
+
+	private:
+		static void DispatchInputEvent(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent* const* a_evns)
+		{
+			static constexpr RE::InputEvent* dummy[] = { nullptr };
+
+			if (!a_evns) {
+				_DispatchInputEvent(a_dispatcher, a_evns);
+				return;
+			}
+
+			bool shouldDispatch = Input::GetSingleton()->ProcessAndDeny(a_evns);
+			
+			_DispatchInputEvent(a_dispatcher, shouldDispatch ? a_evns : dummy);
+		}
+		static inline REL::Relocation<decltype(DispatchInputEvent)> _DispatchInputEvent;
+	};
 	void Install()
 	{
 		SKSE::AllocTrampoline(1 << 5);
 
 		//CanInput::Install();
 		PlayerCharacterEx::InstallHooks();
+		OnInputEventDispatch::Install();
 		//Hook_OnPlayerUpdate::install();
 		//BaseExtraListEx::InstallHooks();
 		logger::info("Installed all hooks");

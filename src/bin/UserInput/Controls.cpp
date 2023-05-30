@@ -34,7 +34,7 @@ void Controls::Init()
 	// gamepad
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>{
-			{ 275, &Wheeler::NextWheel },  // right shoulder
+			{ 281, &Wheeler::NextWheel },  // right trigger
 			//{ 0x10, &Wheeler::PrevWheel },                      // q
 			{ 280, &Wheeler::ToggleWheeler },                   // left trigger
 			{ 268, &Wheeler::PrevItemInEntry },                 // DPAD left
@@ -47,7 +47,7 @@ void Controls::Init()
 	}
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>{
-			{ 274, &Wheeler::CloseWheelerIfOpenedLongEnough },  // LEFT SHOULDER
+			{ 280, &Wheeler::CloseWheelerIfOpenedLongEnough },  // LEFT SHOULDER
 		}) {
 		BindInput(pair.first, pair.second, false, true);
 	}
@@ -102,18 +102,20 @@ bool Controls::IsKeyBound(KeyId key)
 	return _keyFunctionMapDown.contains(key) || _keyFunctionMapUp.contains(key) || _keyFunctionMapDownGamepad.contains(key) || _keyFunctionMapUpGamepad.contains(key);
 }
 
-void Controls::Dispatch(KeyId key, bool isDown, bool isGamePad)
+bool Controls::Dispatch(KeyId key, bool isDown, bool isGamePad)
 {
 	if (isDown) {
 		if (isGamePad) {
 			if (_keyFunctionMapDownGamepad.contains(key)) {
 				FunctionPtr func = _keyFunctionMapDownGamepad[key];
 				func();
+				return true;
 			}
 		} else {
 			if (_keyFunctionMapDown.contains(key)) {
 				FunctionPtr func = _keyFunctionMapDown[key];
 				func();
+				return true;
 			}
 		}
 
@@ -122,13 +124,15 @@ void Controls::Dispatch(KeyId key, bool isDown, bool isGamePad)
 			if (_keyFunctionMapUpGamepad.contains(key)) {
 				FunctionPtr func = _keyFunctionMapUpGamepad[key];
 				func();
+				return true;
 			}
 		} else {
 			if (_keyFunctionMapUp.contains(key)) {
 				FunctionPtr func = _keyFunctionMapUp[key];
 				func();
+				return true;
 			}
 		}
-
 	}
+	return false;
 }

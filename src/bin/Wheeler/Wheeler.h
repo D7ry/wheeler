@@ -82,8 +82,8 @@ public:
 	static void SetActiveWheelIndex(int a_index);
 	
 
-
-	static bool IsInEditMode() { return _editMode; };
+	static bool IsWheelerOpen();
+	static bool IsInEditMode();
 
 	static void SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
 	static void SerializeIntoJsonObj(nlohmann::json& a_json);

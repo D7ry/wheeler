@@ -43,10 +43,6 @@ void Wheeler::Update(float a_deltaTime)
 				_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry on close
 			}
 			//ImGui::GetIO().MouseDrawCursor = false;
-			auto controlMap = RE::ControlMap::GetSingleton();
-			if (controlMap) {
-				controlMap->ignoreKeyboardMouse = false;
-			}
 			if (_editMode) {
 				showEditModeVanillaMenus(ui);
 			}
@@ -57,10 +53,6 @@ void Wheeler::Update(float a_deltaTime)
 
 	if (!ImGui::IsPopupOpen(_wheelWindowID)) {  // should open, but not opened yet
 		//ImGui::GetIO().MouseDrawCursor = true;
-		auto controlMap = RE::ControlMap::GetSingleton();
-		if (controlMap) {
-			controlMap->ignoreKeyboardMouse = true;
-		}
 		ImGui::OpenPopup(_wheelWindowID);
 		if (_activeWheelIdx >= 0 && _activeWheelIdx < _wheels.size()) {
 			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry on reopen
@@ -212,7 +204,7 @@ void Wheeler::OpenWheeler()
 		return;
 	}
 	if (_state != WheelState::KOpened && _state != WheelState::KOpening) {
-		if (Config::Styling::Wheel::SlowTimeScale <= 1) {
+		if (Config::Styling::Wheel::SlowTimeScale < 1) {
 			if (Utils::Time::GGTM() == 1) {
 				Utils::Time::SGTM(Config::Styling::Wheel::SlowTimeScale);
 			}
@@ -256,6 +248,9 @@ void Wheeler::CloseWheeler()
 
 void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
 {
+	if (_state == WheelState::KClosed) {
+		return;
+	}
 	ImVec2 newPos = _cursorPos + ImVec2{ a_deltaX, a_deltaY };
 	// Calculate the distance from the wheel center to the new cursor position
 	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
@@ -274,18 +269,18 @@ void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
 
 void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 {
-	ImVec2 newPos = { a_x, a_y };
-	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
-	// If the distance exceeds the cursor radius, adjust the cursor position
-	if (distanceFromCenter > Config::Control::Wheel::CursorRadiusPerEntry) {
-		// Calculate the normalized direction vector from the center to the new position
-		ImVec2 direction = newPos / distanceFromCenter;
-
-		// Set the cursor position at the edge of the cursor radius
-		newPos = direction * Config::Control::Wheel::CursorRadiusPerEntry;
+	if (_state == WheelState::KClosed) {
+		return;
+	}
+	RE::PlayerControls* controls = RE::PlayerControls::GetSingleton();
+	
+	#define CONTROLLER_DEADZONE 0.1f
+	if (abs(a_x) <= CONTROLLER_DEADZONE && abs(a_y) <= CONTROLLER_DEADZONE) {
+		return;
 	}
 
-	_cursorPos = newPos;
+	_cursorPos.x = a_x;
+	_cursorPos.y = -a_y;
 }
 
 void Wheeler::NextWheel()
@@ -499,6 +494,10 @@ void Wheeler::SetActiveWheelIndex(int a_index)
 {
 	_activeWheelIdx = a_index;
 }
+
+bool Wheeler::IsWheelerOpen() { return _state != WheelState::KClosed; }
+
+bool Wheeler::IsInEditMode() { return _editMode; }
 
 void Wheeler::SerializeFromJsonObj(const nlohmann::json& j_wheeler, SKSE::SerializationInterface* a_intfc)
 {
