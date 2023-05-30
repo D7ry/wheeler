@@ -9,12 +9,12 @@ class WheelEntry
 {
 	// this don't inherit WheelItem because it is a container of that
 public:
-	void Draw(const ImVec2 wheelCenter, float innerSpacing,
+	void DrawBackGround(const ImVec2 wheelCenter, float innerSpacing,
 		float entryInnerAngleMin, float entryInnerAngleMax,
 		float entryOuterAngleMin, float entryOuterAngleMax,
 		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);
 	
-
+	void DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 
 	void DrawControlPrompt(ImVec2 a_center, DrawArgs a_drawArgs);
 

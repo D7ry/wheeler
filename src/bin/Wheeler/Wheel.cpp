@@ -84,15 +84,16 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
 		float t2 = InnerCircleRadius + t1;
 		float rad = (entryInnerAngleMax - entryInnerAngleMin) / 2 + entryInnerAngleMin;
-		ImVec2 itemCenter = ImVec2(
+		ImVec2 entryCenter = ImVec2(
 			a_wheelCenter.x + t2 * cosf(rad),
 			a_wheelCenter.y + t2 * sinf(rad));
 
 		int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
 
-		_entries[entryIdx]->Draw(a_wheelCenter, innerSpacingRad,
+		_entries[entryIdx]->DrawBackGround(a_wheelCenter, innerSpacingRad,
 			entryInnerAngleMin, entryInnerAngleMax,
-			entryOuterAngleMin, entryOuterAngleMax, itemCenter, hovered, numArcSegments, a_imap, a_drawArgs);
+			entryOuterAngleMin, entryOuterAngleMax, entryCenter, hovered, numArcSegments, a_imap, a_drawArgs);
+		_entries[entryIdx]->DrawSlotAndHighlight(a_wheelCenter, entryCenter, hovered, a_imap, a_drawArgs);
 	}
 }
 void Wheel::PushEntry(std::unique_ptr<WheelEntry> a_entry) 

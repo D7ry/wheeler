@@ -5,7 +5,7 @@
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelEntry.h"
 
-void WheelEntry::Draw(
+void WheelEntry::DrawBackGround(
 	const ImVec2 wheelCenter, float innerSpacingRad, 
 	float entryInnerAngleMin, float entryInnerAngleMax,
 	float entryOuterAngleMin, float entryOuterAngleMax, 
@@ -47,7 +47,6 @@ void WheelEntry::Draw(
 		numArcSegments, a_drawARGS);
 
 	if (hovered) {
-		this->drawHighlight(wheelCenter, inv, a_drawARGS);
 		if (!_prevHovered) {
 			float expandSize = Config::Animation::EntryHighlightExpandScale * (OuterCircleRadius - InnerCircleRadius);
 			_arcRadiusIncInterpolator.InterpolateTo(expandSize, Config::Animation::EntryHighlightExpandTime);
@@ -63,7 +62,14 @@ void WheelEntry::Draw(
 			_arcInnerAngleIncInterpolator.InterpolateTo(0, Config::Animation::EntryHighlightRetractTime);
 		}
 	}
-	this->drawSlot(itemCenter, hovered, inv, a_drawARGS);
+}
+
+void WheelEntry::DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
+{
+	if (a_hovered) {
+		this->drawHighlight(a_wheelCenter, a_imap, a_drawArgs);
+	}
+	this->drawSlot(a_entryCenter, a_hovered, a_imap, a_drawArgs);
 }
 
 void WheelEntry::drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
