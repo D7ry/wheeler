@@ -102,6 +102,15 @@ bool Controls::IsKeyBound(KeyId key)
 	return _keyFunctionMapDown.contains(key) || _keyFunctionMapUp.contains(key) || _keyFunctionMapDownGamepad.contains(key) || _keyFunctionMapUpGamepad.contains(key);
 }
 
+bool Controls::IsBound(KeyId key, bool isGamePad)
+{
+	if (isGamePad) {
+		return _keyFunctionMapDownGamepad.contains(key) || _keyFunctionMapUpGamepad.contains(key);
+	} else {
+		return _keyFunctionMapDown.contains(key) || _keyFunctionMapUp.contains(key);
+	}
+}
+
 bool Controls::Dispatch(KeyId key, bool isDown, bool isGamePad)
 {
 	if (isDown) {

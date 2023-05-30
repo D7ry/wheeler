@@ -139,14 +139,11 @@ void Input::ProcessAndFilter(RE::InputEvent** a_event)
 				default:
 					continue;
 				}
-
 				// block button inputs to game when when the input is bound, and when the wheel is open.
-				if (button->IsDown()) {
-					if (Controls::Dispatch(input, true, isGamePad) && wheelerOpen) {
-						shouldDispatch = false;
-					}
-				} else if (button->IsUp()) {
-					if (Controls::Dispatch(input, false, isGamePad) && wheelerOpen) {
+				if (Controls::IsBound(input, isGamePad)) {
+					// dispatch no matter if wheeler is open, wheeler will handle dispatched logic.
+					Controls::Dispatch(input, button->IsDown(), isGamePad);
+					if (wheelerOpen) {  // however, we want to filter out dedicated inputs only when wheeler is open.
 						shouldDispatch = false;
 					}
 				}
