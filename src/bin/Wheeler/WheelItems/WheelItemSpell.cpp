@@ -90,11 +90,10 @@ void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		a_drawArgs);
 	
 	std::string descriptionBuf = "";
-	// for spell we show magic description, for power/lesser power we show item description
-	if (this->isPower()) {
-		descriptionBuf = this->_description;
-	} else {
-		Utils::Magic::GetMagicItemDescription(_spell, descriptionBuf);	
+	descriptionBuf = this->_description;
+	
+	if (descriptionBuf.empty()) { // get description of magic effect only if the original description is empty
+		Utils::Magic::GetMagicItemDescription(_spell, descriptionBuf);
 	}
 	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
 		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
