@@ -2,6 +2,8 @@
 #include "bin/Wheeler/Wheeler.h"
 void Controls::Init()
 {
+	//https://www.creationkit.com/index.php?title=Input_Script
+	// MKB
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>
 		{
@@ -26,6 +28,26 @@ void Controls::Init()
 	for (const auto pair :
 		std::vector<std::pair<KeyId, FunctionPtr>>{
 			{ 58, &Wheeler::CloseWheelerIfOpenedLongEnough },  // caps lock
+		}) {
+		BindInput(pair.first, pair.second, false, false);
+	}
+	// gamepad
+	for (const auto pair :
+		std::vector<std::pair<KeyId, FunctionPtr>>{
+			{ 275, &Wheeler::NextWheel },  // right shoulder
+			//{ 0x10, &Wheeler::PrevWheel },                      // q
+			{ 274, &Wheeler::ToggleWheeler },                    // left shoulder
+			{ 268, &Wheeler::PrevItemInEntry },                 // DPAD left
+			{ 269, &Wheeler::NextItemInEntry },                 // DPAD right
+			{ 281, &Wheeler::ActivateHoveredEntryPrimary },    // right trigger
+			{ 280, &Wheeler::ActivateHoveredEntrySecondary },  // left trigger
+			{ 273, &Wheeler::ActivateHoveredEntrySpecial }     // right thumb
+		}) {
+		BindInput(pair.first, pair.second, true, false);
+	}
+	for (const auto pair :
+		std::vector<std::pair<KeyId, FunctionPtr>>{
+			{ 274, &Wheeler::CloseWheelerIfOpenedLongEnough },  // LEFT SHOULDER
 		}) {
 		BindInput(pair.first, pair.second, false, false);
 	}
