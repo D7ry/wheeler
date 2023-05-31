@@ -8,13 +8,23 @@
 class WheelItem;
 class WheelEntry
 {
-	// this don't inherit WheelItem because it is a container of that
 public:
+	/// <summary>
+	/// Draw the background for this entry, including 2 arcs, one acting as the main background and other, much thinner
+	/// one acting as an indicator to whether the current entry is active.
+	/// The main background changes color when the entry is being hovered, and the background arc's radius linearly interpolates to an
+	/// increased value.
+	/// (GTA5-style)
+	/// </summary>
 	void DrawBackGround(const ImVec2 wheelCenter, float innerSpacing,
 		float entryInnerAngleMin, float entryInnerAngleMax,
 		float entryOuterAngleMin, float entryOuterAngleMax,
 		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);
 	
+	/// <summary>
+	/// Draw the content in slot and (if applicable) highlight region of this wheel entry.
+	/// This function should be called after DrawBackGround to prevent background from being drawn over the content.
+	/// </summary> 
 	void DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 
 	void DrawControlPrompt(ImVec2 a_center, DrawArgs a_drawArgs);
