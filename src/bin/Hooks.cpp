@@ -208,24 +208,23 @@ namespace Hooks
 
 		static inline REL::Relocation<decltype(TESCamera_Update)> _TESCamera_Update;
 	};
+
+	void OnCameraUpdate::TESCamera_Update(RE::TESCamera* a_this)
+	{
+		_TESCamera_Update(a_this);
+		// if (Wheeler::OffsetCamera(a_this)) {  // if we offset the camera, we need to update the camera
+		// 	RE::NiUpdateData updateData;
+		// 	a_this->cameraRoot->UpdateDownwardPass(updateData, 0);
+		// }
+	}
+
 	void Install()
 	{
 		SKSE::AllocTrampoline(1 << 5);
 
-		//CanInput::Install();
 		PlayerCharacterEx::InstallHooks();
 		OnInputEventDispatch::Install();
-		OnCameraUpdate::Install();
-		//Hook_OnPlayerUpdate::install();
-		//BaseExtraListEx::InstallHooks();
+		//OnCameraUpdate::Install(); // hooking camera is a terrible idea
 		logger::info("Installed all hooks");
-	}
-	void OnCameraUpdate::TESCamera_Update(RE::TESCamera* a_this)
-	{
-		_TESCamera_Update(a_this);
-		if (Wheeler::OffsetCamera(a_this)) {  // if we offset the camera, we need to update the camera
-			RE::NiUpdateData updateData;
-			a_this->cameraRoot->UpdateDownwardPass(updateData, 0);
-		}
 	}
 }

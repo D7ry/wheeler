@@ -258,7 +258,7 @@ void Wheeler::UpdateCursorPosMouse(float a_deltaX, float a_deltaY)
 	float distanceFromCenter = sqrt(newPos.x * newPos.x + newPos.y * newPos.y);
 
 	// If the distance exceeds the cursor radius, adjust the cursor position
-	float cursorRadius = getCursorRadius();
+	float cursorRadius = getCursorRadiusMax();
 	if (distanceFromCenter > cursorRadius) {
 		// Calculate the normalized direction vector from the center to the new position
 		ImVec2 direction = newPos / distanceFromCenter;
@@ -281,7 +281,7 @@ void Wheeler::UpdateCursorPosGamepad(float a_x, float a_y)
 	if (abs(a_x) <= CONTROLLER_DEADZONE && abs(a_y) <= CONTROLLER_DEADZONE) {
 		return;
 	}
-	float cursorRadius = getCursorRadius();
+	float cursorRadius = getCursorRadiusMax();
 	_cursorPos.x = a_x * cursorRadius;
 	_cursorPos.y = -a_y * cursorRadius;
 }
@@ -355,31 +355,7 @@ bool Wheeler::GetCursorAngleRadian(float& r_ret)
 	return false;
 }
 
-bool Wheeler::OffsetCamera(RE::TESCamera* a_this)
-{
-	using namespace Config::Animation;
-	if (!CameraRotation || _state == WheelState::KClosed || (_cursorPos.x == 0 && _cursorPos.y == 0)) {
-		return false;
-	}
-	float cursorRadius = getCursorRadius();
-	// Calculate yaw rotation matrix
-	RE::NiMatrix3 yawRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.x / cursorRadius * 0.05, Utils::Math::HORIZONTAL_AXIS);
-	// Set roll component to zero
-	yawRotation.entry[3][3] = 1.0f;
 
-	// Calculate pitch rotation matrix
-	RE::NiMatrix3 pitchRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.y / cursorRadius * 0.05, Utils::Math::VERTICAL_AXIS);
-	// Set roll component to zero
-	pitchRotation.entry[3][3] = 1.0f;
-
-	// Apply rotations to the camera root's local rotation matrix
-	a_this->cameraRoot->local.rotate = a_this->cameraRoot->local.rotate * yawRotation;
-	a_this->cameraRoot->local.rotate = a_this->cameraRoot->local.rotate * pitchRotation;
-
-	return true;
-
-	return true;
-}
 
 void Wheeler::ActivateHoveredEntrySecondary()
 {
@@ -617,10 +593,36 @@ void Wheeler::exitEditMode()
 	_editMode = false;
 }
 
-float Wheeler::getCursorRadius()
+float Wheeler::getCursorRadiusMax()
 {
 	if (_activeWheelIdx == -1 || _wheels.empty()) {
 		return 0.0f;
 	}
 	return Config::Control::Wheel::CursorRadiusPerEntry * _wheels[_activeWheelIdx]->GetNumEntries();
 }
+
+// bool Wheeler::OffsetCamera(RE::TESCamera* a_this)
+// {
+// 	using namespace Config::Animation;
+// 	if (!CameraRotation || _state == WheelState::KClosed || (_cursorPos.x == 0 && _cursorPos.y == 0)) {
+// 		return false;
+// 	}
+// 	float cursorRadius = getCursorRadiusMax();
+// 	// Calculate yaw rotation matrix
+// 	RE::NiMatrix3 yawRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.x / cursorRadius * 0.05, Utils::Math::HORIZONTAL_AXIS);
+// 	// Set roll component to zero
+// 	yawRotation.entry[3][3] = 1.0f;
+
+// 	// Calculate pitch rotation matrix
+// 	RE::NiMatrix3 pitchRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.y / cursorRadius * 0.05, Utils::Math::VERTICAL_AXIS);
+// 	// Set roll component to zero
+// 	pitchRotation.entry[3][3] = 1.0f;
+
+// 	// Apply rotations to the camera root's local rotation matrix
+// 	a_this->cameraRoot->local.rotate = a_this->cameraRoot->local.rotate * yawRotation;
+// 	a_this->cameraRoot->local.rotate = a_this->cameraRoot->local.rotate * pitchRotation;
+
+// 	return true;
+
+// 	return true;
+// }
