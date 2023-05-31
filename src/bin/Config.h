@@ -49,7 +49,7 @@ namespace Config
 		inline float EntryHighlightExpandScale = 0.15f;
 		inline float EntryInputBumpTime = 0.1f;
 		inline float EntryInputBumpScale = -0.1f;
-		inline bool CameraRotation = true;
+		//inline bool CameraRotation = true;
 	}
 
 	namespace Styling
