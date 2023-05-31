@@ -23,7 +23,7 @@ public:
 
 	void InterpolateTo(double targetValue, double interpolDuration);
 
-	void SetCallback(std::function<void()> callback);
+	void PushCallback(std::function<void()> callback);
 
 	// Update the interpolator's value based on a delta. Only TimeFloatInterpolatorManager may call it.
 	void Update(double dt);
@@ -36,7 +36,7 @@ public:
 
 	void ForceValue(double value);
 
-	std::function<void()> callback = nullptr;
+	std::vector<std::function<void()>> _callbacks;
 };
 
 ////PROMPT:

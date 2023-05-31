@@ -7,10 +7,10 @@ TimeBounceInterpolator::TimeBounceInterpolator(double originalValue) :
 	_interpolateBackToOriginal = [this]() {
 		_interpolator.InterpolateTo(_original, _duration);
 	};
-	std::function<void()> funcReset = [this]() {
+	std::function<void()> funcReset = [this]() { // tell the interpolator to interpolate back to the original value once it's reached the target.
 		_interpolateBackToOriginal();
 	};
-	_interpolator.SetCallback(funcReset);
+	_interpolator.PushCallback(funcReset);
 }
 
 void TimeBounceInterpolator::InterpolateTo(double target, double duration)
