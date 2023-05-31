@@ -96,35 +96,12 @@ void SerializationEntry::Load(SKSE::SerializationInterface* a_intfc)
 
 }
 
-
-
-
-	//std::string dataStr;
-	//Read(a_intfc, dataStr);
-	//if (dataStr.empty()) {
-	//	Wheeler::SetWheels(wheels); // empty set of wheels
-	//	return;
-	//}
-	//
-	//nlohmann::json j_wheeler = nlohmann::json::parse(dataStr);
-	////debugging begin
-	//std::ofstream json_file("Data\\SKSE\\Plugins\\wheeler\\testLoadingDump.json");
-	//try {
-	//	json_file << j_wheeler;
-	//} catch (const nlohmann::json::exception& e) {
-	//	// Handle error parsing JSON
-	//	ERROR("Exception dumping : {}", e.what());
-	//	return;
-	//}
-	////debugging end
-	//Wheeler::SetWheels(wheels);
-
-
 void SerializationEntry::Revert(SKSE::SerializationInterface* a_intfc)
 {
 	Wheeler::Clear();
 }
 
+// serialization example:
 /**
 
 "activeWheel" : 0,
