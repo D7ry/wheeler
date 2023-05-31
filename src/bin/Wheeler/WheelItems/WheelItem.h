@@ -31,8 +31,6 @@ public:
 	virtual void ActivateItemSecondary();
 	virtual void ActivateItemSpecial();
 
-	virtual bool IsMutable();
-
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json);
 	static std::shared_ptr<WheelItem> SerializeFromJsonObj(nlohmann::json& a_json);
 
