@@ -43,6 +43,13 @@ public:
 	static void PrevItemInEntry();
 	static void NextItemInEntry();
 
+	static bool GetCursorAngleRadian(float& r_ret);
+
+	/// <summary>
+	/// Offset camera rotation with current cusor position. Returns whether a change has been made to the camera's rotation.
+	/// </summary>
+	static bool OffsetCamera(RE::TESCamera* a_this);
+
 	/// <summary>
 	/// Activate the currently active entry with secondary (left) input, which corresponds to right mouse click or left controller trigger.
 	/// If we're in edit mode:
@@ -129,5 +136,7 @@ private:
 	
 	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
 	static void exitEditMode();
+
+	static float getCursorRadius();
 };
 

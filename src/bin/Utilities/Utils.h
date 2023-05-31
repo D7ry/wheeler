@@ -77,4 +77,12 @@ namespace Utils
 		}
 	};
 
+	namespace Math
+	{
+		const RE::NiPoint3 HORIZONTAL_AXIS = { 0.0f, 0.0f, 1.0f }; 
+		const RE::NiPoint3 VERTICAL_AXIS = { 1.0f, 0.0f, 0.0f };
+
+		RE::NiMatrix3 MatrixFromAxisAngle(float theta, const RE::NiPoint3& axis = HORIZONTAL_AXIS);
+	}
+
 }

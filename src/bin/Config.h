@@ -36,7 +36,7 @@ namespace Config
 		namespace Wheel
 		{
 			// radius that bounds the mouse cursor. Increases with each entry in wheel to make sure MKB users don't rotate the cursor too fast.
-			inline float CursorRadiusPerEntry = 15.f;
+			inline float CursorRadiusPerEntry = 10.f;
 			inline bool DoubleActivateDisable = true;
 		}
 
@@ -49,6 +49,7 @@ namespace Config
 		inline float EntryHighlightExpandScale = 0.15f;
 		inline float EntryInputBumpTime = 0.1f;
 		inline float EntryInputBumpScale = -0.1f;
+		inline bool CameraRotation = true;
 	}
 
 	namespace Styling

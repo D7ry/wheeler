@@ -223,3 +223,8 @@ void Wheel::SetHoveredEntryIndex(int a_index)
 {
 	this->_hoveredEntryIdx = a_index;
 }
+
+int Wheel::GetNumEntries()
+{
+	return this->_entries.size();
+}
