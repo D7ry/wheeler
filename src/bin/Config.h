@@ -47,6 +47,8 @@ namespace Config
 		inline float EntryHighlightExpandTime = 0.2f;
 		inline float EntryHighlightRetractTime = 0.2f;
 		inline float EntryHighlightExpandScale = 0.15f;
+		inline float EntryInputBumpTime = 0.1f;
+		inline float EntryInputBumpScale = -0.1f;
 	}
 
 	namespace Styling

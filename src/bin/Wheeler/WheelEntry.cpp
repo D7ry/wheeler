@@ -132,7 +132,7 @@ void WheelEntry::ActivateItemSecondary(bool editMode)
 	}
 	if (!editMode) {
 		_items[_selectedItem]->ActivateItemSecondary();
-		_arcRadiusBounceInterpolator.InterpolateTo(-10, 0.1f);
+		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale, Config::Animation::EntryInputBumpTime);
 	} else {
 		// remove selected item
 		std::shared_ptr<WheelItem> itemToDelete = _items[_selectedItem];
