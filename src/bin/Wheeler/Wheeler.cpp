@@ -363,12 +363,12 @@ bool Wheeler::OffsetCamera(RE::TESCamera* a_this)
 	}
 	float cursorRadius = getCursorRadius();
 	// Calculate yaw rotation matrix
-	RE::NiMatrix3 yawRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.x / cursorRadius, Utils::Math::HORIZONTAL_AXIS) * 0.05;
+	RE::NiMatrix3 yawRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.x / cursorRadius * 0.05, Utils::Math::HORIZONTAL_AXIS);
 	// Set roll component to zero
 	yawRotation.entry[3][3] = 1.0f;
 
 	// Calculate pitch rotation matrix
-	RE::NiMatrix3 pitchRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.y / cursorRadius, Utils::Math::VERTICAL_AXIS) * 0.05;
+	RE::NiMatrix3 pitchRotation = Utils::Math::MatrixFromAxisAngle(-_cursorPos.y / cursorRadius * 0.05, Utils::Math::VERTICAL_AXIS);
 	// Set roll component to zero
 	pitchRotation.entry[3][3] = 1.0f;
 
