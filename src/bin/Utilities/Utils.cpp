@@ -264,3 +264,25 @@ void Utils::Magic::GetMagicItemDescription(RE::MagicItem* a_magicItem, std::stri
 	a_buf = buf.c_str();
 	stripMagicItemDescriptionFormatCode(a_buf);
 }
+
+RE::NiMatrix3 Utils::Math::MatrixFromAxisAngle(float theta, const RE::NiPoint3& axis)
+{
+	RE::NiPoint3 a = axis;
+	float cosTheta = cosf(theta);
+	float sinTheta = sinf(theta);
+	RE::NiMatrix3 result;
+
+	result.entry[0][0] = cosTheta + a.x * a.x * (1 - cosTheta);
+	result.entry[0][1] = a.x * a.y * (1 - cosTheta) - a.z * sinTheta;
+	result.entry[0][2] = a.x * a.z * (1 - cosTheta) + a.y * sinTheta;
+
+	result.entry[1][0] = a.y * a.x * (1 - cosTheta) + a.z * sinTheta;
+	result.entry[1][1] = cosTheta + a.y * a.y * (1 - cosTheta);
+	result.entry[1][2] = a.y * a.z * (1 - cosTheta) - a.x * sinTheta;
+
+	result.entry[2][0] = a.z * a.x * (1 - cosTheta) - a.y * sinTheta;
+	result.entry[2][1] = a.z * a.y * (1 - cosTheta) + a.x * sinTheta;
+	result.entry[2][2] = cosTheta + a.z * a.z * (1 - cosTheta);
+
+	return result;
+}

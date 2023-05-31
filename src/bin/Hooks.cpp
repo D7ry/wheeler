@@ -1,6 +1,8 @@
 #include "Hooks.h"
 #include "Utilities/UniqueIDHandler.h"
 #include "bin/UserInput/Input.h"
+#include "bin/Config.h"
+#include "bin/Wheeler/Wheeler.h"
 namespace Hooks
 {
 	namespace
@@ -188,15 +190,41 @@ namespace Hooks
 		}
 		static inline REL::Relocation<decltype(DispatchInputEvent)> _DispatchInputEvent;
 	};
+
+	//https://github.com/ersh1/Precision/blob/main/src/Hooks.h
+	class OnCameraUpdate
+	{
+	public:
+		static void Install()
+		{
+			REL::Relocation<std::uintptr_t> hook1{ RELOCATION_ID(49852, 50784) };  // 84AB90, 876700
+
+			auto& trampoline = SKSE::GetTrampoline();
+			_TESCamera_Update = trampoline.write_call<5>(hook1.address() + RELOCATION_OFFSET(0x1A6, 0x1A6), TESCamera_Update);  // 84AD36, 8768A6
+		}
+
+	private:
+		static void TESCamera_Update(RE::TESCamera* a_this);
+
+		static inline REL::Relocation<decltype(TESCamera_Update)> _TESCamera_Update;
+	};
+
+	void OnCameraUpdate::TESCamera_Update(RE::TESCamera* a_this)
+	{
+		_TESCamera_Update(a_this);
+		// if (Wheeler::OffsetCamera(a_this)) {  // if we offset the camera, we need to update the camera
+		// 	RE::NiUpdateData updateData;
+		// 	a_this->cameraRoot->UpdateDownwardPass(updateData, 0);
+		// }
+	}
+
 	void Install()
 	{
 		SKSE::AllocTrampoline(1 << 5);
 
-		//CanInput::Install();
 		PlayerCharacterEx::InstallHooks();
 		OnInputEventDispatch::Install();
-		//Hook_OnPlayerUpdate::install();
-		//BaseExtraListEx::InstallHooks();
+		//OnCameraUpdate::Install(); // hooking camera is a terrible idea
 		logger::info("Installed all hooks");
 	}
 }

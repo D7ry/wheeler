@@ -22,7 +22,8 @@ public:
 	static void Update(float a_deltaTime);
 	
 	/// <summary>
-	/// Resets everything, must be called prior to reloading the wheels.
+	/// Resets everything, freeing wheels and their memebers in the hierarchy.
+	/// must be called prior to reloading the wheels.
 	/// </summary>
 	static void Clear();
 
@@ -42,6 +43,13 @@ public:
 	static void PrevWheel();
 	static void PrevItemInEntry();
 	static void NextItemInEntry();
+
+	static bool GetCursorAngleRadian(float& r_ret);
+
+	/// <summary>
+	/// Offset camera rotation with current cusor position. Returns whether a change has been made to the camera's rotation.
+	/// </summary>
+	static bool OffsetCamera(RE::TESCamera* a_this) = delete;
 
 	/// <summary>
 	/// Activate the currently active entry with secondary (left) input, which corresponds to right mouse click or left controller trigger.
@@ -69,6 +77,7 @@ public:
 
 	// Add a new wheel
 	static void AddWheel();
+
 	// Delete the current wheel
 	static void DeleteCurrentWheel();
 
@@ -113,21 +122,22 @@ private:
 	
 	// if the user presses longer than this(without sending close), the wheel will close on release
 	// the the user presses shorter than this, the wheel will close on a second press.
-	static inline const float PRESS_THRESHOLD = .25f; 
+	static inline const float PRESS_THRESHOLD = .25f;
+
 	static inline float _openTimer = 0;
 	static inline float _closeTimer = 0;
 
 	static inline std::shared_mutex _wheelDataLock;  // global lock
 
+	// Whether the wheel should enter edit mode. Edit mode toggles whenever a game inventory UI opens up.
 	static bool shouldBeInEditMode(RE::UI* a_ui);
-
+	
 	static void hideEditModeVanillaMenus(RE::UI* a_ui);
 	static void showEditModeVanillaMenus(RE::UI* a_ui);
 
-	// Enter edit mode by pushing the adder entry to the wheel entry list. Must be called outside of the render loop
 	static void enterEditMode();
-	
-	// Exit edit mode by popping the adder entry from the wheel entry list. Must be called outside of the render loop
 	static void exitEditMode();
+
+	static float getCursorRadiusMax();
 };
 

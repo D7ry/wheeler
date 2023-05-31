@@ -32,11 +32,6 @@ void WheelItem::ActivateItemSpecial()
 {
 }
 
-bool WheelItem::IsMutable()
-{
-	return false;
-}
-
 void WheelItem::SerializeIntoJsonObj(nlohmann::json& a_json)
 {
 	a_json["type"] = ITEM_TYPE_STR;

@@ -22,10 +22,6 @@ RE::FormID WheelItemMutable::GetFormID()
 	return this->_obj->GetFormID();
 }
 
-bool WheelItemMutable::IsMutable()
-{
-	return true;
-}
 
 std::pair<int, RE::ExtraDataList*> WheelItemMutable::GetItemExtraDataAndCount(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {

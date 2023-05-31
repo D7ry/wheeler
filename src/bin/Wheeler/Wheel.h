@@ -43,6 +43,8 @@ public:
 	static std::unique_ptr<Wheel> SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
 
 	void SetHoveredEntryIndex(int a_index);
+	
+	int GetNumEntries();
 
 private:
     std::vector<std::unique_ptr<WheelEntry>> _entries = {};

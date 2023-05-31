@@ -6,6 +6,13 @@ TimeFloatInterpolator::TimeFloatInterpolator(double initialValue) :
 	TimeFloatInterpolatorManager::RegisterInterpolator(this);
 }
 
+TimeFloatInterpolator::TimeFloatInterpolator(double initialValue, std::function<void()> callback) :
+	value(initialValue), target(initialValue), duration(0.0f), elapsedTime(0.0f)
+{
+	TimeFloatInterpolatorManager::RegisterInterpolator(this);
+	_callbacks.push_back(callback);
+}
+
 TimeFloatInterpolator::TimeFloatInterpolator() :
 	value(0),
 	target(0), duration(0.0f), elapsedTime(0.0f)
@@ -25,12 +32,22 @@ void TimeFloatInterpolator::InterpolateTo(double targetValue, double interpolDur
 	elapsedTime = 0.0f;
 }
 
+void TimeFloatInterpolator::PushCallback(std::function<void()> callback)
+{
+	this->_callbacks.push_back(callback);
+}
+
 void TimeFloatInterpolator::Update(double dt)
 {
 	if (elapsedTime < duration) {
 		elapsedTime += dt;
 		float t = min(elapsedTime / duration, 1.0f);
 		value = value + (target - value) * t;
+		if (elapsedTime >= duration) {
+			for (auto& callback : this->_callbacks) {
+				callback();
+			}
+		}
 	}
 }
 
@@ -43,6 +60,9 @@ void TimeFloatInterpolator::ForceFinish()
 {
 	this->elapsedTime.store(this->duration);
 	this->value.store(this->target);
+	for (auto& callback : this->_callbacks) {
+		callback();
+	}
 }
 
 void TimeFloatInterpolator::SetValue(double value)

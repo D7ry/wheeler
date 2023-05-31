@@ -4,6 +4,7 @@
 #include "imgui.h"
 
 #include "bin/Animation/TimeInterpolator/TimeFloatInterpolator.h"
+#include "bin/Animation/TimeBounceInterpolator.h"
 class WheelItem;
 class WheelEntry
 {
@@ -78,4 +79,5 @@ private:
 	TimeFloatInterpolator _arcRadiusIncInterpolator;  // for animating the arc radius's increase when the entry is hovered
 	TimeFloatInterpolator _arcInnerAngleIncInterpolator;   // for animating the arc's angle increase when the entry is hovered
 	TimeFloatInterpolator _arcOuterAngleIncInterpolator;  // for animating the arc's angle increase when the entry is hovered
+	TimeBounceInterpolator _arcRadiusBounceInterpolator = TimeBounceInterpolator(0);      // for animating the arc radius's bouncing when the entry is clicked
 };

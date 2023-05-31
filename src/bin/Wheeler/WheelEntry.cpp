@@ -16,7 +16,8 @@ void WheelEntry::DrawBackGround(
 
 	float mainArcOuterBoundRadius = OuterCircleRadius;
 	mainArcOuterBoundRadius += _arcRadiusIncInterpolator.GetValue();
-
+	mainArcOuterBoundRadius += _arcRadiusBounceInterpolator.GetValue();
+	
 	float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue() * 2;
 	float entryInnerAngleMaxUpdated = entryInnerAngleMax + _arcInnerAngleIncInterpolator.GetValue() * 2;
 	float entryOuterAngleMinUpdated = entryOuterAngleMin - _arcOuterAngleIncInterpolator.GetValue() * 2;
@@ -131,6 +132,7 @@ void WheelEntry::ActivateItemSecondary(bool editMode)
 	}
 	if (!editMode) {
 		_items[_selectedItem]->ActivateItemSecondary();
+		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale, Config::Animation::EntryInputBumpTime);
 	} else {
 		// remove selected item
 		std::shared_ptr<WheelItem> itemToDelete = _items[_selectedItem];
@@ -150,6 +152,7 @@ void WheelEntry::ActivateItemPrimary(bool editMode)
 		if (_items.size() == 0) {
 			return;  // nothing to erase
 		}
+		_arcRadiusBounceInterpolator.InterpolateTo(-10, 0.1f);
 		_items[_selectedItem]->ActivateItemPrimary();
 	} else {// append item to after _selectedItem index
 		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromMenuHovered();
@@ -264,6 +267,7 @@ void WheelEntry::ResetAnimation()
 	_arcInnerAngleIncInterpolator.ForceValue(0);
 	_arcOuterAngleIncInterpolator.ForceValue(0);
 	_arcRadiusIncInterpolator.ForceValue(0);
+	_arcRadiusBounceInterpolator.ForceValue(0);
 }
 
 
