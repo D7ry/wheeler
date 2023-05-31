@@ -8,7 +8,7 @@ private:
 	double _target;
 	float _duration;
 	std::function<void()> _interpolateBackToOriginal;
-
+	bool _isInterpolatingBackToOriginal = false;
 public:
 	TimeBounceInterpolator(double originalValue);
 
