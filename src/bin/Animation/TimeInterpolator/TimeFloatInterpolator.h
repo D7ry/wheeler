@@ -17,10 +17,13 @@ private:
 
 public:
 	TimeFloatInterpolator(double initialValue);
+	TimeFloatInterpolator(double initialValue, std::function<void()> callback);
 	TimeFloatInterpolator();
 	~TimeFloatInterpolator();
 
 	void InterpolateTo(double targetValue, double interpolDuration);
+
+	void SetCallback(std::function<void()> callback);
 
 	// Update the interpolator's value based on a delta. Only TimeFloatInterpolatorManager may call it.
 	void Update(double dt);
@@ -32,6 +35,8 @@ public:
 	void SetValue(double value);
 
 	void ForceValue(double value);
+
+	std::function<void()> callback = nullptr;
 };
 
 ////PROMPT:
