@@ -77,6 +77,7 @@ public:
 
 	// Add a new wheel
 	static void AddWheel();
+
 	// Delete the current wheel
 	static void DeleteCurrentWheel();
 
@@ -128,8 +129,9 @@ private:
 
 	static inline std::shared_mutex _wheelDataLock;  // global lock
 
+	// Whether the wheel should enter edit mode. Edit mode toggles whenever a game inventory UI opens up.
 	static bool shouldBeInEditMode(RE::UI* a_ui);
-
+	
 	static void hideEditModeVanillaMenus(RE::UI* a_ui);
 	static void showEditModeVanillaMenus(RE::UI* a_ui);
 

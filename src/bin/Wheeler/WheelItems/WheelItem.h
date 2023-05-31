@@ -7,20 +7,28 @@ class WheelItem
 {
 public:
 	WheelItem(){};
-	// draw the item on the wheel's slot
+	
+	/// <summary>
+	/// Draw everything that's supposed to be in a wheel slot(entry)
+	/// Currently, DrawSlot should draw an image of the item and its name.
+	/// </summary>
 	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
-	// draw the item on the wheel's highlight region(given the item is highlighted) e.g. the center of the wheel(GTA-V ish)
+	
+	/// <summary>
+	/// Draw everything of the item that's supposed to be in the highlight region i.e. center of the wheel.
+	/// Currently, DrawHighlight should draw an enlarged image of the item, item description, and item stats(if applicable).
+	/// </summary>
 	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 	virtual bool IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
 	/// <summary>
-	/// Whether the item is available. Unavailable items are greyed out and are typically
-	/// due to previous bound item being removed from inventory.
+	/// Whether the item is available. 
+	/// An item is unavailable when the player lacks skill to use it, or the item is not in the player's inventory.
 	/// </summary>
 	virtual bool IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
-	virtual void ActivateItemSecondary();
 	virtual void ActivateItemPrimary();
+	virtual void ActivateItemSecondary();
 	virtual void ActivateItemSpecial();
 
 	virtual bool IsMutable();
