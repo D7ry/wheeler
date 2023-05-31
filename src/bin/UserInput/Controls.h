@@ -18,10 +18,10 @@ public:
 	/// <param name="isGamePad">whether the input comes from game pad</param>
 	/// <returns>whether the dispatch is successful.</returns>
 	static bool Dispatch(KeyId key, bool isDown = true, bool isGamePad = false);
+
+	
 	static bool IsKeyBound(KeyId key);
 	
-	static bool IsBound(KeyId key, bool isGamePad = false);
-
 private:
 
 	static inline std::unordered_map<KeyId, FunctionPtr> _keyFunctionMapDown;
