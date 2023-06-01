@@ -15,7 +15,14 @@ void TimeFloatInterpolatorManager::UnregisterInterpolator(TimeFloatInterpolator*
 void TimeFloatInterpolatorManager::Update(float dt)
 {
 	std::lock_guard<std::mutex> lock(mutex);
-	for (auto interpolator : interpolators) {
-		interpolator->Update(dt);
+	for (auto it = interpolators.begin(); it != interpolators.end();) {
+		if ((*it)->Update(dt)) {
+			it = interpolators.erase(it);  // interpolator is done, remove it
+		} else {
+			++it;
+		}
 	}
+	ImGui::Begin("INTERPOLATOR DEBUGGING");
+	ImGui::Text("%i interpolators present.", interpolators.size());
+	ImGui::End();
 }

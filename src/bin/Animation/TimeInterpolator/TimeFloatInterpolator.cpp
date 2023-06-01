@@ -3,13 +3,11 @@
 TimeFloatInterpolator::TimeFloatInterpolator(double initialValue) :
 	value(initialValue), target(initialValue), duration(0.0f), elapsedTime(0.0f)
 {
-	TimeFloatInterpolatorManager::RegisterInterpolator(this);
 }
 
 TimeFloatInterpolator::TimeFloatInterpolator(double initialValue, std::function<void()> callback) :
 	value(initialValue), target(initialValue), duration(0.0f), elapsedTime(0.0f)
 {
-	TimeFloatInterpolatorManager::RegisterInterpolator(this);
 	_callbacks.push_back(callback);
 }
 
@@ -17,7 +15,6 @@ TimeFloatInterpolator::TimeFloatInterpolator() :
 	value(0),
 	target(0), duration(0.0f), elapsedTime(0.0f)
 {
-	TimeFloatInterpolatorManager::RegisterInterpolator(this);
 }
 
 TimeFloatInterpolator::~TimeFloatInterpolator()
@@ -30,6 +27,7 @@ void TimeFloatInterpolator::InterpolateTo(double targetValue, double interpolDur
 	target = targetValue;
 	duration = interpolDuration;
 	elapsedTime = 0.0f;
+	TimeFloatInterpolatorManager::RegisterInterpolator(this);
 }
 
 void TimeFloatInterpolator::PushCallback(std::function<void()> callback)
@@ -37,18 +35,22 @@ void TimeFloatInterpolator::PushCallback(std::function<void()> callback)
 	this->_callbacks.push_back(callback);
 }
 
-void TimeFloatInterpolator::Update(double dt)
+bool TimeFloatInterpolator::Update(double dt)
 {
 	if (elapsedTime < duration) {
 		elapsedTime += dt;
 		float t = min(elapsedTime / duration, 1.0f);
 		value = value + (target - value) * t;
-		if (elapsedTime >= duration) {
+		if (elapsedTime >= duration) { // we're done
 			for (auto& callback : this->_callbacks) {
-				callback();
+				// we use jthread here because without it, the callback could try to call this's InterpolateTo(), which leads to a lock race in TimeFloatInterpolatorManager.
+				std::jthread t = std::jthread(callback); 
+				t.detach();
 			}
+			return true;
 		}
 	}
+	return false;
 }
 
 double TimeFloatInterpolator::GetValue() const
@@ -56,13 +58,17 @@ double TimeFloatInterpolator::GetValue() const
 	return value;
 }
 
-void TimeFloatInterpolator::ForceFinish()
+void TimeFloatInterpolator::ForceFinish(bool wantCallback)
 {
 	this->elapsedTime.store(this->duration);
 	this->value.store(this->target);
-	for (auto& callback : this->_callbacks) {
-		callback();
+	if (wantCallback) {
+		for (auto& callback : this->_callbacks) {
+			std::jthread t = std::jthread(callback);
+			t.detach();
+		}
 	}
+	TimeFloatInterpolatorManager::UnregisterInterpolator(this);
 }
 
 void TimeFloatInterpolator::SetValue(double value)

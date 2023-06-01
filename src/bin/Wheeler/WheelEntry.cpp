@@ -258,10 +258,15 @@ std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::jso
 
 void WheelEntry::ResetAnimation()
 {
+	_arcInnerAngleIncInterpolator.ForceFinish();
+	_arcOuterAngleIncInterpolator.ForceFinish();
+	_arcRadiusIncInterpolator.ForceFinish();
 	_arcInnerAngleIncInterpolator.ForceValue(0);
 	_arcOuterAngleIncInterpolator.ForceValue(0);
 	_arcRadiusIncInterpolator.ForceValue(0);
-	_arcRadiusBounceInterpolator.ForceValue(0);
+	// don't need call interpolateto() because bounce interpolator's forceFinish() goes back to its fixed starting value (which is where we want it to be at)
+	_arcRadiusBounceInterpolator.ForceFinish();
+	this->_prevHovered = false;
 }
 
 

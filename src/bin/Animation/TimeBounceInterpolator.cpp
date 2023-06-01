@@ -31,7 +31,12 @@ double TimeBounceInterpolator::GetValue() const
 
 void TimeBounceInterpolator::ForceFinish()
 {
-	_interpolator.ForceFinish();
+	_interpolator.ForceFinish(false);  // finish the interpolator
+	if (!_isInterpolatingBackToOriginal) { // on the forward pass currently
+		// calling ForceFinish() on the forward pass gets the interpolator to the destination, we want it back.
+		_interpolator.ForceValue(this->_original);
+	}
+	_isInterpolatingBackToOriginal = false;  // reset the flag
 }
 
 void TimeBounceInterpolator::SetValue(double value)

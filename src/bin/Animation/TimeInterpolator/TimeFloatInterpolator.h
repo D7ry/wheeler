@@ -23,14 +23,20 @@ public:
 
 	void InterpolateTo(double targetValue, double interpolDuration);
 
+	/// <summary>
+	/// Push a callback function to the interpolator, which will be invoked one the interpolate finishes interpolating.
+	/// Note that the callback function does not run on the imgui thread.
+	/// </summary>
+	/// <param name="callback"></param>
 	void PushCallback(std::function<void()> callback);
 
 	// Update the interpolator's value based on a delta. Only TimeFloatInterpolatorManager may call it.
-	void Update(double dt);
+	// returns whether the interpolator reaches its target value, which signals that it should be removed from the manager
+	bool Update(double dt);
 
 	double GetValue() const;
 
-	void ForceFinish();
+	void ForceFinish(bool wantCallback = true);
 
 	void SetValue(double value);
 
