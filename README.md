@@ -42,10 +42,10 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [x] Enchanted item descriptions
 - [ ] Misc
   - [ ] Controller rumble
-  - [ ] Custom font
-  - [ ] Asian language(Chinese, Japanese, Korean) with special characters
+  - [x] Custom font
+  - [x] Asian language(Chinese, Japanese, Korean) with special characters
   - [ ] Custom icons
-  - [ ] Optimize interpolator manager so that it only manages active interpolators, inactive interpolators are removed from its set, and they add themselves back when they receive a new interpolation target.
+  - [x] Optimize interpolator manager so that it only manages active interpolators, inactive interpolators are removed from its set, and they add themselves back when they receive a new interpolation target.
 
 - Future plans
 - [ ] Fallout-like side menu for consumable access
