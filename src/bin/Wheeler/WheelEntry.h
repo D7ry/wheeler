@@ -8,13 +8,26 @@
 class WheelItem;
 class WheelEntry
 {
-	// this don't inherit WheelItem because it is a container of that
 public:
+	WheelEntry();
+	~WheelEntry();
+
+	/// <summary>
+	/// Draw the background for this entry, including 2 arcs, one acting as the main background and other, much thinner
+	/// one acting as an indicator to whether the current entry is active.
+	/// The main background changes color when the entry is being hovered, and the background arc's radius linearly interpolates to an
+	/// increased value.
+	/// (GTA5-style)
+	/// </summary>
 	void DrawBackGround(const ImVec2 wheelCenter, float innerSpacing,
 		float entryInnerAngleMin, float entryInnerAngleMax,
 		float entryOuterAngleMin, float entryOuterAngleMax,
 		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);
 	
+	/// <summary>
+	/// Draw the content in slot and (if applicable) highlight region of this wheel entry.
+	/// This function should be called after DrawBackGround to prevent background from being drawn over the content.
+	/// </summary> 
 	void DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 
 	void DrawControlPrompt(ImVec2 a_center, DrawArgs a_drawArgs);
@@ -48,19 +61,12 @@ public:
 
 	void PrevItem();
 	void NextItem();
-
-	bool IsEmpty();
-
-	std::vector<std::shared_ptr<WheelItem>>& GetItems();
-
-	WheelEntry();
-
 	void PushItem(std::shared_ptr<WheelItem> item);
 
-	~WheelEntry();
-
-	int GetSelectedItem();
+	int GetSelectedItemIndex();
 	void SetSelectedItem(int a_selected);
+
+	bool IsEmpty();
 
     void SerializeIntoJsonObj(nlohmann::json& a_json);
 	static std::unique_ptr<WheelEntry> SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
@@ -69,13 +75,14 @@ public:
 
 private:
 	void drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
-
 	void drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 	
 	bool _prevHovered = false;  // used to detect when the mouse enters the entry
 	int _selectedItem = -1;
+
 	std::shared_mutex _lock;
 	std::vector<std::shared_ptr<WheelItem>> _items;
+	
 	TimeFloatInterpolator _arcRadiusIncInterpolator;  // for animating the arc radius's increase when the entry is hovered
 	TimeFloatInterpolator _arcInnerAngleIncInterpolator;   // for animating the arc's angle increase when the entry is hovered
 	TimeFloatInterpolator _arcOuterAngleIncInterpolator;  // for animating the arc's angle increase when the entry is hovered

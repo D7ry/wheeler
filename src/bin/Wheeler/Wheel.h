@@ -14,7 +14,7 @@ public:
 		
 
     void Clear();
-    bool Empty();
+    bool IsEmpty();
     
     void PushEntry(std::unique_ptr<WheelEntry> a_entry);
 	void PushEmptyEntry();
@@ -24,25 +24,27 @@ public:
 	
 	void ResetAnimation();
 
+    /// <summary>
+	/// Activate the entry using a primary input(mouse left click / controller right trigger), which either activates
+	/// the currently active item in the entry, or, under edit mode, adds a new item to the entry(if applicable).
+    /// </summary>
     void ActivateHoveredEntryPrimary(bool a_editMode);
 
 	/// <summary>
 	/// Activate the entry using a secondary input(mouse right click / controller left trigger), which either deletes
 	/// an item in the entry, or the whole entry when it's empty.
-	/// 
 	/// </summary>
 	/// <param name="a_editMode">Whether we're in edit mode, which prompts us to deletion.</param>
 	void ActivateHoveredEntrySecondary(bool a_editMode);
 
 	void ActivateHoveredEntrySpecial(bool a_editMode);
-	
+	void SetHoveredEntryIndex(int a_index);
+
 	void MoveHoveredEntryForward();
 	void MoveHoveredEntryBack();
 
     void SerializeIntoJsonObj(nlohmann::json& a_json);
 	static std::unique_ptr<Wheel> SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
-
-	void SetHoveredEntryIndex(int a_index);
 	
 	int GetNumEntries();
 

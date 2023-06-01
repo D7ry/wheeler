@@ -1,6 +1,9 @@
 #pragma once
 
 
+/// <summary>
+/// RenderManager hooks d3d11 render loop and injects imgui entry point.
+/// </summary>
 class RenderManager
 {
 	struct WndProcHook
@@ -33,7 +36,7 @@ class RenderManager
 private:
 	RenderManager() = delete;
 
-	static void draw();  //Rendering Meters.
+	static void draw();
 	static void MessageCallback(SKSE::MessagingInterface::Message* msg);
 
 	static inline bool ShowMeters = false;

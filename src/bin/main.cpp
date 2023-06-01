@@ -60,12 +60,6 @@ namespace
 		*path /= fmt::format("{}.log"sv, Plugin::NAME);
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
-
-//#ifndef NDEBUG
-//		const auto level = spdlog::level::trace;
-//#else
-//		const auto level = spdlog::level::info;
-//#endif
 		const auto level = spdlog::level::info;
 
 		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
@@ -147,19 +141,3 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 
 	return true;
 }
-
-
-//extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const VAL_API::InterfaceVersion a_interfaceVersion)
-//{
-//	//auto api = Messaging::TrueHUDInterface::GetSingleton();
-//	auto api = ModAPI::VALInterface::GetSingleton();
-//	logger::info("ValhallaCombat::RequestPluginAPI called");
-//
-//	switch (a_interfaceVersion) {
-//	case VAL_API::InterfaceVersion::V1:
-//		logger::info("ValhallaCombat::RequestPluginAPI returned the API singleton");
-//		return static_cast<void*>(api);
-//	}
-//	logger::info("ValhallaCombat::RequestPluginAPI requested the wrong interface version");
-//	return nullptr;
-//}

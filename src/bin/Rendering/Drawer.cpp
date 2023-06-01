@@ -45,12 +45,18 @@ void Drawer::draw_text(float a_x,
 
 	shadowPos.x += shadowOffset;
 	shadowPos.y += shadowOffset;
+	// draw shadow
 	drawList->AddText(font, a_font_size, shadowPos, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
-	
+	// lay text on top of shadow
 	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);
 }
 
-void split_text_lines(const std::string& a_text, float a_max_width, float a_font_size, std::vector<std::string>& r_text_lines)
+/// <summary>
+/// Helper to split a text into multiple line, storing them in R_TEXT_LINES.
+/// Calculates the length of the whole text and divide it into mulple lines of approximately same length.
+/// Words(consequtive characters) won't be split mid-line.
+/// </summary>
+static void split_text_lines(const std::string& a_text, float a_max_width, float a_font_size, std::vector<std::string>& r_text_lines)
 {
 	float raw_length = ImGui::CalcTextSize(a_text.c_str()).x * (a_font_size / ImGui::GetFontSize()); // raw length of text in pixels
 	int num_lines = ceil(raw_length / a_max_width);

@@ -9,17 +9,22 @@ namespace Hooks
 	{
 		////https://github.com/ahzaab/iEquipUtil/blob/master/src/BaseExtraListEX.cpp
 		
-		class PlayerCharacterEx : public RE::PlayerCharacter
+		/// <summary>
+		/// Hooks any action that adds item to the player's inventory. 
+		/// Ensures all added items that will potentially be a WheelItemMutable(weapon & armor) have an uniqueID attached to its extraDataList.
+		/// uniqueID is used to differentiate diffeent instances of a form in the player's inventory; more about it in WheelItemMutable.
+		/// </summary>
+		class OnChangePlayerInventory : public RE::PlayerCharacter
 		{
 		public:
-			static void InstallHooks()
+			static void Install()
 			{
 				REL::Relocation<std::uintptr_t> vTable(RE::PlayerCharacter::VTABLE[0]);
-				//_RemoveItem = vTable.write_vfunc(0x56, &PlayerCharacterEx::Hook_RemoveItem);
-				_AddObjectToContainer = vTable.write_vfunc(0x5A, &PlayerCharacterEx::Hook_AddObjectToContainer);
-				_PickUpObject = vTable.write_vfunc(0xCC, &PlayerCharacterEx::Hook_PickUpObject);
+				//_RemoveItem = vTable.write_vfunc(0x56, &OnChangePlayerInventory::Hook_RemoveItem);
+				_AddObjectToContainer = vTable.write_vfunc(0x5A, &OnChangePlayerInventory::Hook_AddObjectToContainer);
+				_PickUpObject = vTable.write_vfunc(0xCC, &OnChangePlayerInventory::Hook_PickUpObject);
 
-				logger::info("Installed hooks for ({})"sv, typeid(PlayerCharacterEx).name());
+				logger::info("Installed hooks for ({})"sv, typeid(OnChangePlayerInventory).name());
 			}
 
 		private:
@@ -164,6 +169,10 @@ namespace Hooks
 	};
 
 	// https://github.com/SlavicPotato/ied-dev
+	/// <summary>
+	/// Hooks the input event dispatching function, this function dispatches a linked list of input events
+	/// to other input event handlers, hence by modifying the linked list we can filter out unwanted input events.
+	/// </summary>
 	class OnInputEventDispatch
 	{
 	public:
@@ -177,8 +186,6 @@ namespace Hooks
 	private:
 		static void DispatchInputEvent(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent** a_evns)
 		{
-			//static RE::InputEvent* dummy[] = { nullptr };
-
 			if (!a_evns) {
 				_DispatchInputEvent(a_dispatcher, a_evns);
 				return;
@@ -222,7 +229,7 @@ namespace Hooks
 	{
 		SKSE::AllocTrampoline(1 << 5);
 
-		PlayerCharacterEx::InstallHooks();
+		OnChangePlayerInventory::Install();
 		OnInputEventDispatch::Install();
 		//OnCameraUpdate::Install(); // hooking camera is a terrible idea
 		logger::info("Installed all hooks");

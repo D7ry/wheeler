@@ -31,6 +31,16 @@ public:
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
 	static void ToggleWheeler();
+
+	/// <summary>
+	/// Close the current wheel, if it's been opened long enough(more than 0.2 seconds).
+	/// This collaborates with `Controls` that invokes this function when the user releases the wheel toggle key.
+	/// Correct usage of this function and ToggleWheeler() ensures the following behavior:
+	/// 	When the user presses down the toggle key for the first time, wheeler opens.
+	///		If the user immediately releases the key, wheeler stays open, until the user presses the toggle key again.
+	///		If the user keeps pressing the toggle key for a while and then releases the key, wheeler automatically closes.
+	/// This allows the toggle key to simultaneously act as a press-open, press-close toggle, and a hold-open, release-close button.
+	/// </summary>
 	static void CloseWheelerIfOpenedLongEnough();
 	
 	static void TryOpenWheeler();
@@ -55,10 +65,8 @@ public:
 	/// Activate the currently active entry with secondary (left) input, which corresponds to right mouse click or left controller trigger.
 	/// If we're in edit mode:
 	///  - the function first checks if there's any entry left. If not, the function calls DeleteCurrentWheel(), given there are more than 1 wheel present(must have at least 1 wheel on stack).
-	///  - if there's some entry left, the function checks if the entry is empty.
-	///		- If yes, we delete the current entry.
-	///		- otherwise, the function invokes the entry's ActivateItemSecondary(true) function, which handles deletion of entry's inner items.
-	/// If we're not in edit mode, the entry calls the currently selected item's ActivateItemSecondary()
+	///  - if there's some entry left, the function calls the current wheel's ActivateItemSecondary(), which handles deletion of entry items, or the entry via subsequent calls.
+	/// If we're not in edit mode, the entry calls the current wheel's ActivateItemSecondary()
 	/// </summary>
 	static void ActivateHoveredEntrySecondary();
 
@@ -75,16 +83,33 @@ public:
 	/// </summary>
 	static void AddEmptyEntryToCurrentWheel();
 
-	// Add a new wheel
+	/// <summary>
+	/// Add a new empty wheel to the set of wheels.
+	/// </summary>
 	static void AddWheel();
 
-	// Delete the current wheel
+	/// <summary>
+	/// Delete the current wheel. The deletion may be performed if and only if the current wheel is empty, and the current wheel is not the last wheel present.
+	/// The caller is responsible for checking the wheel's emptiness.
+	/// </summary>
 	static void DeleteCurrentWheel();
 
+	/// <summary>
+	/// Move the currently active entry forward by one in the current wheel. Only available in edit mode.
+	/// </summary>
 	static void MoveEntryForwardInCurrentWheel();
+	/// <summary>
+	/// Move the currently active entry backward by one in the current wheel. Only available in edit mode.
+	/// </summary>
 	static void MoveEntryBackInCurrentWheel();
-
+	
+	/// <summary>
+	/// Move the currently active wheel forward by one in the set of wheels. Only available in edit mode.
+	/// </summary>
 	static void MoveWheelForward();
+	/// <summary>
+	/// Move the currently active wheel backward by one in the set of wheels. Only available in edit mode.
+	/// </summary>
 	static void MoveWheelBack();
 	
 	static int GetActiveWheelIndex();
