@@ -207,12 +207,6 @@ bool WheelEntry::IsEmpty()
 	return this->_items.empty();
 }
 
-std::vector<std::shared_ptr<WheelItem>>& WheelEntry::GetItems()
-{
-	std::shared_lock<std::shared_mutex> lock(this->_lock);
-	return this->_items;
-}
-
 WheelEntry::WheelEntry()
 {
 	_selectedItem = 0;
@@ -229,7 +223,7 @@ WheelEntry::~WheelEntry()
 	_items.clear();
 }
 
-int WheelEntry::GetSelectedItem()
+int WheelEntry::GetSelectedItemIndex()
 {
 	std::shared_lock<std::shared_mutex> lock(this->_lock);
 	return this->_selectedItem;
