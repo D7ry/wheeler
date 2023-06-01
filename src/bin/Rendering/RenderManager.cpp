@@ -117,7 +117,6 @@ void RenderManager::D3DInitHook::thunk()
 						foundCustomFont = true;
 						break;
 					}
-					break;
 				}
 			}
 			if (foundCustomFont) {
@@ -141,7 +140,7 @@ void RenderManager::D3DInitHook::thunk()
 #if ENABLE_FREETYPE
 	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
-	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_NoHinting;
+	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_LightHinting;
 #else
 #endif
 	if (!foundCustomFont) {

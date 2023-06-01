@@ -51,6 +51,41 @@ void Drawer::draw_text(float a_x,
 	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);
 }
 
+static void split_text_lines_utf8(const std::string& a_text, float a_max_width, float a_font_size, std::vector<std::string>& r_text_lines)
+{
+	float raw_length = ImGui::CalcTextSize(a_text.c_str()).x * (a_font_size / ImGui::GetFontSize());
+	int num_lines = ceil(raw_length / a_max_width);
+	int line_length = ceil(a_text.length() / num_lines);
+	int curr = 0;
+	for (int i = 0; i < num_lines; i++) {
+		if (i == num_lines - 1) {
+			if (curr >= a_text.length()) {
+				break;
+			}
+			r_text_lines.push_back(a_text.substr(curr));
+		} else {
+			int end = curr + line_length;
+			// adjust to the end of the last UTF-8 sequence
+			while (end < a_text.length() && (a_text[end] & 0xC0) == 0x80) {
+				--end;
+			}
+			int last_space = a_text.rfind(' ', end);
+			// adjust to the end of the last UTF-8 sequence
+			while (last_space > curr && (a_text[last_space] & 0xC0) == 0x80) {
+				--last_space;
+			}
+			if (last_space != std::string::npos && last_space > curr) {
+				r_text_lines.push_back(a_text.substr(curr, last_space - curr));
+				curr = last_space + 1;
+			} else {
+				r_text_lines.push_back(a_text.substr(curr, end - curr));
+				curr = end;
+			}
+		}
+	}
+}
+
+
 /// <summary>
 /// Helper to split a text into multiple line, storing them in R_TEXT_LINES.
 /// Calculates the length of the whole text and divide it into mulple lines of approximately same length.
@@ -88,7 +123,7 @@ void Drawer::draw_text_block(float a_x, float a_y, std::string& a_text, ImU32 a_
 		return;
 	}
 	std::vector<std::string> text_lines;
-	split_text_lines(a_text, a_line_length, a_font_size, text_lines);
+	split_text_lines_utf8(a_text, a_line_length, a_font_size, text_lines);
 
 	float font_height = ImGui::CalcTextSize("t").y * a_font_size / ImGui::GetFontSize();
 	float line_y = a_y;
