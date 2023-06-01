@@ -22,7 +22,7 @@ void TimeFloatInterpolatorManager::Update(float dt)
 			++it;
 		}
 	}
-	ImGui::Begin("INTERPOLATOR DEBUGGING");
+	/*ImGui::Begin("INTERPOLATOR DEBUGGING");
 	ImGui::Text("%i interpolators present.", interpolators.size());
-	ImGui::End();
+	ImGui::End();*/
 }
