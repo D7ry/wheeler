@@ -93,6 +93,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		_entries[entryIdx]->DrawBackGround(a_wheelCenter, innerSpacingRad,
 			entryInnerAngleMin, entryInnerAngleMax,
 			entryOuterAngleMin, entryOuterAngleMax, entryCenter, hovered, numArcSegments, a_imap, a_drawArgs);
+		// todo: do the following in another loop
 		_entries[entryIdx]->DrawSlotAndHighlight(a_wheelCenter, entryCenter, hovered, a_imap, a_drawArgs);
 	}
 }
