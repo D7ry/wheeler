@@ -137,9 +137,13 @@ void RenderManager::D3DInitHook::thunk()
 			}
 		}
 	}
+#define ENABLE_FREETYPE 1
+#if ENABLE_FREETYPE
 	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
-	atlas->FontBuilderFlags =  ImGuiFreeTypeBuilderFlags_LightHinting;
+	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_NoHinting;
+#else
+#endif
 	if (!foundCustomFont) {
 		std::string path = R"(Data\SKSE\Plugins\wheeler\resources\fonts\SovngardeLight.ttf)";
 		fontPath = std::filesystem::path(path);
