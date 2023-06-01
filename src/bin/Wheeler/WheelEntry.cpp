@@ -150,10 +150,10 @@ void WheelEntry::ActivateItemPrimary(bool editMode)
 
 	if (!editMode) { 
 		if (_items.size() == 0) {
-			return;  // nothing to erase
+			return;  // nothing to do
 		}
-		_arcRadiusBounceInterpolator.InterpolateTo(-10, 0.1f);
 		_items[_selectedItem]->ActivateItemPrimary();
+		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale, Config::Animation::EntryInputBumpTime);
 	} else {// append item to after _selectedItem index
 		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromMenuHovered();
 		if (newItem) {
