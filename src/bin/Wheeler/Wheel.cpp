@@ -18,11 +18,52 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		return; // nothing more to draw
 	}
 
+	// update hovered item; draw cursor indicator
+	if (!a_cursorCentered) { 
+		// draw cursor indicator
+		float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
+		Drawer::draw_arc(a_wheelCenter,
+			cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
+			cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
+			a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
+			a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
+			CursorIndicatorColor,
+			32, a_drawArgs);
+		ImVec2 cursorIndicatorTriPts[3] = {
+			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
+			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
+			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
+		};
+		for (ImVec2& pos : cursorIndicatorTriPts) {
+			pos = ImRotate(pos, cos(a_cursorAngle), sin(a_cursorAngle));
+		}
+		Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
+		
+		// update hovered item
+		bool updatedActiveEntry = false;
+		if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
+			if (a_cursorAngle < entryInnerAngleMax) {
+				if (entryIdx != _hoveredEntryIdx) {
+					_hoveredEntryIdx = entryIdx;
+					updatedActiveEntry = true;
+				}
+			}
+		} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
+			if (entryIdx != _hoveredEntryIdx) {
+				_hoveredEntryIdx = entryIdx;
+				updatedActiveEntry = true;
+			}
+		}
+		if (updatedActiveEntry) {
+			RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
+		}
+	}
+
+	// draw entries
 	using entryRuntimeData = std::pair<ImVec2, bool>; // <entry center, is hovered>
 	std::vector<entryRuntimeData> entryRuntimeDataVec;
+	// draw background, cache data for foreground
 	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
-		// fancy math begin
-
 		const float entryArcSpan = 2 * IM_PI / _entries.size();
 
 		const float innerSpacingRad = InnerSpacing / InnerCircleRadius / 2;
@@ -43,43 +84,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		}
 
 		
-		// update hovered item
-		if (!a_cursorCentered) {
-			bool updatedActiveEntry = false;
-			float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
-			Drawer::draw_arc(a_wheelCenter,
-				cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
-				cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
-				a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
-				a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
-				CursorIndicatorColor,
-				32, a_drawArgs);
-			ImVec2 cursorIndicatorTriPts[3] = {
-				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
-				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
-				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
-			};
-			for (ImVec2& pos : cursorIndicatorTriPts) {
-				pos = ImRotate(pos, cos(a_cursorAngle), sin(a_cursorAngle));
-			}
-			Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
-			if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
-				if (a_cursorAngle < entryInnerAngleMax) {
-					if (entryIdx != _hoveredEntryIdx) {
-						_hoveredEntryIdx = entryIdx;
-						updatedActiveEntry = true;
-					}
-				}
-			} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
-				if (entryIdx != _hoveredEntryIdx) {
-					_hoveredEntryIdx = entryIdx;
-					updatedActiveEntry = true;
-				}
-			}
-			if (updatedActiveEntry) {
-				RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
-			}
-		}
+		
 		bool hovered = _hoveredEntryIdx == entryIdx;
 
 		// calculate wheel center
