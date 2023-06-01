@@ -13,7 +13,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 	DrawArgs a_drawArgs)
 {
 	using namespace Config::Styling::Wheel;
-	if (this->Empty()) {
+	if (this->IsEmpty()) {
 		Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, "Empty Wheel", C_SKYRIMWHITE, 40.f, a_drawArgs);
 		return; // nothing more to draw
 	}
@@ -107,7 +107,7 @@ void Wheel::PushEmptyEntry()
 	this->PushEntry(std::make_unique<WheelEntry>());  // no need for lock here since it's already locked in PushEntry
 }
 
-bool Wheel::Empty()
+bool Wheel::IsEmpty()
 {
 	std::shared_lock<std::shared_mutex> lock(_lock);
     return this->_entries.empty();

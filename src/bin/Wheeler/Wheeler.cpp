@@ -364,7 +364,7 @@ void Wheeler::ActivateHoveredEntrySecondary()
 	}
 	if (_state == WheelState::KOpened) {
 		std::unique_ptr<Wheel>& activeWheel = _wheels[_activeWheelIdx];
-		if (activeWheel->Empty()) {         // empty wheel, we can only delete in edit mode.
+		if (activeWheel->IsEmpty()) {         // empty wheel, we can only delete in edit mode.
 			if (_editMode && _wheels.size() > 1) {  // we have more than one wheel, so it's safe to delete this one.
 				DeleteCurrentWheel();
 			}
@@ -421,7 +421,7 @@ void Wheeler::DeleteCurrentWheel()
 	}
 	if (_wheels.size() > 1) {
 		std::unique_ptr<Wheel>& toDelete = _wheels[_activeWheelIdx];
-		if (!toDelete->Empty()) { // do not delete an non-empty wheel
+		if (!toDelete->IsEmpty()) { // do not delete an non-empty wheel
 			return;
 		}
 		_wheels.erase(_wheels.begin() + _activeWheelIdx);
