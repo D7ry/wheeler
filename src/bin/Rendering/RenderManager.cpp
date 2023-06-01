@@ -98,12 +98,54 @@ void RenderManager::D3DInitHook::thunk()
 		ERROR("SetWindowLongPtrA failed!");
 
 	INFO("Building font atlas...");
+	std::filesystem::path fontPath;
+	bool foundCustomFont = false;
+	const ImWchar* glyphRanges = 0;
+#define FONTSETTING_PATH "Data\\SKSE\\Plugins\\wheeler\\resources\\fonts\\FontConfig.ini"
+	CSimpleIniA ini;
+	ini.LoadFile(FONTSETTING_PATH);
+	if (!ini.IsEmpty()) {
+		const char* language = ini.GetValue("config", "font", 0);
+		if (language) {
+			std::string fontDir = R"(Data\SKSE\Plugins\wheeler\resources\fonts\)" + std::string(language);
+			// check if folder exists
+			if (std::filesystem::exists(fontDir) && std::filesystem::is_directory(fontDir)) {
+				for (const auto& entry : std::filesystem::directory_iterator(fontDir)) {
+					auto entryPath = entry.path();
+					if (entryPath.extension() == ".ttf" || entryPath.extension() == ".ttc") {
+						fontPath = entryPath;
+						foundCustomFont = true;
+						break;
+					}
+					break;
+				}
+			}
+			if (foundCustomFont) {
+				if (language = "Chinese") {
+					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
+				} else if (language == "Korean") {
+					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesKorean();
+				} else if (language == "Japanese") {
+					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesJapanese();
+				} else if (language == "Thai") {
+					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesThai();
+				} else if (language == "Vietnamese") {
+					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesVietnamese();
+				} else if (language == "Cyrillic") {
+					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
+				}
+			}
+		}
+	}
 	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
 	atlas->FontBuilderFlags =  ImGuiFreeTypeBuilderFlags_LightHinting;
-	std::string path = R"(Data\SKSE\Plugins\wheeler\resources\fonts\SovngardeLight.ttf)";
-	auto file_path = std::filesystem::path(path);
-	ImGui::GetIO().Fonts->AddFontFromFileTTF(file_path.string().c_str(), 64.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+	if (!foundCustomFont) {
+		std::string path = R"(Data\SKSE\Plugins\wheeler\resources\fonts\SovngardeLight.ttf)";
+		fontPath = std::filesystem::path(path);
+	}
+	
+	ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 64.0f, NULL, glyphRanges);
 	INFO("...font atlas built");
 
 	INFO("RenderManager: Initialized");
