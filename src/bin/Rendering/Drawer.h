@@ -9,8 +9,11 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
-// stole from Lama's tiny hud, plus some stuff I added
 
+/// <summary>
+/// Handles drawing geometric primitives as well as text and textures.
+/// Functions of this namespace may only be called when imgui context is present.
+/// </summary>
 namespace Drawer
 {
 	void draw_text(float a_x,
@@ -36,12 +39,14 @@ namespace Drawer
 		ImVec2 a_size,
 		ImU32 a_color,
 		DrawArgs a_drawArgs);
+
 	void draw_arc(
 		ImVec2 center,
 		float radius_min, float radius_max,
 		float inner_ang_min, float inner_ang_max,
 		float outer_ang_min, float outer_ang_max,
 		ImU32 color, uint32_t segments, DrawArgs a_drawArgs);
+		
 	void draw_arc_gradient(ImVec2 center, float radius_min, float radius_max, 
 		float inner_ang_min, float inner_ang_max, 
 		float outer_ang_min, float outer_ang_max, 
