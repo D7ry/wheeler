@@ -92,15 +92,16 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 
 		int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
 
+		// draw background first
 		_entries[entryIdx]->DrawBackGround(a_wheelCenter, innerSpacingRad,
 			entryInnerAngleMin, entryInnerAngleMax,
 			entryOuterAngleMin, entryOuterAngleMax, entryCenter, hovered, numArcSegments, a_imap, a_drawArgs);
+		// prepare for foreground drawing
 		entryRuntimeDataVec.push_back(std::make_pair(entryCenter, hovered));
-		// todo: do the following in another loop
 	}
 	// draw foreground in a separate pass to avoid overlapping
 	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
-		_entries[entryIdx]->DrawForeground(entryRuntimeDataVec[entryIdx].first, entryRuntimeDataVec[entryIdx].second, a_imap, a_drawArgs);
+		_entries[entryIdx]->DrawSlotAndHighlight(a_wheelCenter, entryRuntimeDataVec[entryIdx].first, entryRuntimeDataVec[entryIdx].second, a_imap, a_drawArgs);
 	}
 }
 void Wheel::PushEntry(std::unique_ptr<WheelEntry> a_entry) 
