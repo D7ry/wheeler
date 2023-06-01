@@ -132,7 +132,7 @@ void WheelEntry::ActivateItemSecondary(bool editMode)
 	}
 	if (!editMode) {
 		_items[_selectedItem]->ActivateItemSecondary();
-		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale, Config::Animation::EntryInputBumpTime);
+		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale * (Config::Styling::Wheel::OuterCircleRadius - Config::Styling::Wheel::InnerCircleRadius), Config::Animation::EntryInputBumpTime);
 	} else {
 		// remove selected item
 		std::shared_ptr<WheelItem> itemToDelete = _items[_selectedItem];
@@ -153,7 +153,7 @@ void WheelEntry::ActivateItemPrimary(bool editMode)
 			return;  // nothing to do
 		}
 		_items[_selectedItem]->ActivateItemPrimary();
-		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale, Config::Animation::EntryInputBumpTime);
+		_arcRadiusBounceInterpolator.InterpolateTo(Config::Animation::EntryInputBumpScale * (Config::Styling::Wheel::OuterCircleRadius - Config::Styling::Wheel::InnerCircleRadius), Config::Animation::EntryInputBumpTime);
 	} else {// append item to after _selectedItem index
 		std::shared_ptr<WheelItem> newItem = WheelItemFactory::MakeWheelItemFromMenuHovered();
 		if (newItem) {
