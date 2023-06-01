@@ -47,7 +47,7 @@ void RenderManager::D3DInitHook::thunk()
 {
 	func();
 
-	INFO("D3DInit Hooked!");
+	INFO("RenderManager: Initializing...");
 	auto render_manager = RE::BSRenderManager::GetSingleton();
 	if (!render_manager) {
 		ERROR("Cannot find render manager. Initialization failed!");
@@ -85,7 +85,7 @@ void RenderManager::D3DInitHook::thunk()
 		return;
 	}
 
-	INFO("ImGui initialized!");
+	INFO("...ImGui Initialized");
 
 	initialized.store(true);
 
@@ -96,12 +96,17 @@ void RenderManager::D3DInitHook::thunk()
 			reinterpret_cast<LONG_PTR>(WndProcHook::thunk)));
 	if (!WndProcHook::func)
 		ERROR("SetWindowLongPtrA failed!");
+
+	INFO("Building font atlas...");
 	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
 	atlas->FontBuilderIO = ImGuiFreeType::GetBuilderForFreeType();
 	atlas->FontBuilderFlags =  ImGuiFreeTypeBuilderFlags_LightHinting;
 	std::string path = R"(Data\SKSE\Plugins\wheeler\resources\fonts\SovngardeLight.ttf)";
 	auto file_path = std::filesystem::path(path);
 	ImGui::GetIO().Fonts->AddFontFromFileTTF(file_path.string().c_str(), 64.0f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+	INFO("...font atlas built");
+
+	INFO("RenderManager: Initialized");
 
 }
 
@@ -137,7 +142,6 @@ struct ImageSet
 void RenderManager::MessageCallback(SKSE::MessagingInterface::Message* msg)  //CallBack & LoadTextureFromFile should called after resource loaded.
 {
 	if (msg->type == SKSE::MessagingInterface::kDataLoaded && D3DInitHook::initialized) {
-		// Read Texture only after game engine finished load all it renderer resource.
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = true;
 		io.WantSetMousePos = true;
