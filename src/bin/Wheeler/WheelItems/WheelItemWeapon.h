@@ -27,4 +27,5 @@ public:
 
 private:
 	void equipItem(bool a_toRight = true);
+	void unequipItem(const RE::BGSEquipSlot* a_slot);
 };

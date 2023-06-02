@@ -138,9 +138,20 @@ void WheelItemSpell::ActivateItemSecondary()
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
 		if (this->isPower()) {
-			RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, this->_spell->GetEquipSlot());
+			if (pc->GetActorRuntimeData().selectedPower && pc->GetActorRuntimeData().selectedPower->GetFormID() == this->_spell->GetFormID()) {
+				RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_spell, nullptr, 1, this->_spell->GetEquipSlot());
+			} else {
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, this->_spell->GetEquipSlot());
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
+			}
+		} else {
+			if (pc->GetEquippedObject(true) && pc->GetEquippedObject(true)->GetFormID() == this->_spell->GetFormID()) {
+				Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
+			} else {
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
+			}
 		}
-		RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
 	}
 }
 
@@ -148,10 +159,23 @@ void WheelItemSpell::ActivateItemPrimary()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (pc) {
+		// check if spell is already equiped, if it is, unequip.
 		if (this->isPower()) {
-			RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, this->_spell->GetEquipSlot());
+			if (pc->GetActorRuntimeData().selectedPower && pc->GetActorRuntimeData().selectedPower->GetFormID() == this->_spell->GetFormID()) {
+				RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_spell, nullptr, 1, this->_spell->GetEquipSlot());
+			} else {
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, this->_spell->GetEquipSlot());
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
+			}
 		}
-		RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
+		else {
+			if (pc->GetEquippedObject(false) && pc->GetEquippedObject(false)->GetFormID() == this->_spell->GetFormID()) {
+				Utils::Slot::CleanSlot(pc, Utils::Slot::GetRightHandSlot());
+			} else {
+				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
+			}
+		}
 	}
 }
 
