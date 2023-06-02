@@ -1,30 +1,39 @@
 # Wheeler
-WIP design of a wheel menu....
-Pipeline:
 
-- `Wheeler`: manages items
-- `Serializer`: gets saved items, init `WheelItems`(vector of vector of stuff...), flush changes made by `Wheeler`
-- `WheelItem`: parent class of all wheel items, contains `Draw()` function called by `Wheeler`
-- `Renderer`: ImGui hook and entry
-- `Texture`: interface for getting ptrs to textures, responsible for reading textures
-- `Config`: all settings, styling etc...
-- `Controls`: input mapping
+## Intro
 
-To-dos:
+Most, if not all modern RPG games have some sort of wheel menu for quick actions. GTA5's wheel allows the player to quickly browse their military arsenal, Witcher's wheel allows to switch between magic signs and consumables, and Bethesda's own title, Fallout4, has a wheel for favorited item access. This mod aims to integrate this modern UI paradigm into Skyrim, and hopefully making its players' life easier.
+
+### The wheel
+
+
+### Controlling
+#### Toggling
+
+Wheel menu can be toggled using a hotkey. You can:
+  1. Short press the hotkey to toggle it on, until you press it again. 
+  2. Press and hold the hotkey to keep it open, until you release.
+  
+The above 2 toggle methods coexists; if you press the hotkey long enough, it switches from mode 1 to mode 2. 
+
+#### Item usage
+
+Using(equipping/consuming) an item through the wheel is no different from using it in inventory; simply left/right click on the item will equip it to the corresponding hand.
+
+#### Easy wheel editing
+
+Items and actions can be easily stored into the wheel by:
+1. Opening the inventory
+2. Hovering over the item or action
+3. Left click(MKB) / right shoulder(gamepad) on any slot in the wheel
+
+Deletion is just as easy
+
+
+
+
+To-dos:  
 Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
-- [x] Refactor project structure
-  - [x] Move `WheelItem` to `Wheeler`
-  - [x] Manage `WheelItemMutable` automatically in `WheelItemMutableManager` through automatic constructor insertion and destructor removal
-  - [x] Move `Wheel` to a separate class
-  - [x] `Wheeler` only manages `Wheel` instead of `WheelEntry` that is now `Wheel`'s responsibility to manage
-  - [x] `Wheel` manages `WheelEntry`
-  - [x] `WheelEntry` manages all subclasses of `WheelItem`
-  - [x] Refactor functions so they reach correct objects
-  - [x] Change all storage to `std::unique_ptr` instead of raw pointer, except for `WheelItem` which is stored as a `shared_ptr` in the entry vector, and a `weak_ptr` for `WheelItemMutable` in `WheelItemMutableManager`
-  - [x] Refactor serialization for this hierarchy
-  - [x] Move render function into wheelentry, wheel, and wheelitem; add locking
-- [x] Establish rendering pipeline: each level in the hierarchy(Wheeler, Wheel, WheelEntry, WheelItem) call the lower hierarchy's Draw() function, passing its own alpha, scale, rotation, and translation mult
-  - [x] Change existing rendering functions to work with alpha, scale, rotation, and translation
 - [ ] Input prompts
 - [ ] L/R hand equipped indicator
 - [ ] Better input handling
