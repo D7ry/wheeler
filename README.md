@@ -50,6 +50,8 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
 - Future plans
 - [ ] Fallout-like side menu for consumable access
 - [ ] 3D item display
+- [ ] Non-trivial optimization
+  - [ ] entry data caching
 References:
 
 https://gist.github.com/thennequin/64b4b996ec990c6ddc13a48c6a0ba68c
