@@ -18,7 +18,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		return; // nothing more to draw
 	}
 
-	// update hovered item; draw cursor indicator
+	// draw cursor indicator
 	if (!a_cursorCentered) { 
 		// draw cursor indicator
 		float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
@@ -39,24 +39,6 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		}
 		Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
 		
-		// update hovered item
-		bool updatedActiveEntry = false;
-		if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
-			if (a_cursorAngle < entryInnerAngleMax) {
-				if (entryIdx != _hoveredEntryIdx) {
-					_hoveredEntryIdx = entryIdx;
-					updatedActiveEntry = true;
-				}
-			}
-		} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
-			if (entryIdx != _hoveredEntryIdx) {
-				_hoveredEntryIdx = entryIdx;
-				updatedActiveEntry = true;
-			}
-		}
-		if (updatedActiveEntry) {
-			RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
-		}
 	}
 
 	// draw entries
@@ -82,10 +64,29 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 			entryOuterAngleMin -= IM_PI * 2;
 			entryOuterAngleMax -= IM_PI * 2;
 		}
-
+		bool hovered = false;
+		if (!a_cursorCentered) {
+			// update hovered item
+			bool updatedActiveEntry = false;
+			if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
+				if (a_cursorAngle < entryInnerAngleMax) {
+					if (entryIdx != _hoveredEntryIdx) {
+						_hoveredEntryIdx = entryIdx;
+						updatedActiveEntry = true;
+					}
+				}
+			} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
+				if (entryIdx != _hoveredEntryIdx) {
+					_hoveredEntryIdx = entryIdx;
+					updatedActiveEntry = true;
+				}
+			}
+			if (updatedActiveEntry) {
+				RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
+			}
+			hovered = _hoveredEntryIdx == entryIdx;
+		}
 		
-		
-		bool hovered = _hoveredEntryIdx == entryIdx;
 
 		// calculate wheel center
 		float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
