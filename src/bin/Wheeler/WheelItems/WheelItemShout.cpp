@@ -75,7 +75,12 @@ void WheelItemShout::ActivateItemSecondary()
 	if (!aeMan) {
 		return;
 	}
-	aeMan->EquipShout(pc, this->_shout);
+	RE::TESForm* selectedPower = pc->GetActorRuntimeData().selectedPower;
+	if (selectedPower && selectedPower->GetFormID() == this->_shout->GetFormID()) {
+		aeMan->UnEquipShout(pc, this->_shout);
+	} else {
+		aeMan->EquipShout(pc, this->_shout);
+	}
 }
 
 void WheelItemShout::ActivateItemPrimary()
@@ -88,7 +93,12 @@ void WheelItemShout::ActivateItemPrimary()
 	if (!aeMan) {
 		return;
 	}
-	aeMan->EquipShout(pc, this->_shout);
+	RE::TESForm* selectedPower = pc->GetActorRuntimeData().selectedPower;
+	if (selectedPower && selectedPower->GetFormID() == this->_shout->GetFormID()) {
+		aeMan->UnEquipShout(pc, this->_shout);
+	} else {
+		aeMan->EquipShout(pc, this->_shout);
+	}
 }
 
 void WheelItemShout::ActivateItemSpecial()

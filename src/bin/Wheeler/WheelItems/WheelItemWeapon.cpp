@@ -153,8 +153,7 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 		Utils::Inventory::Hand hand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID());
 		if ((hand == Utils::Inventory::Hand::Right && !a_toRight) || (hand == Utils::Inventory::Hand::Left && a_toRight)) { // in opposite hands, simply swap l/r
 			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot(); // first, clean the slot with item
-			Utils::Slot::CleanSlot(pc, oppositeSlot);
-			return;
+			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_obj, nullptr, 1, oppositeSlot, false, true, true);
 		}
 	} else { // a count bigger than 1 guarantees that the item is untempered
 		extraData = nullptr; // set extraData to nullptr, let the game handle which one to equip.

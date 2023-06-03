@@ -143,12 +143,10 @@ void RenderManager::D3DInitHook::thunk()
 	atlas->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_LightHinting;
 #else
 #endif
-	if (!foundCustomFont) {
-		std::string path = R"(Data\SKSE\Plugins\wheeler\resources\fonts\SovngardeLight.ttf)";
-		fontPath = std::filesystem::path(path);
+	if (foundCustomFont) {
+		ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 64.0f, NULL, glyphRanges);
 	}
 	
-	ImGui::GetIO().Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 64.0f, NULL, glyphRanges);
 	INFO("...font atlas built");
 
 	INFO("RenderManager: Initialized");
