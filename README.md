@@ -9,7 +9,9 @@ Wheeler's hierarchy goes like this:
 
 Wheels -> Wheel -> Slot -> Item
 
-Simply put, you can have more than one wheels, in which you can have some slots, and each slot can contain more than one items. This hierarchy allows you to store basically your whole inventory/magic menu into the wheels. 
+Simply put, you can have more than one wheels, in which you can have some slots, and each slot can contain more than one items. This hierarchy allows you to store basically your whole inventory/magic menu into the wheels.
+
+![Wheel Hierarchy](images/hierarchy_wheel.gif)
 
 ### Display
 Each slot displays the texture of name of its current item(slots can have multiple items in it), and the center of the wheel displays an enlarged texture as well as the detailed description of the item.
