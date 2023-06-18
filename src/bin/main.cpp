@@ -20,6 +20,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		WheelItemMutableManager::GetSingleton()->Register();
 		Config::ReadConfig();
 		Config::UpdateHandler::Register();
+		Controls::BindAllInputsFromConfig();
 		Texture::Init();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
@@ -29,7 +30,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		break;
 	case SKSE::MessagingInterface::kPostLoadGame:
 	case SKSE::MessagingInterface::kNewGame:
-		UniqueIDHandler::AssignUniqueIDsToAllObjects();
+		UniqueIDHandler::EnsureXListUniquenessInPcInventory();
 		break;
 	}
 }
@@ -37,7 +38,6 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 void onSKSEInit()
 {
 	RenderManager::Install();
-	Controls::Init();
 	Wheeler::Init();
 	Hooks::Install();
 	auto serialization = SKSE::GetSerializationInterface();

@@ -145,9 +145,7 @@ private:
 	static inline int _activeWheelIdx = 0;
 
 	
-	// if the user presses longer than this(without sending close), the wheel will close on release
-	// the the user presses shorter than this, the wheel will close on a second press.
-	static inline const float PRESS_THRESHOLD = .25f;
+
 
 	static inline float _openTimer = 0;
 	static inline float _closeTimer = 0;

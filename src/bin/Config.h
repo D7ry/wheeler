@@ -23,6 +23,41 @@ namespace Config
 
 		static bool Register();
 	};
+	namespace InputBindings
+	{
+		namespace GamePad
+		{                                       // right thumb
+			inline uint32_t nextWheel = 281;          // right trigger
+			inline uint32_t prevWheel = 0;    // unmapped
+			inline uint32_t toggleWheel = 280;        // left trigger
+			inline uint32_t nextItem = 269;           // DPAD right
+			inline uint32_t prevItem = 268;      // DPAD left
+			inline uint32_t activatePrimary = 275;  // right shoulder
+			inline uint32_t activateSecondary = 274;  // left shoulder
+			inline uint32_t addWheel = 0;             // unmapped
+			inline uint32_t addEmptyEntry = 0;        // unmapped
+			inline uint32_t moveEntryForward = 0;     // unmapped
+			inline uint32_t moveEntryBack = 0;        // unmapped
+			inline uint32_t moveWheelForward = 0;     // unmapped
+			inline uint32_t moveWheelBack = 0;        // unmapped
+		}
+		namespace MKB
+		{
+			inline uint32_t nextWheel = 0x12;  // e
+			inline uint32_t prevWheel = 0x10;  // q
+			inline uint32_t toggleWheel = 58;  // capslock
+			inline uint32_t prevItem = 264;    // mouse wheel up
+			inline uint32_t nextItem = 265;    // mouse wheel down
+			inline uint32_t activatePrimary = 256;  // left mouse button
+			inline uint32_t activateSecondary = 257;  // right mouse button
+			inline uint32_t addWheel = 49;            // N
+			inline uint32_t addEmptyEntry = 50;       // M
+			inline uint32_t moveEntryForward = 200;   // up arrow
+			inline uint32_t moveEntryBack = 208;      // down arrow
+			inline uint32_t moveWheelForward = 205;   // right arrow
+			inline uint32_t moveWheelBack = 203;      // left arrow
+		}
+	}
 	namespace Sound
 	{
 		static inline const char* SD_WHEELSWITCH = "UIFavorite";
@@ -38,6 +73,10 @@ namespace Config
 			// radius that bounds the mouse cursor. Increases with each entry in wheel to make sure MKB users don't rotate the cursor too fast.
 			inline float CursorRadiusPerEntry = 10.f;
 			inline bool DoubleActivateDisable = true;
+			
+			// if the user presses longer than this(without sending close), the wheel will close on release
+			// the the user presses shorter than this, the wheel will close on a second press.
+			inline float ToggleHoldThreshold = 0.25f;  
 		}
 
 	}

@@ -168,7 +168,7 @@ void Wheeler::ToggleWheeler()
 
 void Wheeler::CloseWheelerIfOpenedLongEnough()
 {
-	if (_state == WheelState::KOpened && _openTimer > PRESS_THRESHOLD) {
+	if (_openTimer > Config::Control::Wheel::ToggleHoldThreshold) {
 		TryCloseWheeler();
 	}
 }

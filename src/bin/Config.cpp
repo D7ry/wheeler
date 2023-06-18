@@ -1,4 +1,6 @@
 #include "Config.h"
+#include "UserInput/Controls.h"
+
 #define SETTINGSFILE_PATH "Data\\SKSE\\Plugins\\wheeler\\Settings.ini"
 
 bool GetBoolValue(const CSimpleIniA& ini, const char* section, const char* key, bool& value)
@@ -49,7 +51,7 @@ void Config::ReadConfig()
 
 	GetFloatValue(ini, "Control.Wheel", "CursorRadiusPerEntry", Config::Control::Wheel::CursorRadiusPerEntry);
 	GetBoolValue(ini, "Control.Wheel", "DoubleActivateDisable", Config::Control::Wheel::DoubleActivateDisable);
-
+	GetFloatValue(ini, "Control.Wheel", "ToggleHoldThreshold", Config::Control::Wheel::ToggleHoldThreshold);
 	GetFloatValue(ini, "Styling.Wheel", "CursorIndicatorDist", Config::Styling::Wheel::CursorIndicatorDist);
 	GetFloatValue(ini, "Styling.Wheel", "CusorIndicatorArcWidth", Config::Styling::Wheel::CusorIndicatorArcWidth);
 	GetFloatValue(ini, "Styling.Wheel", "CursorIndicatorArcAngle", Config::Styling::Wheel::CursorIndicatorArcAngle);
@@ -108,6 +110,34 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Animation", "EntryHighlightExpandScale", Config::Animation::EntryHighlightExpandScale);
 	GetFloatValue(ini, "Animation", "EntryInputBumpScale", Config::Animation::EntryInputBumpScale);
 	GetFloatValue(ini, "Animation", "EntryInputBumpTime", Config::Animation::EntryInputBumpTime);
+
+	GetUInt32Value(ini, "InputBindings.GamePad", "nextWheel", Config::InputBindings::GamePad::nextWheel);
+	GetUInt32Value(ini, "InputBindings.GamePad", "prevWheel", Config::InputBindings::GamePad::prevWheel);
+	GetUInt32Value(ini, "InputBindings.GamePad", "toggleWheel", Config::InputBindings::GamePad::toggleWheel);
+	GetUInt32Value(ini, "InputBindings.GamePad", "nextItem", Config::InputBindings::GamePad::nextItem);
+	GetUInt32Value(ini, "InputBindings.GamePad", "prevItem", Config::InputBindings::GamePad::prevItem);
+	GetUInt32Value(ini, "InputBindings.GamePad", "activatePrimary", Config::InputBindings::GamePad::activatePrimary);
+	GetUInt32Value(ini, "InputBindings.GamePad", "activateSecondary", Config::InputBindings::GamePad::activateSecondary);
+	GetUInt32Value(ini, "InputBindings.GamePad", "addWheel", Config::InputBindings::GamePad::addWheel);
+	GetUInt32Value(ini, "InputBindings.GamePad", "addEmptyEntry", Config::InputBindings::GamePad::addEmptyEntry);
+	GetUInt32Value(ini, "InputBindings.GamePad", "moveEntryForward", Config::InputBindings::GamePad::moveEntryForward);
+	GetUInt32Value(ini, "InputBindings.GamePad", "moveEntryBack", Config::InputBindings::GamePad::moveEntryBack);
+	GetUInt32Value(ini, "InputBindings.GamePad", "moveWheelForward", Config::InputBindings::GamePad::moveWheelForward);
+	GetUInt32Value(ini, "InputBindings.GamePad", "moveWheelBack", Config::InputBindings::GamePad::moveWheelBack);
+
+	GetUInt32Value(ini, "InputBindings.MKB", "nextWheel", Config::InputBindings::MKB::nextWheel);
+	GetUInt32Value(ini, "InputBindings.MKB", "prevWheel", Config::InputBindings::MKB::prevWheel);
+	GetUInt32Value(ini, "InputBindings.MKB", "toggleWheel", Config::InputBindings::MKB::toggleWheel);
+	GetUInt32Value(ini, "InputBindings.MKB", "nextItem", Config::InputBindings::MKB::nextItem);
+	GetUInt32Value(ini, "InputBindings.MKB", "prevItem", Config::InputBindings::MKB::prevItem);
+	GetUInt32Value(ini, "InputBindings.MKB", "activatePrimary", Config::InputBindings::MKB::activatePrimary);
+	GetUInt32Value(ini, "InputBindings.MKB", "activateSecondary", Config::InputBindings::MKB::activateSecondary);
+	GetUInt32Value(ini, "InputBindings.MKB", "addWheel", Config::InputBindings::MKB::addWheel);
+	GetUInt32Value(ini, "InputBindings.MKB", "addEmptyEntry", Config::InputBindings::MKB::addEmptyEntry);
+	GetUInt32Value(ini, "InputBindings.MKB", "moveEntryForward", Config::InputBindings::MKB::moveEntryForward);
+	GetUInt32Value(ini, "InputBindings.MKB", "moveEntryBack", Config::InputBindings::MKB::moveEntryBack);
+	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelForward", Config::InputBindings::MKB::moveWheelForward);
+	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelBack", Config::InputBindings::MKB::moveWheelBack);
 	//GetBoolValue(ini, "Animation", "Camera Rotation", Config::Animation::CameraRotation);
 }
 
@@ -118,6 +148,7 @@ EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_
 	}
 	if (a_event->eventName == "dmenu_updateSettings" && a_event->strArg == "Wheeler") {
 		Config::ReadConfig();
+		Controls::BindAllInputsFromConfig();
 	}
 
 	return EventResult::kContinue;
