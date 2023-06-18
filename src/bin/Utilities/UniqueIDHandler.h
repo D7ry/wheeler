@@ -2,7 +2,7 @@
 class UniqueIDHandler
 {
 public:
-	static void AssignUniqueIDsToAllObjects();
+	static void EnsureXListUniquenessInPcInventory();
 
 	/// <summary>
 	/// Add a uniqueID to the given extraDatalist. If the given extradatalist is a nullptr, initialize it.

@@ -38,7 +38,7 @@ public:
 
 
 protected:
-	Texture::Image _texture;
+	Texture::Image _texture = Texture::Image();
 	std::string _description = "";  // buffer for description.
 	
 

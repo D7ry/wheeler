@@ -1,8 +1,7 @@
 #include "UniqueIDHandler.h"
 #include "Utils.h"
-void UniqueIDHandler::AssignUniqueIDsToAllObjects()
+void UniqueIDHandler::EnsureXListUniquenessInPcInventory()
 {
-	INFO("Indexing uniqueIDs...");
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (!pc) {
 		return;

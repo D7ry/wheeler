@@ -63,9 +63,16 @@ public:
 		destruction_shock,
 		restoration,
 		poison_default,
-		armor_light,
-		armor_heavy,
+		armor_light_chest,
+		armor_heavy_chest,
+		armor_light_arm,
+		armor_heavy_arm,
+		armor_light_foot,
+		armor_heavy_foot,
+		armor_light_head,
+		armor_heavy_head,
 		armor_clothing,
+		armor_default,
 		scroll,
 		arrow,
 		hand_to_hand,
@@ -160,9 +167,22 @@ private:
 		{ R"(destruction_shock.svg)", icon_image_type::destruction_shock },
 		{ R"(restoration.svg)", icon_image_type::restoration },
 		{ R"(poison_default.svg)", icon_image_type::poison_default },
-		{ R"(armor_light.svg)", icon_image_type::armor_light },
-		{ R"(armor_heavy.svg)", icon_image_type::armor_heavy },
+		// armors
+		// armor with ratings
+		{ R"(armor_light_chest.svg)", icon_image_type::armor_light_chest },
+		{ R"(armor_heavy_chest.svg)", icon_image_type::armor_heavy_chest },
+		{ R"(armor_light_arm.svg)", icon_image_type::armor_light_arm },
+		{ R"(armor_heavy_arm.svg)", icon_image_type::armor_heavy_arm },
+		{ R"(armor_light_foot.svg)", icon_image_type::armor_light_foot },
+		{ R"(armor_heavy_foot.svg)", icon_image_type::armor_heavy_foot },
+		{ R"(armor_light_head.svg)", icon_image_type::armor_light_head },
+		{ R"(armor_heavy_head.svg)", icon_image_type::armor_heavy_head },
+
+		// clothing and robe
 		{ R"(armor_clothing.svg)", icon_image_type::armor_clothing },
+		{ R"(armor_default.svg)", icon_image_type::armor_default },
+
+		
 		{ R"(scroll.svg)", icon_image_type::scroll },
 		{ R"(arrow.svg)", icon_image_type::arrow },
 		{ R"(hand_to_hand.svg)", icon_image_type::hand_to_hand },
