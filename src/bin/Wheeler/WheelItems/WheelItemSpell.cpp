@@ -50,7 +50,7 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 			iconType = Texture::icon_image_type::power;
 		}
 	}
-	this->_texture = Texture::GetIconImage(iconType);
+	this->_texture = Texture::GetIconImage(iconType, a_spell);
 	RE::BSString descriptionBuf = "";
 	this->_spell->GetDescription(descriptionBuf, nullptr);
 	this->_description = descriptionBuf.c_str();

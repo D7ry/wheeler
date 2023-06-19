@@ -9,7 +9,7 @@ WheelItemLight::WheelItemLight(RE::TESObjectLIGH* a_light)
 	}
 	this->_light = a_light;
 	// load texture
-	this->_texture = Texture::GetIconImage(Texture::icon_image_type::torch);
+	this->_texture = Texture::GetIconImage(Texture::icon_image_type::torch, a_light);
 }
 
 void WheelItemLight::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)

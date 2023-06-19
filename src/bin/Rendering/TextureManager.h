@@ -48,6 +48,7 @@ public:
 		dagger,
 		sword_two_handed,
 		axe_two_handed,
+		warhammer_two_handed,
 		staff,
 		bow,
 		crossbow,
@@ -105,10 +106,13 @@ public:
 		mask,
 		total
 	};
-	static Image& GetIconImage(icon_image_type a_imageType);
-
+	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form);
+	
 private:
 	static inline std::map<uint32_t, Image> icon_struct;
+
+	static inline std::map<RE::FormID, Image> icon_struct_formID;
+	static inline std::map<std::string, Image> icon_struct_keyword;
 
 	static bool load_texture_from_file(const char* filename,
 		ID3D11ShaderResourceView** out_srv,
@@ -146,8 +150,11 @@ private:
 		}
 	}
 
+	static void load_custom_icon_images();
+
 	static inline std::string icon_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\icons)";
 	static inline std::string img_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\img)";
+	static inline std::string icon_custom_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\icons_custom)";
 
 	
 
@@ -160,6 +167,7 @@ private:
 		{ R"(dagger.svg)", icon_image_type::dagger },
 		{ R"(sword_two_handed.svg)", icon_image_type::sword_two_handed },
 		{ R"(axe_two_handed.svg)", icon_image_type::axe_two_handed },
+		{ R"(warhammer_two_handed.svg)", icon_image_type::warhammer_two_handed },
 		{ R"(staff.svg)", icon_image_type::staff },
 		{ R"(bow.svg)", icon_image_type::bow },
 		{ R"(crossbow.svg)", icon_image_type::crossbow },

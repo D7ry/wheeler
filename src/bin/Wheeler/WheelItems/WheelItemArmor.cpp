@@ -110,7 +110,7 @@ WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
 		}
 	}
 
-	_texture = Texture::GetIconImage(iconType);
+	_texture = Texture::GetIconImage(iconType, a_armor);
 	// get description
 	RE::BSString descriptionBuf = "";
 	armor->GetDescription(descriptionBuf, nullptr);
