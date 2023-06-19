@@ -119,30 +119,12 @@ WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
 
 void WheelItemArmor::ActivateItemSecondary()
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc) {
-		return;
-	}
-	RE::TESObjectREFR::InventoryItemMap imap = pc->GetInventory();
-	if (this->IsActive(imap)) {
-		this->unequipArmor();
-	} else {
-		this->equipArmor();
-	}
+	toggleEquip();
 }
 
 void WheelItemArmor::ActivateItemPrimary()
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc) {
-		return;
-	}
-	RE::TESObjectREFR::InventoryItemMap imap = pc->GetInventory();
-	if (this->IsActive(imap)) {
-		this->unequipArmor();
-	} else {
-		this->equipArmor();
-	}
+	toggleEquip();
 }
 
 void WheelItemArmor::SerializeIntoJsonObj(nlohmann::json& a_json)
@@ -152,10 +134,28 @@ void WheelItemArmor::SerializeIntoJsonObj(nlohmann::json& a_json)
 	a_json["uniqueID"] = this->GetUniqueID();
 }
 
+void WheelItemArmor::toggleEquip()
+{
+	auto pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc) {
+		return;
+	}
+	RE::TESObjectREFR::InventoryItemMap imap = pc->GetInventory();
+	if (this->IsActive(imap)) {
+		this->unequipArmor();
+	} else {
+		this->equipArmor();
+	}
+}
+
 void WheelItemArmor::equipArmor()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
 	if (!pc || !pc->Is3DLoaded()) {
+		return;
+	}
+	auto aeMan = RE::ActorEquipManager::GetSingleton();
+	if (!aeMan) {
 		return;
 	}
 	RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
@@ -166,13 +166,13 @@ void WheelItemArmor::equipArmor()
 		return;
 	}
 	auto slot = this->_obj->As<RE::TESObjectARMO>()->GetEquipSlot();
-	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, _obj, extraData, 1, slot);
+	aeMan->EquipObject(pc, _obj, extraData, 1, slot);
 }
 
 void WheelItemArmor::unequipArmor()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc) {
+	if (!pc || !pc->Is3DLoaded()) {
 		return;
 	}
 	auto aeMan = RE::ActorEquipManager::GetSingleton();
@@ -181,6 +181,10 @@ void WheelItemArmor::unequipArmor()
 	}
 	aeMan->UnequipObject(pc, this->_obj, nullptr, 1, this->_obj->As<RE::TESObjectARMO>()->GetEquipSlot());
 }
+
+
+
+
 
 bool WheelItemArmor::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {

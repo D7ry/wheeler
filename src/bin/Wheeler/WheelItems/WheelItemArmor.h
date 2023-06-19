@@ -24,6 +24,7 @@ public:
 	static inline const char* ITEM_TYPE_STR = "WheelItemArmor";
 
 private:
+	void toggleEquip();
 	void equipArmor();
 	void unequipArmor();
 };

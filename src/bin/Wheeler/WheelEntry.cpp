@@ -247,12 +247,18 @@ std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::jso
 	entry->SetSelectedItem(j_entry["selecteditem"]);
 
 	nlohmann::json j_items = j_entry["items"];
-	for (const auto& j_item : j_items) {
-		std::shared_ptr<WheelItem> item = WheelItemFactory::MakeWheelItemFromJsonObject(j_item, a_intfc);
-		if (item) {
-			entry->PushItem(std::move(item));
+	try {
+		for (const auto& j_item : j_items) {
+			std::shared_ptr<WheelItem> item = WheelItemFactory::MakeWheelItemFromJsonObject(j_item, a_intfc);
+			if (item) {
+				entry->PushItem(std::move(item));
+			}
 		}
 	}
+	catch (std::exception exception) {
+		logger::info("Exception serializing wheel entry: {}", exception.what());
+	}
+
 	return std::move(entry);
 }
 

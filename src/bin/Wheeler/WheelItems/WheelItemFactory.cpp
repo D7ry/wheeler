@@ -7,6 +7,7 @@
 #include "WheelItemWeapon.h"
 #include "WheelItemArmor.h"
 #include "WheelItemShout.h"
+#include "WheelItemLight.h"
 
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
@@ -34,30 +35,57 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 				return nullptr;
 			}
 
+			// if is weapon or armor, get the item's unique ID. If there's no unique id, abort.
 			uint16_t uniqueID = 0;
-			if (!invEntry->extraLists) {
-				return nullptr;
-			}
-			for (auto& extraList : *invEntry->extraLists) {
-				if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
-					auto* uniqueIDExtra = extraList->GetByType<RE::ExtraUniqueID>();
-					if (uniqueIDExtra) {
-						uniqueID = uniqueIDExtra->uniqueID;
-						break;
+			RE::FormType formType = boundObj->GetFormType();
+			switch (formType) {
+			case RE::FormType::Weapon:
+			case RE::FormType::Armor:
+			{
+				if (!invEntry->extraLists) {
+					return nullptr;
+				}
+				for (auto& extraList : *invEntry->extraLists) {
+					if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
+						auto* uniqueIDExtra = extraList->GetByType<RE::ExtraUniqueID>();
+						if (uniqueIDExtra) {
+							uniqueID = uniqueIDExtra->uniqueID;
+							break;
+						}
 					}
 				}
+				if (uniqueID == 0) {
+					return nullptr;
+				}
 			}
-			if (uniqueID == 0) {
-				return nullptr;
+			break;
+			default:
+			break;
 			}
 
-			RE::FormType formType = boundObj->GetFormType();
-			if (formType == RE::FormType::Weapon) {
+			switch (formType) {
+			case RE::FormType::Weapon:
+			{
 				std::shared_ptr<WheelItemWeapon> wheelItemweap = WheelItemMutable::CreateWheelItemMutable<WheelItemWeapon>(boundObj, uniqueID);
 				return wheelItemweap;
-			} else if (formType == RE::FormType::Armor) {
+			}
+			break;
+			case RE::FormType::Armor:
+			{
 				std::shared_ptr<WheelItemArmor> wheelItemArmo = WheelItemMutable::CreateWheelItemMutable<WheelItemArmor>(boundObj, uniqueID);
 				return wheelItemArmo;
+			}
+			break;
+			case RE::FormType::Light:
+			{
+				RE::TESObjectLIGH* light = boundObj->As<RE::TESObjectLIGH>();
+				if (!light || !light->CanBeCarried()) {
+					return nullptr;
+				}
+				std::shared_ptr<WheelItemLight> wheelItemLight = std::make_shared<WheelItemLight>(light);
+				return wheelItemLight;
+			}
+			break;
 			}
 		} else if (ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
 			auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
@@ -70,18 +98,17 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 			}
 			switch (form->GetFormType()) {
 			case RE::FormType::Spell:
-				{
-					std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(form->As<RE::SpellItem>());
-					return wheelItemSpell;
-					break;
-				}
-
+			{
+				std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(form->As<RE::SpellItem>());
+				return wheelItemSpell;
+			}
+			break;
 			case RE::FormType::Shout:
-				{
-					std::shared_ptr<WheelItemShout> wheelItemShout = std::make_shared<WheelItemShout>(form->As<RE::TESShout>());
-					return wheelItemShout;
-					break;
-				}
+			{
+				std::shared_ptr<WheelItemShout> wheelItemShout = std::make_shared<WheelItemShout>(form->As<RE::TESShout>());
+				return wheelItemShout;
+			}
+			break;
 			}
 		}
 	}
@@ -95,13 +122,14 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohmann::json a_json, SKSE::SerializationInterface* a_intfc)
 {
 	if (!a_json.contains("type")) {
-		ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: json object does not contain \"type\" field.");
-		return nullptr;
+		throw std::exception("WheelItemFactory::MakeWheelItemFromJsonObject: Json object does not contain a \"type\" field.");
+	}
+	if (!a_json.contains("formID")) {
+		throw std::exception("WheelItemFactory::MakeWheelItemFromJsonObject: Json object does not contain a \"formID\" field.");
 	}
 	std::string type = a_json["type"];
 	RE::FormID formID = a_json["formID"].get<RE::FormID>();
 	if (!a_intfc->ResolveFormID(formID, formID)) {
-		ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to resolve formID.");
 		return nullptr;
 	}
 	try
@@ -109,7 +137,6 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 		if (type == WheelItemWeapon::ITEM_TYPE_STR) {
 			RE::TESObjectWEAP* weap = static_cast<RE::TESObjectWEAP*>(RE::TESForm::LookupByID(formID));
 			if (!weap) {
-				ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup weap.");
 				return nullptr;
 			}
 			uint16_t uniqueID = a_json["uniqueID"].get<uint16_t>();
@@ -118,7 +145,6 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 		} else if (type == WheelItemArmor::ITEM_TYPE_STR) {
 			RE::TESObjectARMO* armor = static_cast<RE::TESObjectARMO*>(RE::TESForm::LookupByID(formID));
 			if (!armor) {
-				ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup armor.");
 				return nullptr;
 			}
 			uint16_t uniqueID = a_json["uniqueID"].get<uint16_t>();
@@ -127,7 +153,6 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 		} else if (type == WheelItemSpell::ITEM_TYPE_STR) {
 			RE::SpellItem* spell = static_cast<RE::SpellItem*>(RE::TESForm::LookupByID(formID));
 			if (!spell) {
-				ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup spell.");
 				return nullptr;
 			}
 			std::shared_ptr<WheelItemSpell> wheelItemSpell = std::make_shared<WheelItemSpell>(spell);
@@ -135,11 +160,17 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 		} else if (type == WheelItemShout::ITEM_TYPE_STR) {
 			RE::TESShout* shout = static_cast<RE::TESShout*>(RE::TESForm::LookupByID(formID));
 			if (!shout) {
-				ERROR("Error: WheelItemFactory::MakeWheelItemFromJsonObject: failed to lookup shout.");
 				return nullptr;
 			}
 			std::shared_ptr<WheelItemShout> wheelItemShout = std::make_shared<WheelItemShout>(shout);
 			return wheelItemShout;
+		} else if (type == WheelItemLight::ITEM_TYPE_STR) {
+			RE::TESObjectLIGH* light = static_cast<RE::TESObjectLIGH*>(RE::TESForm::LookupByID(formID));
+			if (!light) {
+				return nullptr;
+			}
+			std::shared_ptr<WheelItemLight> wheelItemLight = std::make_shared<WheelItemLight>(light);
+			return wheelItemLight;
 		}
 	}
 	catch (std::exception exception) {
