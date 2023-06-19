@@ -38,11 +38,11 @@ void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		C_SKYRIMWHITE, a_drawArgs);
 	
 	std::string descriptionBuf = "";
-	// first check if description is empty, if not we just show the description itself, weapon's sepcial description is probably more important.
-	if (!this->_description.empty()) {  // non-empty description, weapon's main description takes priority(it's probably a special weapon)
+	// first check if description is empty, if not we just show the description itself, armor's sepcial description is probably more important.
+	if (!this->_description.empty()) {  // non-empty description, armor's main description takes priority(it's probably a special armor)
 		descriptionBuf = this->_description;
 	} else {
-		// try to get enchant of this weapon
+		// try to get enchant of this armor
 		std::vector<RE::EnchantmentItem*> enchants;
 		this->GetItemEnchantment(a_imap, enchants);
 		if (!enchants.empty()) {
@@ -66,7 +66,15 @@ WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
 	RE::TESObjectARMO* armor = a_armor->As<RE::TESObjectARMO>();
 	using SlotEnum = RE::BGSBipedObjectForm::BipedObjectSlot;
 	Texture::icon_image_type iconType = Texture::icon_image_type::armor_default;
-	if (armor->IsHeavyArmor()) {
+	if (armor->HasKeywordString("ArmorJewelry") || armor->HasKeywordString("VendorItemJewelry") || armor->HasKeywordString("JewelryExpensive")) {
+		if (armor->HasKeywordString("ClothingNecklace") || armor->HasPartOf(SlotEnum::kAmulet)) {
+			iconType = Texture::icon_image_type::armor_necklace;
+		} else if (armor->HasKeywordString("ClothingCirclet") || armor->HasPartOf(SlotEnum::kCirclet)) {
+			iconType = Texture::icon_image_type::armor_circlet;
+		} else if (armor->HasKeywordString("ClothingRing") || armor->HasPartOf(SlotEnum::kRing)) {
+			iconType = Texture::icon_image_type::armor_ring;
+		}
+	} else if (armor->IsHeavyArmor()) {
 		if (armor->HasPartOf(SlotEnum::kBody)) {
 			iconType = Texture::icon_image_type::armor_heavy_chest;
 		} else if (armor->HasPartOf(SlotEnum::kHead) || armor->HasPartOf(SlotEnum::kHair) || armor->HasPartOf(SlotEnum::kCirclet)) {
@@ -75,8 +83,10 @@ WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
 			iconType = Texture::icon_image_type::armor_heavy_foot;
 		} else if (armor->HasPartOf(SlotEnum::kHands)) {
 			iconType = Texture::icon_image_type::armor_heavy_arm;
+		} else if (armor->HasPartOf(SlotEnum::kShield)) {
+			iconType = Texture::icon_image_type::armor_heavy_shield;
 		}
-	} else {
+	} else if (armor->IsLightArmor()) {
 		if (armor->HasPartOf(SlotEnum::kBody)) {
 			iconType = Texture::icon_image_type::armor_light_chest;
 		} else if (armor->HasPartOf(SlotEnum::kHead) || armor->HasPartOf(SlotEnum::kHair) || armor->HasPartOf(SlotEnum::kCirclet)) {
@@ -85,6 +95,18 @@ WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
 			iconType = Texture::icon_image_type::armor_light_foot;
 		} else if (armor->HasPartOf(SlotEnum::kHands)) {
 			iconType = Texture::icon_image_type::armor_light_arm;
+		} else if (armor->HasPartOf(SlotEnum::kShield)) {
+			iconType = Texture::icon_image_type::armor_light_shield;
+		}
+	} else if (armor->IsClothing()) {
+		if (armor->HasPartOf(SlotEnum::kBody)) {
+			iconType = Texture::icon_image_type::armor_clothing_chest;
+		} else if (armor->HasPartOf(SlotEnum::kHead) || armor->HasPartOf(SlotEnum::kHair) || armor->HasPartOf(SlotEnum::kCirclet)) {
+			iconType = Texture::icon_image_type::armor_clothing_head;
+		} else if (armor->HasPartOf(SlotEnum::kFeet) || armor->HasPartOf(SlotEnum::kCalves)) {
+			iconType = Texture::icon_image_type::armor_clothing_foot;
+		} else if (armor->HasPartOf(SlotEnum::kHands)) {
+			iconType = Texture::icon_image_type::armor_clothing_arm;
 		}
 	}
 

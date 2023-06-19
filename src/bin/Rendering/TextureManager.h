@@ -63,6 +63,8 @@ public:
 		destruction_shock,
 		restoration,
 		poison_default,
+		armor_heavy_shield,
+		armor_light_shield,
 		armor_light_chest,
 		armor_heavy_chest,
 		armor_light_arm,
@@ -71,7 +73,13 @@ public:
 		armor_heavy_foot,
 		armor_light_head,
 		armor_heavy_head,
-		armor_clothing,
+		armor_clothing_head,
+		armor_clothing_chest,
+		armor_clothing_foot,
+		armor_clothing_arm,
+		armor_necklace,
+		armor_circlet,
+		armor_ring,
 		armor_default,
 		scroll,
 		arrow,
@@ -177,9 +185,21 @@ private:
 		{ R"(armor_heavy_foot.svg)", icon_image_type::armor_heavy_foot },
 		{ R"(armor_light_head.svg)", icon_image_type::armor_light_head },
 		{ R"(armor_heavy_head.svg)", icon_image_type::armor_heavy_head },
+		// shields
+		{ R"(armor_heavy_shield.svg)", icon_image_type::armor_heavy_shield },
+		{ R"(armor_light_shield.svg)", icon_image_type::armor_light_shield },
 
-		// clothing and robe
-		{ R"(armor_clothing.svg)", icon_image_type::armor_clothing },
+		// clothing
+		{ R"(armor_clothing_head.svg)", icon_image_type::armor_clothing_head },
+		{ R"(armor_clothing_chest.svg)", icon_image_type::armor_clothing_chest },
+		{ R"(armor_clothing_arm.svg)", icon_image_type::armor_clothing_arm },
+		{ R"(armor_clothing_foot.svg)", icon_image_type::armor_clothing_foot },
+
+		// jewelry
+		{ R"(armor_circlet.svg)", icon_image_type::armor_circlet },
+		{ R"(armor_necklace.svg)", icon_image_type::armor_necklace },
+		{ R"(armor_ring.svg)", icon_image_type::armor_ring },
+
 		{ R"(armor_default.svg)", icon_image_type::armor_default },
 
 		

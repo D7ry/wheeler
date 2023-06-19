@@ -78,6 +78,14 @@ void WheelItemMutable::GetItemEnchantment(RE::TESObjectREFR::InventoryItemMap& a
 			}
 			break;
 		}
+	case RE::FormType::Armor:
+		{
+			auto armor = static_cast<RE::TESObjectARMO*>(this->_obj);
+			if (armor->formEnchanting) {
+				r_enchantments.push_back(armor->formEnchanting);
+			}
+			break;
+		}
 	}
 	std::unique_ptr<RE::InventoryEntryData>* pp = nullptr;
 	for (auto& [boundObj, data] : a_invMap) {
