@@ -128,23 +128,26 @@ void Texture::load_custom_icon_images()
 		Image img;
 		std::string fileName = entry.path().filename().string();
 		bool fid = false;  // whether we're looking for a formID match
-		size_t idx = fileName.find_first_of("FID_");
+		size_t idx = fileName.find("FID_");
 		if (idx == 0) {
 			fid = true;
 		} else {
-			idx = fileName.find_first_of("KWD_");
+			idx = fileName.find("KWD_");
 			if (idx != 0) {
 				continue;  // not a valid file name
 			}
 		}
 		if (fid) {
 			const size_t pluginNameBegin = 4;
-			size_t pluginNameEnd = fileName.find_first_of("_", pluginNameBegin);  // find the 2nd '_'
+			size_t pluginNameEnd = fileName.find("_0x", pluginNameBegin);  // find the 2nd '_'
 			if (pluginNameEnd == std::string::npos) {
-				continue;
+				pluginNameEnd = fileName.find("_0X", pluginNameBegin);
+				if (pluginNameEnd == std::string::npos) {
+					continue;
+				}
 			}
 			std::string pluginName = fileName.substr(pluginNameBegin, pluginNameEnd - pluginNameBegin);
-			size_t formIdEnd = fileName.find_last_not_of(".svg") + 1;  // +1 because substr is right exclusive
+			size_t formIdEnd = fileName.find(".svg");
 			size_t formIdBegin = pluginNameEnd + 1;
 			std::string formIdStr = fileName.substr(formIdBegin, formIdEnd - formIdBegin);
 			int formId = hexStringToInt(formIdStr);
@@ -158,7 +161,7 @@ void Texture::load_custom_icon_images()
 			icon_struct_formID[formID] = img;
 		} else { //kwd
 			const size_t keywordBegin = 4;
-			size_t keywordEnd = fileName.find_last_not_of(".svg") + 1;
+			size_t keywordEnd = fileName.find(".svg");
 			std::string keyWord = fileName.substr(keywordBegin, keywordEnd - keywordBegin);
 			Image img;
 			load_texture_from_file(entry.path().string().c_str(), &img.texture, img.width, img.height);
