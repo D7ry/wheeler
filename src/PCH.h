@@ -1,5 +1,6 @@
 
 #pragma once
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 #pragma warning(push)
 #include <RE/Skyrim.h>
@@ -55,3 +56,4 @@ struct DrawArgs
 	float rotationOffset = 0.0f;
 	ImVec2 translationOffset = ImVec2(0.0f, 0.0f);
 };
+

@@ -119,34 +119,31 @@ void Input::ProcessAndFilter(RE::InputEvent** a_event)
 				event = event->next;
 				continue;
 			}
+			uint32_t input = button->GetIDCode();
+			using DeviceType = RE::INPUT_DEVICE;
+			bool isGamePad = false;
+			switch (button->device.get()) {
+			case DeviceType::kMouse:
+				input += kMouseOffset;
+				break;
+			case DeviceType::kKeyboard:
+				input += kKeyboardOffset;
+				break;
+			case DeviceType::kGamepad:
+				input = GetGamepadIndex((RE::BSWin32GamepadDevice::Key)input);
+				isGamePad = true;
+				break;
+			}
+			if (!Controls::IsKeyBound(input)) { // not bound, don't care
+				event = event->next;
+				continue;
+			}
+			if (wheelerOpen) {
+				shouldDispatch = false;  // block button input when wheel is open, regardless of whether it's down, up, pressed
+			}
 			if (button->IsDown() || button->IsUp()) {
-				auto scan_code = button->GetIDCode();
-
-				using DeviceType = RE::INPUT_DEVICE;
-				bool isGamePad = false;
-				auto input = scan_code;
-				switch (button->device.get()) {
-				case DeviceType::kMouse:
-					input += kMouseOffset;
-					break;
-				case DeviceType::kKeyboard:
-					input += kKeyboardOffset;
-					break;
-				case DeviceType::kGamepad:
-					input = GetGamepadIndex((RE::BSWin32GamepadDevice::Key)input);
-					isGamePad = true;
-					break;
-				default:
-					continue;
-				}
-				// block button inputs to game when when the input is bound, and when the wheel is open.
-				if (Controls::IsKeyBound(input)) {
-					// dispatch no matter if wheeler is open, wheeler will handle dispatched logic.
-					Controls::Dispatch(input, button->IsDown(), isGamePad);
-					if (wheelerOpen) {  // however, we want to filter out dedicated inputs only when wheeler is open.
-						shouldDispatch = false;
-					}
-				}
+				// dispatch no matter if wheeler is open, wheeler will handle dispatched logic.
+				Controls::Dispatch(input, button->IsDown(), isGamePad);
 			}
 
 		}

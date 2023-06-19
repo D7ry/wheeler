@@ -1,5 +1,6 @@
 #include "Drawer.h"
-#define IMGUI_DEFINE_MATH_OPERATORS
+
+
 #include "imgui.h"
 
 #include "bin/Utilities/Utils.h"
