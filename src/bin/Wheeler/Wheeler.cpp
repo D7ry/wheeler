@@ -204,6 +204,34 @@ void Wheeler::OpenWheeler()
 	if (!RE::PlayerCharacter::GetSingleton() || !RE::PlayerCharacter::GetSingleton()->Is3DLoaded()) {
 		return;
 	}
+	auto ui = RE::UI::GetSingleton();
+	if (!ui) {
+		return;
+	}
+	static constexpr std::array<std::string_view, 14> conflictingMenus({
+		RE::BookMenu::MENU_NAME,
+		RE::BarterMenu::MENU_NAME,
+		RE::CraftingMenu::MENU_NAME,
+		RE::JournalMenu::MENU_NAME,
+		RE::LevelUpMenu::MENU_NAME,
+		RE::LockpickingMenu::MENU_NAME,
+		RE::LoadingMenu::MENU_NAME,
+		RE::MainMenu::MENU_NAME,
+		RE::MapMenu::MENU_NAME,
+		RE::RaceSexMenu::MENU_NAME,
+		RE::SleepWaitMenu::MENU_NAME,
+		RE::StatsMenu::MENU_NAME,
+		RE::TweenMenu::MENU_NAME,
+		RE::Console::MENU_NAME
+	});
+	for (std::string_view menuName : conflictingMenus) {
+		if (ui->IsMenuOpen(menuName) 
+			&& !ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME) 
+			&& !ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
+			return;
+		}
+	}
+	
 	if (_state != WheelState::KOpened && _state != WheelState::KOpening) {
 		if (Config::Styling::Wheel::SlowTimeScale < 1) {
 			if (Utils::Time::GGTM() == 1) {

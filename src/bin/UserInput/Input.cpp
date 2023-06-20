@@ -115,37 +115,41 @@ void Input::ProcessAndFilter(RE::InputEvent** a_event)
 			}
 		} else if (event->eventType == RE::INPUT_EVENT_TYPE::kButton) {
 			const auto button = static_cast<RE::ButtonEvent*>(event);
-			if (!button) {
-				event = event->next;
-				continue;
+			if (button) {
+				uint32_t input = button->GetIDCode();
+				using DeviceType = RE::INPUT_DEVICE;
+				bool isGamePad = false;
+				RE::INPUT_DEVICE device = button->device.get();
+				switch (device) {
+				case DeviceType::kMouse:
+					input += kMouseOffset;
+					break;
+				case DeviceType::kKeyboard:
+					input += kKeyboardOffset;
+					break;
+				case DeviceType::kGamepad:
+					input = GetGamepadIndex((RE::BSWin32GamepadDevice::Key)input);
+					isGamePad = true;
+					break;
+				}
+				bool isKeyBound = Controls::IsKeyBound(input);
+				if (wheelerOpen) {
+					if (isKeyBound) {
+						shouldDispatch = false;  // block button input when wheel is open, regardless of whether it's down, up, pressed
+					} else {
+						RE::ControlMap* ctrlMap = RE::ControlMap::GetSingleton();
+						if (ctrlMap) { // filter out inputs like opening tween menu to avoid some consistency issues
+							shouldDispatch = !EventsToFilterWhenWheelerActive.contains(std::string(ctrlMap->GetUserEventName(input, device)));
+						}
+					}
+				}
+				if (isKeyBound) {
+					if (button->IsDown() || button->IsUp()) {
+						// dispatch no matter if wheeler is open, wheeler will handle dispatched logic.
+						Controls::Dispatch(input, button->IsDown(), isGamePad);
+					}
+				}
 			}
-			uint32_t input = button->GetIDCode();
-			using DeviceType = RE::INPUT_DEVICE;
-			bool isGamePad = false;
-			switch (button->device.get()) {
-			case DeviceType::kMouse:
-				input += kMouseOffset;
-				break;
-			case DeviceType::kKeyboard:
-				input += kKeyboardOffset;
-				break;
-			case DeviceType::kGamepad:
-				input = GetGamepadIndex((RE::BSWin32GamepadDevice::Key)input);
-				isGamePad = true;
-				break;
-			}
-			if (!Controls::IsKeyBound(input)) { // not bound, don't care
-				event = event->next;
-				continue;
-			}
-			if (wheelerOpen) {
-				shouldDispatch = false;  // block button input when wheel is open, regardless of whether it's down, up, pressed
-			}
-			if (button->IsDown() || button->IsUp()) {
-				// dispatch no matter if wheeler is open, wheeler will handle dispatched logic.
-				Controls::Dispatch(input, button->IsDown(), isGamePad);
-			}
-
 		}
 		
 		RE::InputEvent* nextEvent = event->next;
