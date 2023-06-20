@@ -85,9 +85,9 @@ Wheeler does not leave any script or reference in the player's save; item datas 
 Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
 - [ ] Input prompts
 - [ ] L/R hand equipped indicator
-- [ ] Better input handling
+- [x] Better input handling
   - [x] Only hook inputs that are bound, let other inputs go so user can walk while selecting wheel items
-  - [ ] Disable some other inputs too(e.g. opening inventory) even though they're not bound they still affects the wheel.
+  - [x] Disable some other inputs too(e.g. opening inventory) even though they're not bound they still affects the wheel.
 - [ ] Add other item types
   - [x] Power - they're the same as spell but stored in a different slot
   - [x] Shout - lmb -> equip; rmb -> release (same as power that are not equipped to hand)
@@ -102,7 +102,7 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [ ] Controller rumble
   - [x] Custom font
   - [x] Asian language(Chinese, Japanese, Korean) with special characters
-  - [ ] Custom icons
+  - [x] Custom icons
   - [x] Optimize interpolator manager so that it only manages active interpolators, inactive interpolators are removed from its set, and they add themselves back when they receive a new interpolation target.
 
 - Future plans
