@@ -16,9 +16,6 @@
 #include "WheelItems/WheelItemSpell.h"
 #include "WheelItems/WheelItemWeapon.h"
 
-
-static float _alphaMult = 1.f;
-
 void Wheeler::Update(float a_deltaTime)
 {
 	std::shared_lock<std::shared_mutex> lock(_wheelDataLock);
