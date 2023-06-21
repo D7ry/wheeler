@@ -76,9 +76,7 @@ void Wheeler::Update(float a_deltaTime)
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		drawList->PushClipRectFullScreen();
 		
-		DrawArgs drawArgs;
-		drawArgs.alphaMult = _alphaMult;
-		
+		DrawArgs drawArgs;		
 		// get ready to draw the wheel
 		const ImVec2 wheelCenter = getWheelCenter();
 		RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
@@ -131,7 +129,6 @@ void Wheeler::Update(float a_deltaTime)
 			}
 			break;
 		}
-		_alphaMult = alphaMult;
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -421,7 +418,7 @@ void Wheeler::ActivateHoveredEntrySpecial()
 void Wheeler::AddEmptyEntryToCurrentWheel()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode || _wheels.empty() || _activeWheelIdx == -1) {
+	if (!_editMode || _state == WheelState::KClosed || _wheels.empty() || _activeWheelIdx == -1) {
 		return;
 	}
 	_wheels[_activeWheelIdx]->PushEmptyEntry();
@@ -431,7 +428,7 @@ void Wheeler::AddEmptyEntryToCurrentWheel()
 void Wheeler::AddWheel()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode) {
+	if (!_editMode || _state == WheelState::KClosed) {
 		return;
 	}
 	_wheels.push_back(std::make_unique<Wheel>());
@@ -440,7 +437,7 @@ void Wheeler::AddWheel()
 void Wheeler::DeleteCurrentWheel()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode) {
+	if (!_editMode || _state == WheelState::KClosed) {
 		return;
 	}
 	if (_wheels.size() > 1) {
@@ -459,7 +456,7 @@ void Wheeler::DeleteCurrentWheel()
 void Wheeler::MoveEntryForwardInCurrentWheel()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode) {
+	if (!_editMode || _state == WheelState::KClosed) {
 		return;
 	}
 	if (_activeWheelIdx != -1) {
@@ -470,7 +467,7 @@ void Wheeler::MoveEntryForwardInCurrentWheel()
 void Wheeler::MoveEntryBackInCurrentWheel()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode) {
+	if (!_editMode || _state == WheelState::KClosed) {
 		return;
 	}
 	if (_activeWheelIdx != -1) {
@@ -481,7 +478,7 @@ void Wheeler::MoveEntryBackInCurrentWheel()
 void Wheeler::MoveWheelForward()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode) {
+	if (!_editMode || _state == WheelState::KClosed) {
 		return;
 	}
 	if (_wheels.size() > 1) {
@@ -503,7 +500,7 @@ void Wheeler::MoveWheelForward()
 void Wheeler::MoveWheelBack()
 {
 	std::unique_lock<std::shared_mutex> lock(_wheelDataLock);
-	if (!_editMode) {
+	if (!_editMode || _state == WheelState::KClosed) {
 		return;
 	}
 	if (_wheels.size() > 1) {
