@@ -75,8 +75,30 @@ void Wheeler::Update(float a_deltaTime)
 	if (poppedUp) {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		drawList->PushClipRectFullScreen();
+
+		// update fade timer, alpha and wheel state.
+		_openTimer += a_deltaTime;
+
+		float alphaMult = 1.0f;
+		switch (_state) {
+		case WheelState::KOpening:
+			alphaMult = std::fminf(_openTimer / Config::Styling::Wheel::FadeTime, 1.f);
+			if (_openTimer >= Config::Styling::Wheel::FadeTime) {
+				_state = WheelState::KOpened;
+			}
+			break;
+		case WheelState::KClosing:
+			_closeTimer += a_deltaTime;
+			alphaMult = std::fmaxf(1 - _closeTimer / Config::Styling::Wheel::FadeTime, 0.f);
+			if (_closeTimer >= Config::Styling::Wheel::FadeTime) {
+				CloseWheeler();
+				_closeTimer = 0;
+			}
+			break;
+		}
 		
-		DrawArgs drawArgs;		
+		DrawArgs drawArgs;
+		drawArgs.alphaMult = alphaMult;
 		// get ready to draw the wheel
 		const ImVec2 wheelCenter = getWheelCenter();
 		RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
@@ -107,28 +129,7 @@ void Wheeler::Update(float a_deltaTime)
 		}
 
 		
-		// update fade timer, alpha and wheel state.
-		_openTimer += a_deltaTime;
 
-		float alphaMult = 1.0f;
-		switch (_state) {
-		case WheelState::KOpening:
-			if (_openTimer >= Config::Styling::Wheel::FadeTime) {
-				_state = WheelState::KOpened;
-			} else {
-				alphaMult = _openTimer / Config::Styling::Wheel::FadeTime;
-			}
-			break;
-		case WheelState::KClosing:
-			_closeTimer += a_deltaTime;
-			if (_closeTimer >= Config::Styling::Wheel::FadeTime) {
-				CloseWheeler();
-				_closeTimer = 0;
-			} else {
-				alphaMult = 1 - _closeTimer / Config::Styling::Wheel::FadeTime;
-			}
-			break;
-		}
 		drawList->PopClipRect();
 		ImGui::EndPopup();
 	}
@@ -202,7 +203,7 @@ void Wheeler::OpenWheeler()
 	if (!ui) {
 		return;
 	}
-	static constexpr std::array<std::string_view, 14> conflictingMenus({
+	static constexpr std::array<std::string_view, 15> conflictingMenus({
 		RE::BookMenu::MENU_NAME,
 		RE::BarterMenu::MENU_NAME,
 		RE::CraftingMenu::MENU_NAME,
@@ -216,7 +217,8 @@ void Wheeler::OpenWheeler()
 		RE::SleepWaitMenu::MENU_NAME,
 		RE::StatsMenu::MENU_NAME,
 		RE::TweenMenu::MENU_NAME,
-		RE::Console::MENU_NAME
+		RE::Console::MENU_NAME,
+		RE::DialogueMenu::MENU_NAME
 	});
 	for (std::string_view menuName : conflictingMenus) {
 		if (ui->IsMenuOpen(menuName) 

@@ -17,29 +17,7 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, "Empty Wheel", C_SKYRIMWHITE, 40.f, a_drawArgs);
 		return; // nothing more to draw
 	}
-
-	// draw cursor indicator
-	if (!a_cursorCentered) { 
-		// draw cursor indicator
-		float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
-		Drawer::draw_arc(a_wheelCenter,
-			cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
-			cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
-			a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
-			a_cursorAngle - (CursorIndicatorArcAngle / 2), a_cursorAngle + (CursorIndicatorArcAngle / 2),
-			CursorIndicatorColor,
-			32, a_drawArgs);
-		ImVec2 cursorIndicatorTriPts[3] = {
-			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
-			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
-			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
-		};
-		for (ImVec2& pos : cursorIndicatorTriPts) {
-			pos = ImRotate(pos, cos(a_cursorAngle), sin(a_cursorAngle));
-		}
-		Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
-		
-	}
+	float cursorIndicatorAngle = a_cursorAngle;
 
 	// draw entries
 	using entryRuntimeData = std::pair<ImVec2, bool>; // <entry center, is hovered>
@@ -96,6 +74,12 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 			a_wheelCenter.x + t2 * cosf(rad),
 			a_wheelCenter.y + t2 * sinf(rad));
 
+		if (hovered) {
+			if (Config::Animation::SnappyCursorIndicator) {  // update cursor indicator angle to point to item center
+				cursorIndicatorAngle = rad;
+			}
+		}
+
 		int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
 
 		// draw background first
@@ -105,9 +89,31 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 		// prepare for foreground drawing
 		entryRuntimeDataVec.push_back(std::make_pair(entryCenter, hovered));
 	}
+	
 	// draw foreground in a separate pass to avoid overlapping
 	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
 		_entries[entryIdx]->DrawSlotAndHighlight(a_wheelCenter, entryRuntimeDataVec[entryIdx].first, entryRuntimeDataVec[entryIdx].second, a_imap, a_drawArgs);
+	}
+
+	// draw cursor indicator
+	if (!a_cursorCentered) {
+		float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
+		Drawer::draw_arc(a_wheelCenter,
+			cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
+			cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
+			cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
+			cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
+			CursorIndicatorColor,
+			32, a_drawArgs);
+		ImVec2 cursorIndicatorTriPts[3] = {
+			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
+			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
+			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
+		};
+		for (ImVec2& pos : cursorIndicatorTriPts) {
+			pos = ImRotate(pos, cos(cursorIndicatorAngle), sin(cursorIndicatorAngle));
+		}
+		Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
 	}
 }
 void Wheel::PushEntry(std::unique_ptr<WheelEntry> a_entry) 
