@@ -8,6 +8,7 @@
 #include "WheelItemArmor.h"
 #include "WheelItemShout.h"
 #include "WheelItemLight.h"
+#include "WheelItemAmmo.h"
 
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
@@ -86,6 +87,15 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 				return wheelItemLight;
 			}
 			break;
+			case RE::FormType::Ammo:
+			{
+				RE::TESAmmo* ammo = boundObj->As<RE::TESAmmo>();
+				if (!ammo) {
+					return nullptr;
+				}
+				std::shared_ptr<WheelItemAmmo> wheelItemAmmo = std::make_shared<WheelItemAmmo>(ammo);
+				return wheelItemAmmo;
+			}
 			}
 		} else if (ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
 			auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
