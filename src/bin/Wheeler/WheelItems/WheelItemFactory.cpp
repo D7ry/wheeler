@@ -181,10 +181,17 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 			}
 			std::shared_ptr<WheelItemLight> wheelItemLight = std::make_shared<WheelItemLight>(light);
 			return wheelItemLight;
+		} else if (type == WheelItemAmmo::ITEM_TYPE_STR) {
+			RE::TESAmmo* ammo = static_cast<RE::TESAmmo*>(RE::TESForm::LookupByID(formID));
+			if (!ammo) {
+				return nullptr;
+			}
+			std::shared_ptr<WheelItemAmmo> wheelItemAmmo = std::make_shared<WheelItemAmmo>(ammo);
+			return wheelItemAmmo;
 		}
 	}
 	catch (std::exception exception) {
-		INFO("Exception: {}", exception.what());
+		INFO("Exception when de-serializing wheel item: {}", exception.what());
 	}
 	
 	return nullptr;

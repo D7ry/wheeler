@@ -13,8 +13,9 @@ void WheelItemAmmo::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR:
 {
 	{
 		using namespace Config::Styling::Item::Slot;
+		int ammoCount = a_imap.contains(this->_ammo) ? a_imap.find(this->_ammo)->second.first : 0;
 		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			_ammo->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
+			fmt::format("{} ({})", _ammo->GetName(), ammoCount).data(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
 		Drawer::draw_texture(_texture.texture,
 			ImVec2(a_center.x, a_center.y),
 			Config::Styling::Item::Slot::Texture::OffsetX,
