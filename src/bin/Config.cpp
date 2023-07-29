@@ -1,5 +1,6 @@
 #include "Config.h"
 #include "UserInput/Controls.h"
+#include "imgui.h"
 
 #define SETTINGSFILE_PATH "Data\\SKSE\\Plugins\\wheeler\\Settings.ini"
 
@@ -139,6 +140,62 @@ void Config::ReadConfig()
 	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelForward", Config::InputBindings::MKB::moveWheelForward);
 	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelBack", Config::InputBindings::MKB::moveWheelBack);
 	//GetBoolValue(ini, "Animation", "Camera Rotation", Config::Animation::CameraRotation);
+
+	Config::offsetSizingToViewport();  // Offset sizing values to the current viewport
+}
+
+void Config::offsetSizingToViewport()
+{
+	float scale = ImGui::GetIO().DisplaySize.x / REFERENCE_WIDTH; // base scale on width
+	for (float* value : 
+		{
+			&Config::Control::Wheel::CursorRadiusPerEntry,
+			&Config::Styling::Wheel::CursorIndicatorDist,
+			&Config::Styling::Wheel::CusorIndicatorArcWidth,
+			&Config::Styling::Wheel::CursorIndicatorTriangleSideLength,
+			&Config::Styling::Wheel::WheelIndicatorOffsetX,
+			&Config::Styling::Wheel::WheelIndicatorOffsetY,
+			&Config::Styling::Wheel::WheelIndicatorSize,
+			&Config::Styling::Wheel::WheelIndicatorSpacing,
+			&Config::Styling::Wheel::InnerCircleRadius,
+			&Config::Styling::Wheel::OuterCircleRadius,
+			&Config::Styling::Wheel::InnerSpacing,
+			&Config::Styling::Wheel::ActiveArcWidth,
+			&Config::Styling::Wheel::CenterOffsetX,
+			&Config::Styling::Wheel::CenterOffsetY,
+			
+			&Config::Styling::Entry::Highlight::Text::OffsetX,
+			&Config::Styling::Entry::Highlight::Text::OffsetY,
+			&Config::Styling::Entry::Highlight::Text::Size,
+
+			&Config::Styling::Item::Highlight::Texture::OffsetX,
+			&Config::Styling::Item::Highlight::Texture::OffsetY,
+			&Config::Styling::Item::Highlight::Texture::Scale,
+
+			&Config::Styling::Item::Highlight::Text::OffsetX,
+			&Config::Styling::Item::Highlight::Text::OffsetY,
+			&Config::Styling::Item::Highlight::Text::Size,
+
+			&Config::Styling::Item::Highlight::Desc::OffsetX,
+			&Config::Styling::Item::Highlight::Desc::OffsetY,
+			&Config::Styling::Item::Highlight::Desc::Size,
+			&Config::Styling::Item::Highlight::Desc::LineLength,
+			&Config::Styling::Item::Highlight::Desc::LineSpacing,
+
+			&Config::Styling::Item::Highlight::Stat::OffsetX,
+			&Config::Styling::Item::Highlight::Stat::OffsetY,
+
+			&Config::Styling::Item::Slot::Texture::OffsetX,
+			&Config::Styling::Item::Slot::Texture::OffsetY,
+			&Config::Styling::Item::Slot::Texture::Scale,
+
+			&Config::Styling::Item::Slot::Text::OffsetX,
+			&Config::Styling::Item::Slot::Text::OffsetY,
+			&Config::Styling::Item::Slot::Text::Size
+		} 
+		) {
+		*value = *value * scale;
+	}
 }
 
 EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>* a_eventSource)

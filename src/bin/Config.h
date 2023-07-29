@@ -12,8 +12,11 @@ using EventResult = RE::BSEventNotifyControl;
 
 namespace Config
 {
+	#define REFERENCE_WIDTH 1920
 
 	void ReadConfig();
+
+	void offsetSizingToViewport();
 
 	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
 	{
@@ -88,7 +91,7 @@ namespace Config
 		inline float EntryHighlightExpandScale = 0.15f;
 		inline float EntryInputBumpTime = 0.1f;
 		inline float EntryInputBumpScale = -0.1f;
-		inline bool SnappyCursorIndicator = true;
+		inline bool SnappyCursorIndicator = false;
 		//inline bool CameraRotation = true;
 	}
 
