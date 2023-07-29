@@ -55,6 +55,8 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
 		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 
+	int weaponDamage = this->_obj->As<RE::TESObjectWEAP>()->GetAttackDamage();
+	drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, weaponDamage, a_drawArgs);
 }
 
 WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID)
@@ -100,10 +102,10 @@ WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_unique
 			iconType = Texture::icon_image_type::axe_two_handed;
 		}
 	}
-		
 		break;
 	}
 	_texture = Texture::GetIconImage(iconType, a_weapon);
+	_stat_texture = Texture::GetIconImage(Texture::icon_image_type::weapon_damage, nullptr);
 
 	RE::BSString descriptionBuf = "";
 	a_weapon->As<RE::TESObjectWEAP>()->GetDescription(descriptionBuf, nullptr);

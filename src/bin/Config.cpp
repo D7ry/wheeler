@@ -98,6 +98,14 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "Size", Config::Styling::Item::Highlight::Desc::Size);
 	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "LineLength", Config::Styling::Item::Highlight::Desc::LineLength);
 	GetFloatValue(ini, "Styling.Item.Highlight.Desc", "LineSpacing", Config::Styling::Item::Highlight::Desc::LineSpacing);
+	
+	GetFloatValue(ini, "Styling.Item.Highlight.StatIcon", "OffsetX", Config::Styling::Item::Highlight::StatIcon::OffsetX);
+	GetFloatValue(ini, "Styling.Item.Highlight.StatIcon", "OffsetY", Config::Styling::Item::Highlight::StatIcon::OffsetY);
+	GetFloatValue(ini, "Styling.Item.Highlight.StatIcon", "Scale", Config::Styling::Item::Highlight::StatIcon::Scale);
+
+	GetFloatValue(ini, "Styling.Item.Highlight.StatText", "OffsetX", Config::Styling::Item::Highlight::StatText::OffsetX);
+	GetFloatValue(ini, "Styling.Item.Highlight.StatText", "OffsetY", Config::Styling::Item::Highlight::StatText::OffsetY);
+	GetFloatValue(ini, "Styling.Item.Highlight.StatText", "Size", Config::Styling::Item::Highlight::StatText::Size);
 
 	GetFloatValue(ini, "Styling.Item.Slot.Texture", "OffsetX", Config::Styling::Item::Slot::Texture::OffsetX);
 	GetFloatValue(ini, "Styling.Item.Slot.Texture", "OffsetY", Config::Styling::Item::Slot::Texture::OffsetY);
@@ -105,6 +113,8 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "OffsetX", Config::Styling::Item::Slot::Text::OffsetX);
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "OffsetY", Config::Styling::Item::Slot::Text::OffsetY);
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "Size", Config::Styling::Item::Slot::Text::Size);
+
+	
 
 	GetFloatValue(ini, "Animation", "EntryHighlightExpandTime", Config::Animation::EntryHighlightExpandTime);
 	GetFloatValue(ini, "Animation", "EntryHighlightRetractTime", Config::Animation::EntryHighlightRetractTime);
@@ -182,8 +192,13 @@ void Config::offsetSizingToViewport()
 			&Config::Styling::Item::Highlight::Desc::LineLength,
 			&Config::Styling::Item::Highlight::Desc::LineSpacing,
 
-			&Config::Styling::Item::Highlight::Stat::OffsetX,
-			&Config::Styling::Item::Highlight::Stat::OffsetY,
+			&Config::Styling::Item::Highlight::StatIcon::OffsetX,
+			&Config::Styling::Item::Highlight::StatIcon::OffsetY,
+			&Config::Styling::Item::Highlight::StatIcon::Scale,
+
+			&Config::Styling::Item::Highlight::StatText::OffsetX,
+			&Config::Styling::Item::Highlight::StatText::OffsetY,
+			&Config::Styling::Item::Highlight::StatText::Size,
 
 			&Config::Styling::Item::Slot::Texture::OffsetX,
 			&Config::Styling::Item::Slot::Texture::OffsetY,

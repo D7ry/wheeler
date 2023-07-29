@@ -97,6 +97,8 @@ public:
 		torch,
 		lantern,
 		mask,
+		armor_rating,
+		weapon_damage,
 		total
 	};
 	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form);
@@ -215,6 +217,12 @@ private:
 		{ R"(illusion.svg)", icon_image_type::illusion },
 		{ R"(torch.svg)", icon_image_type::torch },
 		{ R"(lantern.svg)", icon_image_type::lantern },
-		{ R"(mask.svg)", icon_image_type::mask } };
+		{ R"(mask.svg)", icon_image_type::mask },
+		
+		// Item Stats
+		{ R"(armor_rating.svg)", icon_image_type::armor_rating },
+		{ R"(weapon_damage.svg)", icon_image_type::weapon_damage }
+	
+	};
 };
 

@@ -39,7 +39,13 @@ public:
 
 protected:
 	Texture::Image _texture = Texture::Image();
+	Texture::Image _stat_texture = Texture::Image();
 	std::string _description = "";  // buffer for description.
 	
+	/// <summary>
+	/// Draws stat icon and value of the item when the item is highlighted.
+	/// Coordinates and scale of the icon texture and value text are determined by Config.
+	/// </summary>
+	void drawItemHighlightStatIconAndValue(ImVec2 a_center, Texture::Image& a_stat_icon, int a_stat_value, DrawArgs a_drawArgs);
 
 };

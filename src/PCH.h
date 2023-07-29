@@ -55,5 +55,6 @@ struct DrawArgs
 	float scaleMult = 1.0f;
 	float rotationOffset = 0.0f;
 	ImVec2 translationOffset = ImVec2(0.0f, 0.0f);
+	bool centerObject = true;
 };
 

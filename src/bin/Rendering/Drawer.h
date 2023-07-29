@@ -20,7 +20,8 @@ namespace Drawer
 		const char* a_text,
 		ImU32 a_color,
 		float a_font_size,
-		DrawArgs a_drawArgs);
+		DrawArgs a_drawArgs,
+		bool a_center_text = true);
 	
 	void draw_text_block(float a_x,
 		float a_y,

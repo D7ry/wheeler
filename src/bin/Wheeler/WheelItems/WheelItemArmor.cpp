@@ -53,6 +53,11 @@ void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
 		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 
+	// draw armor rating
+	RE::TESObjectARMO* armor = this->_obj->As<RE::TESObjectARMO>();
+	int armorRating = armor->GetArmorRating();
+	drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, armorRating, a_drawArgs);
+	
 }
 
 WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
@@ -111,6 +116,7 @@ WheelItemArmor::WheelItemArmor(RE::TESBoundObject* a_armor, uint16_t a_uniqueID)
 	}
 
 	_texture = Texture::GetIconImage(iconType, a_armor);
+	_stat_texture = Texture::GetIconImage(Texture::icon_image_type::armor_default, nullptr);
 	// get description
 	RE::BSString descriptionBuf = "";
 	armor->GetDescription(descriptionBuf, nullptr);

@@ -19,15 +19,17 @@ void Texture::Init()
 Texture::Image Texture::GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form)
 {
 	// look for formId matches
-	if (icon_struct_formID.contains(a_form->GetFormID())) {
-		return icon_struct_formID[a_form->GetFormID()];
-	}
-	// look for keyword matches
-	const auto keywordForm = a_form->As<RE::BGSKeywordForm>();
-	if (keywordForm) {
-		for (auto& entry : icon_struct_keyword) {
-			if (keywordForm->HasKeywordString(entry.first)) {
-				return entry.second;
+	if (a_form) {
+		if (icon_struct_formID.contains(a_form->GetFormID())) {
+			return icon_struct_formID[a_form->GetFormID()];
+		}
+		// look for keyword matches
+		const auto keywordForm = a_form->As<RE::BGSKeywordForm>();
+		if (keywordForm) {
+			for (auto& entry : icon_struct_keyword) {
+				if (keywordForm->HasKeywordString(entry.first)) {
+					return entry.second;
+				}
 			}
 		}
 	}

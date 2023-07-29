@@ -181,10 +181,18 @@ namespace Config
 					inline float LineSpacing = 5.f;
 				}
 
-				namespace Stat
+				namespace StatIcon
 				{
 					inline float OffsetX = 0;
 					inline float OffsetY = 0;
+					inline float Scale = .2f;
+				}
+
+				namespace StatText
+				{
+					inline float OffsetX = 0;
+					inline float OffsetY = 0;
+					inline float Size = 35;
 				}
 			}
 			namespace Slot

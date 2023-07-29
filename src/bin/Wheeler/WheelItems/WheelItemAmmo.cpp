@@ -7,6 +7,7 @@ WheelItemAmmo::WheelItemAmmo(RE::TESAmmo* a_ammo)
 	this->_ammo = a_ammo;
 	// load texture
 	this->_texture = Texture::GetIconImage(Texture::icon_image_type::arrow, a_ammo);
+	this->_stat_texture = Texture::GetIconImage(Texture::icon_image_type::weapon_damage, nullptr);
 }
 
 void WheelItemAmmo::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
@@ -39,6 +40,9 @@ void WheelItemAmmo::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryI
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE, a_drawArgs);
+
+	int ammoDamage = this->_ammo->data.damage;
+	drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, ammoDamage, a_drawArgs);
 }
 
 bool WheelItemAmmo::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)

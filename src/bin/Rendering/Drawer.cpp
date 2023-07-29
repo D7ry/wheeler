@@ -9,13 +9,11 @@ void Drawer::draw_text(float a_x,
 		const char* a_text,
 		ImU32 a_color,
 		float a_font_size,
-		DrawArgs a_drawArgs)
+		DrawArgs a_drawArgs,
+		bool a_center_text)
 {
 	auto* font = ImGui::GetDefaultFont();  // TODO: add custom font support
 
-	//it should center the text, it kind of does
-	auto text_x = 0.f;
-	auto text_y = 0.f;
 
 	if (!a_text || !*a_text) {
 		return;
@@ -23,20 +21,28 @@ void Drawer::draw_text(float a_x,
 
 	Utils::Color::MultAlpha(a_color, a_drawArgs.alphaMult);
 
-	float currFontSize = ImGui::GetFontSize();
 	
-	float fontRatio = a_font_size / currFontSize;
+	ImVec2 position = ImVec2(a_x, a_y);
+	
+	if (a_center_text) {
+		float currFontSize = ImGui::GetFontSize();
 
-	ImVec2 text_size = ImGui::CalcTextSize(a_text);
-	text_size.x *= fontRatio;
-	text_size.y *= fontRatio;
-	
-	text_x = -text_size.x * 0.5f;
-	text_y = -text_size.y * 0.5f;
-	
+		float fontRatio = a_font_size / currFontSize;
 
-	const auto position =
-		ImVec2(a_x + text_x, a_y + text_y);
+		ImVec2 text_size = ImGui::CalcTextSize(a_text);
+		text_size.x *= fontRatio;
+		text_size.y *= fontRatio;
+
+		//it should center the text, it kind of does
+		auto text_x = 0.f;
+		auto text_y = 0.f;
+
+		text_x = -text_size.x * 0.5f;
+		text_y = -text_size.y * 0.5f;
+	
+		position.x += text_x;
+		position.y += text_y;
+	}
 
 	auto drawList = ImGui::GetWindowDrawList();
 	
@@ -52,6 +58,14 @@ void Drawer::draw_text(float a_x,
 	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);
 }
 
+/// <summary>
+/// Splits a text into multiple lines and storing them in a vector,
+/// given a maximum width.
+/// </summary>
+/// <param name="a_text"></param>
+/// <param name="a_max_width"></param>
+/// <param name="a_font_size"></param>
+/// <param name="r_text_lines"></param>
 static void split_text_lines_utf8(const std::string& a_text, float a_max_width, float a_font_size, std::vector<std::string>& r_text_lines)
 {
 	float raw_length = ImGui::CalcTextSize(a_text.c_str()).x * (a_font_size / ImGui::GetFontSize());
