@@ -75,31 +75,38 @@ void WheelEntry::DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter
 
 void WheelEntry::drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	std::shared_lock<std::shared_mutex> lock(this->_lock);
-
-	if (_items.size() == 0) {
-		return; // nothing to draw
+	try {
+		std::shared_lock<std::shared_mutex> lock(this->_lock);
+		
+		if (_items.size() == 0) {
+			return;  // nothing to draw
+		}
+		_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap, a_drawArgs);
+	} catch (std::exception& e) {
+		logger::error("Exception in WheelEntry::drawSlot: {}", e.what());
 	}
-	_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap, a_drawArgs);
 }
 
 void WheelEntry::drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	std::shared_lock<std::shared_mutex> lock(this->_lock);
+	try {
+		std::shared_lock<std::shared_mutex> lock(this->_lock);
 
-	if (_items.size() == 0) {
-		return;  // nothing to draw
-	}
-	_items[_selectedItem]->DrawHighlight(a_center, a_imap, a_drawArgs);
-	if (_items.size() > 1) {
-		Drawer::draw_text(
-			a_center.x + Config::Styling::Entry::Highlight::Text::OffsetX,
-			a_center.y + Config::Styling::Entry::Highlight::Text::OffsetY,
-			fmt::format("{} / {}", _selectedItem + 1, _items.size()).data(),
-			C_SKYRIMWHITE,
-			Config::Styling::Entry::Highlight::Text::Size,
-			a_drawArgs
-			);
+		if (_items.size() == 0) {
+			return;  // nothing to draw
+		}
+		_items[_selectedItem]->DrawHighlight(a_center, a_imap, a_drawArgs);
+		if (_items.size() > 1) {
+			Drawer::draw_text(
+				a_center.x + Config::Styling::Entry::Highlight::Text::OffsetX,
+				a_center.y + Config::Styling::Entry::Highlight::Text::OffsetY,
+				fmt::format("{} / {}", _selectedItem + 1, _items.size()).data(),
+				C_SKYRIMWHITE,
+				Config::Styling::Entry::Highlight::Text::Size,
+				a_drawArgs);
+		}
+	} catch (std::exception& e) {
+		logger::error("Exception in WheelEntry::drawHighlight: {}", e.what());
 	}
 }
 

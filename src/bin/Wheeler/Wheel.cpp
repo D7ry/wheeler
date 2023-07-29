@@ -12,108 +12,111 @@ Wheel::~Wheel()
 void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentered, RE::TESObjectREFR::InventoryItemMap& a_imap,
 	DrawArgs a_drawArgs)
 {
-	using namespace Config::Styling::Wheel;
-	if (this->IsEmpty()) {
-		Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, "Empty Wheel", C_SKYRIMWHITE, 40.f, a_drawArgs);
-		return; // nothing more to draw
-	}
-	float cursorIndicatorAngle = a_cursorAngle;
-
-	// draw entries
-	using entryRuntimeData = std::pair<ImVec2, bool>; // <entry center, is hovered>
-	std::vector<entryRuntimeData> entryRuntimeDataVec;
-	// draw background, cache data for foreground
-	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
-		const float entryArcSpan = 2 * IM_PI / _entries.size();
-
-		const float innerSpacingRad = InnerSpacing / InnerCircleRadius / 2;
-		float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacingRad + IM_PI / 2;
-		float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacingRad + IM_PI / 2;
-
-		float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacingRad * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
-		float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacingRad * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
-
-		if (entryInnerAngleMax > IM_PI * 2) {
-			entryInnerAngleMin -= IM_PI * 2;
-			entryInnerAngleMax -= IM_PI * 2;
+	try {
+		using namespace Config::Styling::Wheel;
+		if (this->IsEmpty()) {
+			Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, "Empty Wheel", C_SKYRIMWHITE, 40.f, a_drawArgs);
+			return;  // nothing more to draw
 		}
+		float cursorIndicatorAngle = a_cursorAngle;
 
-		if (entryOuterAngleMax > IM_PI * 2) {
-			entryOuterAngleMin -= IM_PI * 2;
-			entryOuterAngleMax -= IM_PI * 2;
-		}
-		bool hovered = false;
-		if (!a_cursorCentered) {
-			// update hovered item
-			bool updatedActiveEntry = false;
-			if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
-				if (a_cursorAngle < entryInnerAngleMax) {
+		// draw entries
+		using entryRuntimeData = std::pair<ImVec2, bool>;  // <entry center, is hovered>
+		std::vector<entryRuntimeData> entryRuntimeDataVec;
+		// draw background, cache data for foreground
+		for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
+			const float entryArcSpan = 2 * IM_PI / _entries.size();
+
+			const float innerSpacingRad = InnerSpacing / InnerCircleRadius / 2;
+			float entryInnerAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacingRad + IM_PI / 2;
+			float entryInnerAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacingRad + IM_PI / 2;
+
+			float entryOuterAngleMin = entryArcSpan * (entryIdx - 0.5f) + innerSpacingRad * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+			float entryOuterAngleMax = entryArcSpan * (entryIdx + 0.5f) - innerSpacingRad * (InnerCircleRadius / OuterCircleRadius) + IM_PI / 2;
+
+			if (entryInnerAngleMax > IM_PI * 2) {
+				entryInnerAngleMin -= IM_PI * 2;
+				entryInnerAngleMax -= IM_PI * 2;
+			}
+
+			if (entryOuterAngleMax > IM_PI * 2) {
+				entryOuterAngleMin -= IM_PI * 2;
+				entryOuterAngleMax -= IM_PI * 2;
+			}
+			bool hovered = false;
+			if (!a_cursorCentered) {
+				// update hovered item
+				bool updatedActiveEntry = false;
+				if (a_cursorAngle >= entryInnerAngleMin) {  // Normal case
+					if (a_cursorAngle < entryInnerAngleMax) {
+						if (entryIdx != _hoveredEntryIdx) {
+							_hoveredEntryIdx = entryIdx;
+							updatedActiveEntry = true;
+						}
+					}
+				} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
 					if (entryIdx != _hoveredEntryIdx) {
 						_hoveredEntryIdx = entryIdx;
 						updatedActiveEntry = true;
 					}
 				}
-			} else if (a_cursorAngle + 2 * IM_PI < entryInnerAngleMax && a_cursorAngle + 2 * IM_PI >= entryInnerAngleMin) {  // Wrap-around case
-				if (entryIdx != _hoveredEntryIdx) {
-					_hoveredEntryIdx = entryIdx;
-					updatedActiveEntry = true;
+				if (updatedActiveEntry) {
+					RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
+				}
+				hovered = _hoveredEntryIdx == entryIdx;
+			}
+
+			// calculate wheel center
+			float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
+			float t2 = InnerCircleRadius + t1;
+			float rad = (entryInnerAngleMax - entryInnerAngleMin) / 2 + entryInnerAngleMin;
+			ImVec2 entryCenter = ImVec2(
+				a_wheelCenter.x + t2 * cosf(rad),
+				a_wheelCenter.y + t2 * sinf(rad));
+
+			if (hovered) {
+				if (Config::Animation::SnappyCursorIndicator) {  // update cursor indicator angle to point to item center
+					cursorIndicatorAngle = rad;
 				}
 			}
-			if (updatedActiveEntry) {
-				RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
+
+			int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
+
+			// draw background first
+			_entries[entryIdx]->DrawBackGround(a_wheelCenter, innerSpacingRad,
+				entryInnerAngleMin, entryInnerAngleMax,
+				entryOuterAngleMin, entryOuterAngleMax, entryCenter, hovered, numArcSegments, a_imap, a_drawArgs);
+			// prepare for foreground drawing
+			entryRuntimeDataVec.push_back(std::make_pair(entryCenter, hovered));
+		}
+
+		// draw foreground in a separate pass to avoid overlapping
+		for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
+			_entries[entryIdx]->DrawSlotAndHighlight(a_wheelCenter, entryRuntimeDataVec[entryIdx].first, entryRuntimeDataVec[entryIdx].second, a_imap, a_drawArgs);
+		}
+
+		// draw cursor indicator
+		if (!a_cursorCentered) {
+			float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
+			Drawer::draw_arc(a_wheelCenter,
+				cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
+				cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
+				cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
+				cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
+				CursorIndicatorColor,
+				32, a_drawArgs);
+			ImVec2 cursorIndicatorTriPts[3] = {
+				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
+				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
+				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
+			};
+			for (ImVec2& pos : cursorIndicatorTriPts) {
+				pos = ImRotate(pos, cos(cursorIndicatorAngle), sin(cursorIndicatorAngle));
 			}
-			hovered = _hoveredEntryIdx == entryIdx;
+			Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
 		}
-		
-
-		// calculate wheel center
-		float t1 = (OuterCircleRadius - InnerCircleRadius) / 2;
-		float t2 = InnerCircleRadius + t1;
-		float rad = (entryInnerAngleMax - entryInnerAngleMin) / 2 + entryInnerAngleMin;
-		ImVec2 entryCenter = ImVec2(
-			a_wheelCenter.x + t2 * cosf(rad),
-			a_wheelCenter.y + t2 * sinf(rad));
-
-		if (hovered) {
-			if (Config::Animation::SnappyCursorIndicator) {  // update cursor indicator angle to point to item center
-				cursorIndicatorAngle = rad;
-			}
-		}
-
-		int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
-
-		// draw background first
-		_entries[entryIdx]->DrawBackGround(a_wheelCenter, innerSpacingRad,
-			entryInnerAngleMin, entryInnerAngleMax,
-			entryOuterAngleMin, entryOuterAngleMax, entryCenter, hovered, numArcSegments, a_imap, a_drawArgs);
-		// prepare for foreground drawing
-		entryRuntimeDataVec.push_back(std::make_pair(entryCenter, hovered));
-	}
-	
-	// draw foreground in a separate pass to avoid overlapping
-	for (int entryIdx = 0; entryIdx < this->_entries.size(); entryIdx++) {
-		_entries[entryIdx]->DrawSlotAndHighlight(a_wheelCenter, entryRuntimeDataVec[entryIdx].first, entryRuntimeDataVec[entryIdx].second, a_imap, a_drawArgs);
-	}
-
-	// draw cursor indicator
-	if (!a_cursorCentered) {
-		float cursorIndicatorToCenterDist = InnerCircleRadius - CursorIndicatorDist;
-		Drawer::draw_arc(a_wheelCenter,
-			cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2),
-			cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2),
-			cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
-			cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
-			CursorIndicatorColor,
-			32, a_drawArgs);
-		ImVec2 cursorIndicatorTriPts[3] = {
-			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
-			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
-			{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
-		};
-		for (ImVec2& pos : cursorIndicatorTriPts) {
-			pos = ImRotate(pos, cos(cursorIndicatorAngle), sin(cursorIndicatorAngle));
-		}
-		Drawer::draw_triangle_filled(cursorIndicatorTriPts[0] + a_wheelCenter, cursorIndicatorTriPts[1] + a_wheelCenter, cursorIndicatorTriPts[2] + a_wheelCenter, CursorIndicatorColor, a_drawArgs);
+	} catch (const std::exception& e) {
+		logger::error("Exception in Wheel::Draw: {}", e.what());
 	}
 }
 void Wheel::PushEntry(std::unique_ptr<WheelEntry> a_entry) 
