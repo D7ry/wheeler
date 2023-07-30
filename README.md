@@ -91,8 +91,11 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
 - [ ] Add other item types
   - [x] Power - they're the same as spell but stored in a different slot
   - [x] Shout - lmb -> equip; rmb -> release (same as power that are not equipped to hand)
-  - [ ] Potion 
-  - [ ] Arrow
+  - [x] Potion 
+  - [ ] Poison
+  - [x] Food
+  - [x] Arrow
+  - [ ] Scrolls
 - [ ] Enchanting support
   - [ ] Enchanted items have enchanting bar display
   - [ ] Smart enchant refill
@@ -104,6 +107,8 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [x] Asian language(Chinese, Japanese, Korean) with special characters
   - [x] Custom icons
   - [x] Optimize interpolator manager so that it only manages active interpolators, inactive interpolators are removed from its set, and they add themselves back when they receive a new interpolation target.
+  - [ ] Combo key input to open dedicated wheels
+  - [ ] special key binding for opening wheel while inside inventory(for controller)
 
 - Future plans
 - [ ] Fallout-like side menu for consumable access
