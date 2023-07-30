@@ -40,9 +40,17 @@ void WheelItemAmmo::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryI
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE, a_drawArgs);
+	
+	float ammoDamage = 0;
 
-	int ammoDamage = this->_ammo->data.damage;
-	drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, ammoDamage, a_drawArgs);
+	if (a_imap.contains(this->_ammo)) {
+		RE::InventoryEntryData* inventoryEntry = a_imap.find(this->_ammo)->second.second.get();
+		ammoDamage = RE::PlayerCharacter::GetSingleton()->GetDamage(inventoryEntry);
+	} else {
+		ammoDamage = this->_ammo->data.damage;
+	}
+	
+	DrawItemHighlightStatIconAndValue(a_center, this->_stat_texture, ammoDamage, a_drawArgs);
 }
 
 bool WheelItemAmmo::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)

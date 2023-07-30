@@ -39,6 +39,11 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE, a_drawArgs);
 	
+	RE::InventoryEntryData* invData = nullptr;
+	if (a_imap.contains(this->_obj)) {
+		invData = a_imap.find(this->_obj)->second.second.get();
+	}
+
 	std::string descriptionBuf = "";
 	// first check if description is empty, if not we just show the description itself, weapon's sepcial description is probably more important.
 	if (!this->_description.empty()) {  // non-empty description, weapon's main description takes priority(it's probably a special weapon)
@@ -46,7 +51,7 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 	} else {
 		// try to get enchant of this weapon
 		std::vector<RE::EnchantmentItem*> enchants;
-		this->GetItemEnchantment(a_imap, enchants);
+		this->GetItemEnchantment(invData, enchants);
 		if (!enchants.empty()) {
 			// take 1st item for now.
 			Utils::Magic::GetMagicItemDescription(enchants[0], descriptionBuf);
@@ -55,8 +60,14 @@ void WheelItemWeapon::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventor
 	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
 		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 
-	int weaponDamage = this->_obj->As<RE::TESObjectWEAP>()->GetAttackDamage();
-	drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, weaponDamage, a_drawArgs);
+	float weaponDamage = 0;
+	
+	if (invData != nullptr) {
+		weaponDamage = RE::PlayerCharacter::GetSingleton()->GetDamage(invData);
+	} else {
+		weaponDamage = this->_obj->As<RE::TESObjectWEAP>()->GetAttackDamage();
+	}
+	DrawItemHighlightStatIconAndValue(a_center, this->_stat_texture, weaponDamage, a_drawArgs);
 }
 
 WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_uniqueID)

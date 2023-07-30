@@ -36,15 +36,22 @@ void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		Config::Styling::Item::Highlight::Texture::OffsetY,
 		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
 		C_SKYRIMWHITE, a_drawArgs);
+
+	// get inventory entry data, ptr -> unique_ptr(dangerous)
+	RE::TESObjectARMO* armor = this->_obj->As<RE::TESObjectARMO>();
+	RE::InventoryEntryData* invData = nullptr;
+	if (a_imap.contains(armor)) {
+		invData = a_imap.find(armor)->second.second.get();
+	}
 	
 	std::string descriptionBuf = "";
 	// first check if description is empty, if not we just show the description itself, armor's sepcial description is probably more important.
 	if (!this->_description.empty()) {  // non-empty description, armor's main description takes priority(it's probably a special armor)
 		descriptionBuf = this->_description;
-	} else {
+	} else if (invData != nullptr) {
 		// try to get enchant of this armor
 		std::vector<RE::EnchantmentItem*> enchants;
-		this->GetItemEnchantment(a_imap, enchants);
+		this->GetItemEnchantment(invData, enchants);
 		if (!enchants.empty()) {
 			// take 1st item for now.
 			Utils::Magic::GetMagicItemDescription(enchants[0], descriptionBuf);
@@ -54,9 +61,14 @@ void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 
 	// draw armor rating
-	RE::TESObjectARMO* armor = this->_obj->As<RE::TESObjectARMO>();
-	int armorRating = armor->GetArmorRating();
-	drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, armorRating, a_drawArgs);
+	float armorRating = 0;
+	if (invData != nullptr) {
+		armorRating = RE::PlayerCharacter::GetSingleton()->GetArmorValue(invData);
+	} else {
+		armorRating = armor->GetArmorRating();
+	}
+
+	DrawItemHighlightStatIconAndValue(a_center, this->_stat_texture, armorRating, a_drawArgs);
 	
 }
 

@@ -91,10 +91,46 @@ void WheelItemMutable::GetItemEnchantment(RE::TESObjectREFR::InventoryItemMap& a
 	for (auto& [boundObj, data] : a_invMap) {
 		if (boundObj->formID == this->_obj->GetFormID()) {
 			pp = &data.second;
+			break;
 		}
 	}
 	if (pp) {
 		for (auto* extraList : *pp->get()->extraLists) {
+			if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
+				if (this->GetUniqueID() == extraList->GetByType<RE::ExtraUniqueID>()->uniqueID) {
+					if (extraList->HasType(RE::ExtraDataType::kEnchantment)) {
+						r_enchantments.push_back(extraList->GetByType<RE::ExtraEnchantment>()->enchantment);
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+
+void WheelItemMutable::GetItemEnchantment(RE::InventoryEntryData* a_iData, std::vector<RE::EnchantmentItem*>& r_enchantments)
+{
+	switch (this->_obj->GetFormType()) {
+	case RE::FormType::Weapon:
+		{
+			auto weapon = static_cast<RE::TESObjectWEAP*>(this->_obj);
+			if (weapon->formEnchanting) {
+				r_enchantments.push_back(weapon->formEnchanting);
+			}
+			break;
+		}
+	case RE::FormType::Armor:
+		{
+			auto armor = static_cast<RE::TESObjectARMO*>(this->_obj);
+			if (armor->formEnchanting) {
+				r_enchantments.push_back(armor->formEnchanting);
+			}
+			break;
+		}
+	}
+
+	if (a_iData) {
+		for (RE::ExtraDataList* extraList : *a_iData->extraLists) {
 			if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
 				if (this->GetUniqueID() == extraList->GetByType<RE::ExtraUniqueID>()->uniqueID) {
 					if (extraList->HasType(RE::ExtraDataType::kEnchantment)) {

@@ -46,6 +46,6 @@ protected:
 	/// Draws stat icon and value of the item when the item is highlighted.
 	/// Coordinates and scale of the icon texture and value text are determined by Config.
 	/// </summary>
-	void drawItemHighlightStatIconAndValue(ImVec2 a_center, Texture::Image& a_stat_icon, int a_stat_value, DrawArgs a_drawArgs);
+	void DrawItemHighlightStatIconAndValue(ImVec2 a_center, Texture::Image& a_stat_icon, float a_stat_value, DrawArgs a_drawArgs);
 
 };

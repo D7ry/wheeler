@@ -63,7 +63,7 @@ protected:
 	std::pair<int, RE::ExtraDataList*> GetItemExtraDataAndCount(RE::TESObjectREFR::InventoryItemMap& a_inv);
 
 	void GetItemEnchantment(RE::TESObjectREFR::InventoryItemMap& a_invMap, std::vector<RE::EnchantmentItem*>& r_enchantments);
-
+	void GetItemEnchantment(RE::InventoryEntryData* a_iData, std::vector<RE::EnchantmentItem*>& r_enchantments);
 
 	RE::TESBoundObject* _obj; // TESObjectWEAP or TESObjectARMO
 

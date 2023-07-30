@@ -39,12 +39,12 @@ void WheelItem::SerializeIntoJsonObj(nlohmann::json& a_json)
 	a_json["WARNING"] = "This is a placeholder item. It should not be used.";
 }
 
-void WheelItem::drawItemHighlightStatIconAndValue(ImVec2 a_center, Texture::Image& a_stat_icon, int a_stat_value, DrawArgs a_drawArgs)
+void WheelItem::DrawItemHighlightStatIconAndValue(ImVec2 a_center, Texture::Image& a_stat_icon, float a_stat_value, DrawArgs a_drawArgs)
 {
 	Drawer::draw_text(
 		a_center.x + Config::Styling::Item::Highlight::StatText::OffsetX,
 		a_center.y + Config::Styling::Item::Highlight::StatText::OffsetY,
-		fmt::format(": {}", a_stat_value).data(),
+		fmt::format(": {}", int(std::ceil(a_stat_value))).data(),
 		C_SKYRIMWHITE,
 		Config::Styling::Item::Highlight::StatText::Size,
 		a_drawArgs,
