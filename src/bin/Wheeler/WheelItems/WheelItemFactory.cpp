@@ -9,6 +9,7 @@
 #include "WheelItemShout.h"
 #include "WheelItemLight.h"
 #include "WheelItemAmmo.h"
+#include "WheelItemAlchemy.h"
 
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
@@ -96,6 +97,17 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 				std::shared_ptr<WheelItemAmmo> wheelItemAmmo = std::make_shared<WheelItemAmmo>(ammo);
 				return wheelItemAmmo;
 			}
+			break;
+			case RE::FormType::AlchemyItem:  // can be food, drink, poison, potion
+			{
+				RE::AlchemyItem* alchemyItem = boundObj->As<RE::AlchemyItem>();
+				if (!alchemyItem) {
+					return nullptr;
+				}
+				std::shared_ptr<WheelItemAlchemy> wheelItemAlchemy = std::make_shared<WheelItemAlchemy>(alchemyItem);
+				return wheelItemAlchemy;
+			}
+			break;
 			}
 		} else if (ui->IsMenuOpen(RE::MagicMenu::MENU_NAME)) {
 			auto* magMenu = static_cast<RE::MagicMenu*>(ui->GetMenu(RE::MagicMenu::MENU_NAME).get());
@@ -188,6 +200,13 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 			}
 			std::shared_ptr<WheelItemAmmo> wheelItemAmmo = std::make_shared<WheelItemAmmo>(ammo);
 			return wheelItemAmmo;
+		} else if (type == WheelItemAlchemy::ITEM_TYPE_STR) {
+			RE::AlchemyItem* alchemyItem = static_cast<RE::AlchemyItem*>(RE::TESForm::LookupByID(formID));
+			if (!alchemyItem) {
+				return nullptr;
+			}
+			std::shared_ptr<WheelItemAlchemy> wheelItemAlchemy = std::make_shared<WheelItemAlchemy>(alchemyItem);
+			return wheelItemAlchemy;
 		}
 	}
 	catch (std::exception exception) {

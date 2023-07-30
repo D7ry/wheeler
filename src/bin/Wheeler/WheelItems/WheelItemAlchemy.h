@@ -1,10 +1,13 @@
 #pragma once
 #include "WheelItem.h"
-class WheelItemPotion : public WheelItem
+class WheelItemAlchemy : public WheelItem
 {
 public:
-	WheelItemPotion() = delete;
-	~WheelItemPotion(){};
+	WheelItemAlchemy() = delete;
+	
+	WheelItemAlchemy(RE::AlchemyItem* a_alchemyItem);
+	
+	~WheelItemAlchemy(){};
 	
 	virtual void DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs) override;
 	virtual void DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs) override;
@@ -18,5 +21,8 @@ public:
 	
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 	
-	static inline const char* ITEM_TYPE_STR = "WheelItemPotion";
+	static inline const char* ITEM_TYPE_STR = "WheelItemAlchemy";
+
+private:
+	RE::AlchemyItem* _alchemyItem = nullptr;
 };
