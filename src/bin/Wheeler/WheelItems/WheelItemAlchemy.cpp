@@ -1,5 +1,6 @@
 #include "bin/Rendering/Drawer.h"
 #include "bin/Utilities/Utils.h"
+#include "bin/Wheeler/Wheeler.h"
 #include "WheelItemAlchemy.h"
 
 WheelItemAlchemy::WheelItemAlchemy(RE::AlchemyItem* a_alchemyItem)
@@ -113,6 +114,10 @@ void WheelItemAlchemy::ActivateItemPrimary()
 	case WheelItemAlchemyType::kPotion:
 	case WheelItemAlchemyType::kFood:
 		this->consume();
+		break;
+	case WheelItemAlchemyType::kPoison:
+		this->applyPoison();
+		break;
 	}
 }
 
@@ -122,6 +127,10 @@ void WheelItemAlchemy::ActivateItemSecondary()
 	case WheelItemAlchemyType::kPotion:
 	case WheelItemAlchemyType::kFood:
 		this->consume();
+		break;
+	case WheelItemAlchemyType::kPoison:
+		this->applyPoison();
+		break;
 	}
 }
 
@@ -146,4 +155,17 @@ void WheelItemAlchemy::consume()
 		return;
 	}
 	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->_alchemyItem);
+}
+
+void WheelItemAlchemy::applyPoison()
+{
+	if (this->_alchemyItemType != WheelItemAlchemyType::kPoison) {
+		throw std::exception("WheelItemAlchemy::applyPoison : Item is not a poison");
+	}
+	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
+	if (!pc) {
+		return;
+	}
+	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->_alchemyItem);
+	Wheeler::TryCloseWheeler(); // close wheeler for the pop-up
 }

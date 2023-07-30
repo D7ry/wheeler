@@ -35,4 +35,5 @@ private:
 	WheelItemAlchemyType _alchemyItemType = WheelItemAlchemyType::kNone;
 
 	void consume();
+	void applyPoison();
 };
