@@ -24,5 +24,15 @@ public:
 	static inline const char* ITEM_TYPE_STR = "WheelItemAlchemy";
 
 private:
+	enum class WheelItemAlchemyType
+	{
+		kFood,
+		kPotion,
+		kPoison,
+		kNone
+	};
 	RE::AlchemyItem* _alchemyItem = nullptr;
+	WheelItemAlchemyType _alchemyItemType = WheelItemAlchemyType::kNone;
+
+	void consume();
 };
