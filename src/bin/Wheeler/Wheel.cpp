@@ -82,10 +82,17 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 
 			int numArcSegments = (int)(256 * entryArcSpan / (2 * IM_PI)) + 1;
 
+			std::unique_ptr<WheelEntry>& wheelEntry = _entries[entryIdx];
 			// draw background first
-			_entries[entryIdx]->DrawBackGround(a_wheelCenter, innerSpacingRad,
+			wheelEntry->DrawBackGround(a_wheelCenter, innerSpacingRad,
 				entryInnerAngleMin, entryInnerAngleMax,
-				entryOuterAngleMin, entryOuterAngleMax, entryCenter, hovered, numArcSegments, a_imap, a_drawArgs);
+				entryOuterAngleMin, entryOuterAngleMax, hovered, numArcSegments, a_imap, a_drawArgs);
+			
+			// offset entry center position
+			const float radiusMod = wheelEntry->GetRadiusMod();
+			entryCenter.x += radiusMod * cosf(rad);
+			entryCenter.y += radiusMod * sinf(rad);
+
 			// prepare for foreground drawing
 			entryRuntimeDataVec.push_back(std::make_pair(entryCenter, hovered));
 		}

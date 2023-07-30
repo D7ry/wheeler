@@ -22,13 +22,19 @@ public:
 	void DrawBackGround(const ImVec2 wheelCenter, float innerSpacing,
 		float entryInnerAngleMin, float entryInnerAngleMax,
 		float entryOuterAngleMin, float entryOuterAngleMax,
-		const ImVec2 itemCenter, bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);
+		bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);
 	
 	/// <summary>
 	/// Draw the content in slot and (if applicable) highlight region of this wheel entry.
 	/// This function should be called after DrawBackGround to prevent background from being drawn over the content.
 	/// </summary> 
 	void DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
+
+	/// <summary>
+	/// Get the radius changes made by arcRadiusIncInterpolator. Use this function to calculate the offset of item center.
+	/// </summary>
+	/// <returns></returns>
+	const float GetRadiusMod();
 
 	void DrawControlPrompt(ImVec2 a_center, DrawArgs a_drawArgs);
 

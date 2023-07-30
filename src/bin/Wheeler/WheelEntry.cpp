@@ -9,7 +9,7 @@ void WheelEntry::DrawBackGround(
 	const ImVec2 wheelCenter, float innerSpacingRad, 
 	float entryInnerAngleMin, float entryInnerAngleMax,
 	float entryOuterAngleMin, float entryOuterAngleMax, 
-	const ImVec2 itemCenter, bool hovered, 
+	bool hovered, 
 	int numArcSegments, RE::TESObjectREFR::InventoryItemMap& inv, DrawArgs a_drawARGS)
 {
 	using namespace Config::Styling::Wheel;
@@ -108,6 +108,11 @@ void WheelEntry::drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItem
 	} catch (std::exception& e) {
 		logger::error("Exception in WheelEntry::drawHighlight: {}", e.what());
 	}
+}
+
+const float WheelEntry::GetRadiusMod()
+{
+	return this->_arcRadiusIncInterpolator.GetValue();
 }
 
 bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
