@@ -136,6 +136,7 @@ void Config::ReadConfig()
 	GetUInt32Value(ini, "InputBindings.GamePad", "moveWheelForward", Config::InputBindings::GamePad::moveWheelForward);
 	GetUInt32Value(ini, "InputBindings.GamePad", "moveWheelBack", Config::InputBindings::GamePad::moveWheelBack);
 	GetUInt32Value(ini, "InputBindings.GamePad", "toggleWheelIfInInventory", Config::InputBindings::GamePad::toggleWheelIfInInventory);
+	GetUInt32Value(ini, "InputBindings.GamePad", "toggleWheelIfNotInInventory", Config::InputBindings::GamePad::toggleWheelIfNotInInventory);
 
 	GetUInt32Value(ini, "InputBindings.MKB", "nextWheel", Config::InputBindings::MKB::nextWheel);
 	GetUInt32Value(ini, "InputBindings.MKB", "prevWheel", Config::InputBindings::MKB::prevWheel);

@@ -48,6 +48,7 @@ void Controls::BindAllInputsFromConfig()
 				 { nextWheel, &Wheeler::NextWheel },
 				 { prevWheel, &Wheeler::PrevWheel },
 				 { toggleWheel, &Wheeler::ToggleWheeler },
+				 { toggleWheelIfNotInInventory, &Wheeler::ToggleWheelIfNotInInventory },
 				 { toggleWheelIfInInventory, &Wheeler::ToggleWheelIfInInventory },
 				 { prevItem, &Wheeler::PrevItemInEntry },
 				 { nextItem, &Wheeler::NextItemInEntry } }) {

@@ -32,6 +32,7 @@ public:
 
 	static void ToggleWheeler();
 	static void ToggleWheelIfInInventory();
+	static void ToggleWheelIfNotInInventory();
 
 	/// <summary>
 	/// Close the current wheel, if it's been opened long enough(more than 0.2 seconds).

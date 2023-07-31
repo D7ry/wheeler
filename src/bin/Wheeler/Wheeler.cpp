@@ -168,6 +168,14 @@ void Wheeler::ToggleWheelIfInInventory()
 	}
 }
 
+void Wheeler::ToggleWheelIfNotInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && !shouldBeInEditMode(ui)) {
+		ToggleWheeler();
+	}
+}
+
 void Wheeler::CloseWheelerIfOpenedLongEnough()
 {
 	if (_openTimer > Config::Control::Wheel::ToggleHoldThreshold) {
