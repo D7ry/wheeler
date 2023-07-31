@@ -94,6 +94,11 @@ namespace Config
 		inline float EntryHighlightExpandScale = 0.15f;
 		inline float EntryInputBumpTime = 0.1f;
 		inline float EntryInputBumpScale = -0.1f;
+		
+		inline float ToggleVerticalFadeDistance = 0.f;
+		inline float ToggleHorizontalFadeDistance = 0.f;
+		inline float FadeTime = 0.08f;  // time it takes to fade in/out, set to 0 to disable.
+
 		inline bool SnappyCursorIndicator = false;
 		//inline bool CameraRotation = true;
 	}
@@ -136,7 +141,6 @@ namespace Config
 			inline bool BlurOnOpen = true;
 			inline float SlowTimeScale = .1f;
 
-			inline float FadeTime = 0.08f;  // time it takes to fade in/out, set to 0 to disable.
 			
 			// offset of wheel center, to which everything else is relative to
 			inline float CenterOffsetX = 450.f;

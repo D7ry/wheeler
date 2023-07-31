@@ -79,7 +79,6 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Styling.Wheel", "ActiveArcWidth", Config::Styling::Wheel::ActiveArcWidth);
 	GetBoolValue(ini, "Styling.Wheel", "BlurOnOpen", Config::Styling::Wheel::BlurOnOpen);
 	GetFloatValue(ini, "Styling.Wheel", "SlowTimeScale", Config::Styling::Wheel::SlowTimeScale);
-	GetFloatValue(ini, "Styling.Wheel", "FadeTime", Config::Styling::Wheel::FadeTime);
 	GetFloatValue(ini, "Styling.Wheel", "CenterOffsetX", Config::Styling::Wheel::CenterOffsetX);
 	GetFloatValue(ini, "Styling.Wheel", "CenterOffsetY", Config::Styling::Wheel::CenterOffsetY);
 
@@ -121,6 +120,9 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Animation", "EntryHighlightExpandScale", Config::Animation::EntryHighlightExpandScale);
 	GetFloatValue(ini, "Animation", "EntryInputBumpScale", Config::Animation::EntryInputBumpScale);
 	GetFloatValue(ini, "Animation", "EntryInputBumpTime", Config::Animation::EntryInputBumpTime);
+	GetFloatValue(ini, "Animation", "ToggleHorizontalFadeDistance", Config::Animation::ToggleHorizontalFadeDistance);
+	GetFloatValue(ini, "Animation", "ToggleVerticalFadeDistance", Config::Animation::ToggleVerticalFadeDistance);
+	GetFloatValue(ini, "Animation", "FadeTime", Config::Animation::FadeTime);
 
 	GetUInt32Value(ini, "InputBindings.GamePad", "nextWheel", Config::InputBindings::GamePad::nextWheel);
 	GetUInt32Value(ini, "InputBindings.GamePad", "prevWheel", Config::InputBindings::GamePad::prevWheel);
@@ -161,7 +163,7 @@ void Config::ReadConfig()
 void Config::offsetSizingToViewport()
 {
 	float scale = ImGui::GetIO().DisplaySize.x / REFERENCE_WIDTH; // base scale on width
-	for (float* value : 
+	for (float* value :
 		{
 			&Config::Control::Wheel::CursorRadiusPerEntry,
 			&Config::Styling::Wheel::CursorIndicatorDist,
@@ -177,7 +179,7 @@ void Config::offsetSizingToViewport()
 			&Config::Styling::Wheel::ActiveArcWidth,
 			&Config::Styling::Wheel::CenterOffsetX,
 			&Config::Styling::Wheel::CenterOffsetY,
-			
+
 			&Config::Styling::Entry::Highlight::Text::OffsetX,
 			&Config::Styling::Entry::Highlight::Text::OffsetY,
 			&Config::Styling::Entry::Highlight::Text::Size,
@@ -210,7 +212,10 @@ void Config::offsetSizingToViewport()
 
 			&Config::Styling::Item::Slot::Text::OffsetX,
 			&Config::Styling::Item::Slot::Text::OffsetY,
-			&Config::Styling::Item::Slot::Text::Size
+			&Config::Styling::Item::Slot::Text::Size,
+
+			&Config::Animation::ToggleVerticalFadeDistance,
+			&Config::Animation::ToggleHorizontalFadeDistance
 		} 
 		) {
 		*value = *value * scale;
