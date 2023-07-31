@@ -43,6 +43,8 @@ namespace Config
 			inline uint32_t moveEntryBack = 0;        // unmapped
 			inline uint32_t moveWheelForward = 0;     // unmapped
 			inline uint32_t moveWheelBack = 0;        // unmapped
+
+			inline uint32_t toggleWheelIfInInventory = 0;  // unmapped
 		}
 		namespace MKB
 		{

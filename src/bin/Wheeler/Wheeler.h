@@ -31,6 +31,7 @@ public:
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
 	static void ToggleWheeler();
+	static void ToggleWheelIfInInventory();
 
 	/// <summary>
 	/// Close the current wheel, if it's been opened long enough(more than 0.2 seconds).

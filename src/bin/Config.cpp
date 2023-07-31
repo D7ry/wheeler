@@ -135,6 +135,7 @@ void Config::ReadConfig()
 	GetUInt32Value(ini, "InputBindings.GamePad", "moveEntryBack", Config::InputBindings::GamePad::moveEntryBack);
 	GetUInt32Value(ini, "InputBindings.GamePad", "moveWheelForward", Config::InputBindings::GamePad::moveWheelForward);
 	GetUInt32Value(ini, "InputBindings.GamePad", "moveWheelBack", Config::InputBindings::GamePad::moveWheelBack);
+	GetUInt32Value(ini, "InputBindings.GamePad", "toggleWheelIfInInventory", Config::InputBindings::GamePad::toggleWheelIfInInventory);
 
 	GetUInt32Value(ini, "InputBindings.MKB", "nextWheel", Config::InputBindings::MKB::nextWheel);
 	GetUInt32Value(ini, "InputBindings.MKB", "prevWheel", Config::InputBindings::MKB::prevWheel);
@@ -149,6 +150,8 @@ void Config::ReadConfig()
 	GetUInt32Value(ini, "InputBindings.MKB", "moveEntryBack", Config::InputBindings::MKB::moveEntryBack);
 	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelForward", Config::InputBindings::MKB::moveWheelForward);
 	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelBack", Config::InputBindings::MKB::moveWheelBack);
+
+
 	//GetBoolValue(ini, "Animation", "Camera Rotation", Config::Animation::CameraRotation);
 
 	Config::offsetSizingToViewport();  // Offset sizing values to the current viewport
