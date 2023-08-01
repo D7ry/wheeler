@@ -99,15 +99,15 @@ I haven't noticed any incompatibilities between wheeler and any other UI mod, as
 [Script I used to generate this page from markdown](https://github.com/D7ry/markdown-to-nexus-bb-code)
 
 # Credits
-[LamasTinyHUD](https://www.nexusmods.com/skyrimspecialedition/mods/82545) and the author mlthelama. Referring to its ImGui codebase significantly helped me understand how to draw .svg files and much more. I can't stress how much the author's source has helped me
-[DearImGui](https://github.com/ocornut/imgui) for its awesomeness
-[Ryan](https://www.nexusmods.com/skyrimspecialedition/users/5687342) for clib
-[Original algorithms](https://github.com/ocornut/imgui/issues/434) that has inspired this mod in its early stage
-[iEquip](https://www.nexusmods.com/skyrimspecialedition/mods/27008)'s SKSE source that has helped me understand how to differentiate items through unique ID indexing
+[LamasTinyHUD](https://www.nexusmods.com/skyrimspecialedition/mods/82545) and the author mlthelama. Referring to its ImGui codebase significantly helped me understand how to draw .svg files and much more. I can't stress how much the author's source has helped me  
+[DearImGui](https://github.com/ocornut/imgui) for its awesomeness  
+[Ryan](https://www.nexusmods.com/skyrimspecialedition/users/5687342) for clib  
+[Original algorithms](https://github.com/ocornut/imgui/issues/434) that has inspired this mod in its early stage  
+[iEquip](https://www.nexusmods.com/skyrimspecialedition/mods/27008)'s SKSE source that has helped me understand how to differentiate items through unique ID indexing  
 [Sovngarde](https://www.nexusmods.com/skyrimspecialedition/mods/386)'s font is being used as wheeler's default English font
-My patreons for your support!
-Horizon: Forbidden West and GTA5 for artistic inspiration
-绝伦 for the cover image
+My patreons for your support!  
+Horizon: Forbidden West and GTA5 for artistic inspiration  
+绝伦 for the cover image  
 
 
 # Support
