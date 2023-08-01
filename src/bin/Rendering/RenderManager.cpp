@@ -119,7 +119,8 @@ void RenderManager::D3DInitHook::thunk()
 				}
 			}
 			if (foundCustomFont) {
-				if (language = "Chinese") {
+				INFO("Loading font: {}", fontPath.string().c_str());
+				if (language == "Chinese") {
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
 				} else if (language == "Korean") {
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesKorean();
