@@ -19,6 +19,10 @@ void Drawer::draw_text(float a_x,
 		return;
 	}
 
+	if (a_drawArgs.alphaMult == 0.f || a_font_size == 0) {
+		return;
+	}
+
 	Utils::Color::MultAlpha(a_color, a_drawArgs.alphaMult);
 
 	
@@ -138,6 +142,9 @@ static void split_text_lines(const std::string& a_text, float a_max_width, float
 void Drawer::draw_text_block(float a_x, float a_y, std::string& a_text, ImU32 a_color, float a_font_size, float a_line_spacing, float a_line_length, DrawArgs a_drawArgs)
 {
 	if (a_text.empty()) {
+		return;
+	}
+	if (a_drawArgs.alphaMult == 0.f || a_font_size == 0) {
 		return;
 	}
 	std::vector<std::string> text_lines;
