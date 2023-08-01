@@ -94,6 +94,9 @@ A: You will be able to replace item icon textures and even add custom textures f
 # Compatibility
 I haven't noticed any incompatibilities between wheeler and any other UI mod, as wheeler goes through its own rendering pipeline. Please let me know if you find any, which I will try my best to fix.
 
+# Multi-lingual support
+If your language requires fonts other than English(for example, Russian, Korean, Japanese, etc...), navigate to "Wheeler\SKSE\Plugins\wheeler\resources\fonts", open "fontConfig.ini" and change the "font = English" to your language. Then, put the .ttf or .ttc font file into the corresponding language folder. (Japanese, English and Chinese fonts are already included in the mod)
+
 # Source
 [Github](https://github.com/D7ry/wheeler)
 [Script I used to generate this page from markdown](https://github.com/D7ry/markdown-to-nexus-bb-code)
@@ -108,7 +111,6 @@ I haven't noticed any incompatibilities between wheeler and any other UI mod, as
 My patreons for your support!  
 Horizon: Forbidden West and GTA5 for artistic inspiration  
 绝伦 for the cover image  
-
-
+Adamin_Dibi and Monitor144hz for their font suggestions  
 # Support
 [Support me on Patreon](https://www.patreon.com/d7ry)
