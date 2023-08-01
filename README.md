@@ -92,7 +92,7 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [x] Power - they're the same as spell but stored in a different slot
   - [x] Shout - lmb -> equip; rmb -> release (same as power that are not equipped to hand)
   - [x] Potion 
-  - [ ] Poison
+  - [x] Poison
   - [x] Food
   - [x] Arrow
   - [ ] Scrolls
@@ -108,7 +108,7 @@ Desired hierarchy: Wheeler -> Wheel -> WheelEntry -> WheelItem
   - [x] Custom icons
   - [x] Optimize interpolator manager so that it only manages active interpolators, inactive interpolators are removed from its set, and they add themselves back when they receive a new interpolation target.
   - [ ] Combo key input to open dedicated wheels
-  - [ ] special key binding for opening wheel while inside inventory(for controller)
+  - [x] special key binding for opening wheel while inside inventory(for controller)
 
 - Future plans
 - [ ] Fallout-like side menu for consumable access

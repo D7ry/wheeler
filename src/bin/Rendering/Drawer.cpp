@@ -52,8 +52,11 @@ void Drawer::draw_text(float a_x,
 
 	shadowPos.x += shadowOffset;
 	shadowPos.y += shadowOffset;
+
+	ImU32 shadowCol = 0xFF000000;
+	Utils::Color::MultAlpha(shadowCol, a_drawArgs.alphaMult);
 	// draw shadow
-	drawList->AddText(font, a_font_size, shadowPos, 0xFF000000, a_text, nullptr, 0.0f, nullptr);
+	drawList->AddText(font, a_font_size, shadowPos, shadowCol, a_text, nullptr, 0.0f, nullptr);
 	// lay text on top of shadow
 	drawList->AddText(font, a_font_size, position, a_color, a_text, nullptr, 0.0f, nullptr);
 }

@@ -79,18 +79,18 @@ void Wheeler::Update(float a_deltaTime)
 		// update fade timer, alpha and wheel state.
 		_openTimer += a_deltaTime;
 
-		float alphaMult = 1.0f;
+		float fadeLerp = 1.0f;
 		switch (_state) {
 		case WheelState::KOpening:
-			alphaMult = std::fminf(_openTimer / Config::Styling::Wheel::FadeTime, 1.f);
-			if (_openTimer >= Config::Styling::Wheel::FadeTime) {
+			fadeLerp = std::fminf(_openTimer / Config::Animation::FadeTime, 1.f);
+			if (_openTimer >= Config::Animation::FadeTime) {
 				_state = WheelState::KOpened;
 			}
 			break;
 		case WheelState::KClosing:
 			_closeTimer += a_deltaTime;
-			alphaMult = std::fmaxf(1 - _closeTimer / Config::Styling::Wheel::FadeTime, 0.f);
-			if (_closeTimer >= Config::Styling::Wheel::FadeTime) {
+			fadeLerp = std::fmaxf(1 - _closeTimer / Config::Animation::FadeTime, 0.f);
+			if (_closeTimer >= Config::Animation::FadeTime) {
 				CloseWheeler();
 				_closeTimer = 0;
 			}
@@ -98,9 +98,14 @@ void Wheeler::Update(float a_deltaTime)
 		}
 		
 		DrawArgs drawArgs;
-		drawArgs.alphaMult = alphaMult;
+		drawArgs.alphaMult = fadeLerp;
 		// get ready to draw the wheel
-		const ImVec2 wheelCenter = getWheelCenter();
+
+		// lerp wheel center
+		ImVec2 wheelCenter = getWheelCenter();
+		wheelCenter.y += (1 - fadeLerp) * Config::Animation::ToggleVerticalFadeDistance;
+		wheelCenter.x += (1 - fadeLerp) * Config::Animation::ToggleHorizontalFadeDistance;
+
 		RE::TESObjectREFR::InventoryItemMap inv = RE::PlayerCharacter::GetSingleton()->GetInventory();
 
 		float cursorAngle = atan2f(_cursorPos.y, _cursorPos.x);  // where the cursor is pointing to
@@ -160,10 +165,42 @@ void Wheeler::ToggleWheeler()
 	}
 }
 
+void Wheeler::ToggleWheelIfInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && shouldBeInEditMode(ui)) {
+		ToggleWheeler();
+	}
+}
+
+void Wheeler::ToggleWheelIfNotInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && !shouldBeInEditMode(ui)) {
+		ToggleWheeler();
+	}
+}
+
 void Wheeler::CloseWheelerIfOpenedLongEnough()
 {
 	if (_openTimer > Config::Control::Wheel::ToggleHoldThreshold) {
 		TryCloseWheeler();
+	}
+}
+
+void Wheeler::CloseWheelerIfOpenedLongEnoughIfInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && shouldBeInEditMode(ui)) {
+		CloseWheelerIfOpenedLongEnough();
+	}
+}
+
+void Wheeler::CloseWheelerIfOpenedLongEnoughIfNotInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && !shouldBeInEditMode(ui)) {
+		CloseWheelerIfOpenedLongEnough();
 	}
 }
 
@@ -180,7 +217,7 @@ void Wheeler::TryCloseWheeler()
 	if (_state == WheelState::KClosed || _state == WheelState::KClosing) {
 		return;
 	}
-	if (Config::Styling::Wheel::FadeTime == 0) {
+	if (Config::Animation::FadeTime == 0) {
 		CloseWheeler();  // close directly
 	} else {
 		// set timescale to 1 prior to closing the wheel to avoid weirdness
@@ -244,7 +281,7 @@ void Wheeler::OpenWheeler()
 			_wheels[_activeWheelIdx]->SetHoveredEntryIndex(-1);  // reset active entry on OPEN
 			_wheels[_activeWheelIdx]->ResetAnimation();
 		}
-		_state = Config::Styling::Wheel::FadeTime > 0 ? WheelState::KOpening : WheelState::KOpened;
+		_state = Config::Animation::FadeTime > 0 ? WheelState::KOpening : WheelState::KOpened;
 		_openTimer = 0;
 		RE::PlaySoundRE(Config::Sound::SD_WHEELERTOGGLE);
 	}

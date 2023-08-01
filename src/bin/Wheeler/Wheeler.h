@@ -31,6 +31,8 @@ public:
 	static void UpdateCursorPosGamepad(float a_x, float a_y);
 
 	static void ToggleWheeler();
+	static void ToggleWheelIfInInventory();
+	static void ToggleWheelIfNotInInventory();
 
 	/// <summary>
 	/// Close the current wheel, if it's been opened long enough(more than 0.2 seconds).
@@ -42,6 +44,9 @@ public:
 	/// This allows the toggle key to simultaneously act as a press-open, press-close toggle, and a hold-open, release-close button.
 	/// </summary>
 	static void CloseWheelerIfOpenedLongEnough();
+	static void CloseWheelerIfOpenedLongEnoughIfInInventory();
+	static void CloseWheelerIfOpenedLongEnoughIfNotInInventory();
+
 	
 	static void TryOpenWheeler();
 	static void TryCloseWheeler();

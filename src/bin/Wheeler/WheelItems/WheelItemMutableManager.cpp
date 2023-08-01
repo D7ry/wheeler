@@ -43,7 +43,7 @@ EventResult WheelItemMutableManager::ProcessEvent(const RE::TESUniqueIDChangeEve
 	uint16_t newUniqueID = a_event->newUniqueID;
 	for (auto& item : this->_mutables) {
 		if (item->GetFormID() == form->GetFormID()) {
-			if (item->GetUniqueID() == oldUniqueID) {
+			if (item->GetUniqueID() == oldUniqueID && newUniqueID != 0) {
 				INFO("{}'s new unique id changed from {} to {} due to external changes.", form->GetName(), oldUniqueID, newUniqueID);
 				item->SetUniqueID(newUniqueID);  // update the uniqueID of the item
 			}

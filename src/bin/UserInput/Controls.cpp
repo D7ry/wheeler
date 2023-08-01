@@ -48,11 +48,15 @@ void Controls::BindAllInputsFromConfig()
 				 { nextWheel, &Wheeler::NextWheel },
 				 { prevWheel, &Wheeler::PrevWheel },
 				 { toggleWheel, &Wheeler::ToggleWheeler },
+				 { toggleWheelIfNotInInventory, &Wheeler::ToggleWheelIfNotInInventory },
+				 { toggleWheelIfInInventory, &Wheeler::ToggleWheelIfInInventory },
 				 { prevItem, &Wheeler::PrevItemInEntry },
 				 { nextItem, &Wheeler::NextItemInEntry } }) {
 			bindInput(mapping.first, mapping.second, true, true);
 		}
 		bindInput(toggleWheel, &Wheeler::CloseWheelerIfOpenedLongEnough, false, true);
+		bindInput(toggleWheelIfInInventory, &Wheeler::CloseWheelerIfOpenedLongEnoughIfInInventory, false, true);
+		bindInput(toggleWheelIfNotInInventory, &Wheeler::CloseWheelerIfOpenedLongEnoughIfNotInInventory, false, true);
 	}
 
 }
