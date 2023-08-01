@@ -188,6 +188,22 @@ void Wheeler::CloseWheelerIfOpenedLongEnough()
 	}
 }
 
+void Wheeler::CloseWheelerIfOpenedLongEnoughIfInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && shouldBeInEditMode(ui)) {
+		CloseWheelerIfOpenedLongEnough();
+	}
+}
+
+void Wheeler::CloseWheelerIfOpenedLongEnoughIfNotInInventory()
+{
+	RE::UI* ui = RE::UI::GetSingleton();
+	if (ui && !shouldBeInEditMode(ui)) {
+		CloseWheelerIfOpenedLongEnough();
+	}
+}
+
 void Wheeler::TryOpenWheeler()
 {
 	// here we straight up open the wheel, and set state to opening if we have a fade time.

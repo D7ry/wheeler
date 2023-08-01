@@ -44,6 +44,9 @@ public:
 	/// This allows the toggle key to simultaneously act as a press-open, press-close toggle, and a hold-open, release-close button.
 	/// </summary>
 	static void CloseWheelerIfOpenedLongEnough();
+	static void CloseWheelerIfOpenedLongEnoughIfInInventory();
+	static void CloseWheelerIfOpenedLongEnoughIfNotInInventory();
+
 	
 	static void TryOpenWheeler();
 	static void TryCloseWheeler();

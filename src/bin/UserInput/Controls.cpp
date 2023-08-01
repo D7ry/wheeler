@@ -55,6 +55,8 @@ void Controls::BindAllInputsFromConfig()
 			bindInput(mapping.first, mapping.second, true, true);
 		}
 		bindInput(toggleWheel, &Wheeler::CloseWheelerIfOpenedLongEnough, false, true);
+		bindInput(toggleWheelIfInInventory, &Wheeler::CloseWheelerIfOpenedLongEnoughIfInInventory, false, true);
+		bindInput(toggleWheelIfNotInInventory, &Wheeler::CloseWheelerIfOpenedLongEnoughIfNotInInventory, false, true);
 	}
 
 }
