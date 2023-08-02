@@ -45,7 +45,7 @@ void WheelItem::drawItemHighlightStatIconAndValue(ImVec2 a_center, Texture::Imag
 		a_center.x + Config::Styling::Item::Highlight::StatText::OffsetX,
 		a_center.y + Config::Styling::Item::Highlight::StatText::OffsetY,
 		fmt::format(": {}", int(std::ceil(a_stat_value))).data(),
-		C_SKYRIMWHITE,
+		Config::Styling::Wheel::TextColor,
 		Config::Styling::Item::Highlight::StatText::Size,
 		a_drawArgs,
 		false);
@@ -64,7 +64,7 @@ void WheelItem::drawHighlightDescription(ImVec2 a_center, const char* a_text, Dr
 {
 	std::string buf = std::string(a_text);
 	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
-		buf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
+		buf, Config::Styling::Wheel::TextColor, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
 }
 
 void WheelItem::drawHighlightTexture(ImVec2 a_center, DrawArgs a_drawArgs)
@@ -81,7 +81,7 @@ void WheelItem::drawHighlightText(ImVec2 a_center, const char* a_text, DrawArgs 
 {
 	using namespace Config::Styling::Item::Highlight;
 	Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-		a_text, C_SKYRIMWHITE, Text::Size, a_drawArgs);
+		a_text, Config::Styling::Wheel::TextColor, Text::Size, a_drawArgs);
 }
 
 void WheelItem::drawSlotTexture(ImVec2 a_center, DrawArgs a_drawArgs)
@@ -99,6 +99,6 @@ void WheelItem::drawSlotText(ImVec2 a_center, const char* a_text, DrawArgs a_dra
 {
 	using namespace Config::Styling::Item::Slot;
 	Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-		a_text, C_SKYRIMWHITE, Text::Size, a_drawArgs);
+		a_text, Config::Styling::Wheel::TextColor, Text::Size, a_drawArgs);
 }
 

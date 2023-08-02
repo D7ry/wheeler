@@ -4,6 +4,7 @@
 #include "imgui.h"
 
 #include "bin/Utilities/Utils.h"
+#include "bin/Config.h"
 void Drawer::draw_text(float a_x,
 		float a_y,
 		const char* a_text,
@@ -53,7 +54,7 @@ void Drawer::draw_text(float a_x,
 	shadowPos.x += shadowOffset;
 	shadowPos.y += shadowOffset;
 
-	ImU32 shadowCol = 0xFF000000;
+	ImU32 shadowCol = Config::Styling::Wheel::TextShadowColor;
 	Utils::Color::MultAlpha(shadowCol, a_drawArgs.alphaMult);
 	// draw shadow
 	drawList->AddText(font, a_font_size, shadowPos, shadowCol, a_text, nullptr, 0.0f, nullptr);

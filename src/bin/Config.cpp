@@ -82,6 +82,10 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Styling.Wheel", "CenterOffsetX", Config::Styling::Wheel::CenterOffsetX);
 	GetFloatValue(ini, "Styling.Wheel", "CenterOffsetY", Config::Styling::Wheel::CenterOffsetY);
 
+	GetUInt32Value(ini, "Styling.Wheel", "TextShadowColor", Config::Styling::Wheel::TextShadowColor);
+	GetUInt32Value(ini, "Styling.Wheel", "TextColor", Config::Styling::Wheel::TextColor);
+
+
 	GetFloatValue(ini, "Styling.Entry.Highlight.Text", "OffsetX", Config::Styling::Entry::Highlight::Text::OffsetX);
 	GetFloatValue(ini, "Styling.Entry.Highlight.Text", "OffsetY", Config::Styling::Entry::Highlight::Text::OffsetY);
 	GetFloatValue(ini, "Styling.Entry.Highlight.Text", "Size", Config::Styling::Entry::Highlight::Text::Size);

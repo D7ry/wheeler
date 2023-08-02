@@ -3,6 +3,7 @@
 
 static ImU32 C_SKYRIMGREY = IM_COL32(255, 255, 255, 100 );
 static ImU32 C_SKYRIMWHITE = IM_COL32(255, 255, 255, 255);
+static ImU32 C_BLACK = IM_COL32(0, 0, 0, 255);
 static ImU32 C_SKYRIMDARKGREY_MENUBACKGROUND = IM_COL32(0, 0, 0, 125);
 static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
 static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
@@ -145,6 +146,9 @@ namespace Config
 			// offset of wheel center, to which everything else is relative to
 			inline float CenterOffsetX = 450.f;
 			inline float CenterOffsetY = 0.f;
+
+			inline ImU32 TextColor = C_SKYRIMWHITE;
+			inline ImU32 TextShadowColor = C_BLACK;
 		}
 
 		namespace Entry
