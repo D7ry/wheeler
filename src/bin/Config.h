@@ -113,6 +113,7 @@ namespace Config
 			inline float CursorIndicatorArcAngle = 2 * IM_PI * 1 / 12.f;  // 1/12 of a circle
 			inline float CursorIndicatorTriangleSideLength = 5.f;
 			inline ImU32 CursorIndicatorColor = C_SKYRIMWHITE;
+			inline bool CursorIndicatorInwardFacing = true;
 
 			inline float WheelIndicatorOffsetX = 260.f;
 			inline float WheelIndicatorOffsetY = 340.f;

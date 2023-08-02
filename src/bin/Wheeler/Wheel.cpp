@@ -112,11 +112,16 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 				cursorIndicatorAngle - (CursorIndicatorArcAngle / 2), cursorIndicatorAngle + (CursorIndicatorArcAngle / 2),
 				CursorIndicatorColor,
 				32, a_drawArgs);
-			ImVec2 cursorIndicatorTriPts[3] = {
-				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength },
-				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength },
-				{ cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 }
-			};
+			ImVec2 cursorIndicatorTriPts[3];
+			if (Config::Styling::Wheel::CursorIndicatorInwardFacing) {
+				cursorIndicatorTriPts[0] = { cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength };
+				cursorIndicatorTriPts[1] = { cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength };
+				cursorIndicatorTriPts[2] = { cursorIndicatorToCenterDist - (CusorIndicatorArcWidth / 2) - CursorIndicatorTriangleSideLength, 0 };
+			} else {
+				cursorIndicatorTriPts[0] = { cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), +CursorIndicatorTriangleSideLength };
+				cursorIndicatorTriPts[1] = { cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2), -CursorIndicatorTriangleSideLength };
+				cursorIndicatorTriPts[2] = { cursorIndicatorToCenterDist + (CusorIndicatorArcWidth / 2) + CursorIndicatorTriangleSideLength, 0 };
+			}
 			for (ImVec2& pos : cursorIndicatorTriPts) {
 				pos = ImRotate(pos, cos(cursorIndicatorAngle), sin(cursorIndicatorAngle));
 			}
