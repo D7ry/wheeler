@@ -58,36 +58,14 @@ WheelItemSpell::WheelItemSpell(RE::SpellItem* a_spell)
 
 void WheelItemSpell::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	{
-		using namespace Config::Styling::Item::Slot;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			this->_spell->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-	}
-
-	Drawer::draw_texture(_texture.texture,
-		ImVec2(a_center.x, a_center.y),
-		Config::Styling::Item::Slot::Texture::OffsetX,
-		Config::Styling::Item::Slot::Texture::OffsetY,
-		ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-		C_SKYRIMWHITE,
-		a_drawArgs);
+	this->drawSlotText(a_center, this->_spell->GetName(), a_drawArgs);
+	this->drawSlotTexture(a_center, a_drawArgs);
 }
 
 void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	{
-		using namespace Config::Styling::Item::Highlight;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			_spell->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-	}
-	
-	Drawer::draw_texture(_texture.texture,
-		ImVec2(a_center.x, a_center.y),
-		Config::Styling::Item::Highlight::Texture::OffsetX,
-		Config::Styling::Item::Highlight::Texture::OffsetY,
-		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		C_SKYRIMWHITE,
-		a_drawArgs);
+	this->drawHighlightText(a_center, this->_spell->GetName(), a_drawArgs);
+	this->drawHighlightTexture(a_center, a_drawArgs);
 	
 	std::string descriptionBuf = "";
 	descriptionBuf = this->_description;
@@ -95,8 +73,9 @@ void WheelItemSpell::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 	if (descriptionBuf.empty()) { // get description of magic effect only if the original description is empty
 		Utils::Magic::GetMagicItemDescription(_spell, descriptionBuf);
 	}
-	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
-		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
+	if (!descriptionBuf.empty()) {
+		this->drawHighlightDescription(a_center, descriptionBuf.data(), a_drawArgs);
+	}
 
 }
 

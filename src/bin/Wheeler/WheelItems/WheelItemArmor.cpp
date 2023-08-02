@@ -8,34 +8,15 @@ void WheelItemArmor::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR
 	int itemCount = this->GetItemExtraDataAndCount(a_imap).first;
 	if (itemCount > 1) {
 		text += " (" + std::to_string(itemCount) + ")";
-	} 
-	{
-		using namespace Config::Styling::Item::Slot;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			text.data(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-		Drawer::draw_texture(_texture.texture,
-			ImVec2(a_center.x, a_center.y),
-			Config::Styling::Item::Slot::Texture::OffsetX,
-			Config::Styling::Item::Slot::Texture::OffsetY,
-			ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-			C_SKYRIMWHITE, a_drawArgs);
 	}
+	this->drawSlotText(a_center, text.data(), a_drawArgs);
+	this->drawSlotTexture(a_center, a_drawArgs);
 }
 
 void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	{
-		using namespace Config::Styling::Item::Highlight;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			this->_obj->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-	}
-	
-	Drawer::draw_texture(_texture.texture,
-		ImVec2(a_center.x, a_center.y),
-		Config::Styling::Item::Highlight::Texture::OffsetX,
-		Config::Styling::Item::Highlight::Texture::OffsetY,
-		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		C_SKYRIMWHITE, a_drawArgs);
+	this->drawHighlightText(a_center, this->_obj->GetName(), a_drawArgs);
+	this->drawHighlightTexture(a_center, a_drawArgs);
 
 	// get inventory entry data, ptr -> unique_ptr(dangerous)
 	RE::TESObjectARMO* armor = this->_obj->As<RE::TESObjectARMO>();
@@ -57,8 +38,7 @@ void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 			Utils::Magic::GetMagicItemDescription(enchants[0], descriptionBuf);
 		}
 	}
-	Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
-		descriptionBuf, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
+	this->drawHighlightDescription(a_center, descriptionBuf.data(), a_drawArgs);
 
 	// draw armor rating
 	float armorRating = 0;
@@ -68,7 +48,7 @@ void WheelItemArmor::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::Inventory
 		armorRating = armor->GetArmorRating();
 	}
 
-	DrawItemHighlightStatIconAndValue(a_center, this->_stat_texture, armorRating, a_drawArgs);
+	this->drawItemHighlightStatIconAndValue(a_center, this->_stat_texture, armorRating, a_drawArgs);
 	
 }
 
