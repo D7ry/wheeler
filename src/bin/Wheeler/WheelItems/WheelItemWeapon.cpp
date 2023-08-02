@@ -150,60 +150,73 @@ void WheelItemWeapon::SerializeIntoJsonObj(nlohmann::json& a_json)
 
 void WheelItemWeapon::equipItem(bool a_toRight)
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc || !pc->Is3DLoaded()) {
-		return;
-	}
-	RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
-	auto itemData = this->GetItemExtraDataAndCount(inv);
-	int count = itemData.first;
-	RE::ExtraDataList* extraData = itemData.second;
-	if (count <= 0) { // nothing to equip
-		return;
-	}
-	
-	if (count < 2) {  // we have less than 2, meaning we can't dual-wield
-		Utils::Inventory::Hand hand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID());
-		if ((hand == Utils::Inventory::Hand::Right && !a_toRight) || (hand == Utils::Inventory::Hand::Left && a_toRight)) { // in opposite hands, simply swap l/r
-			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot(); // first, clean the slot with item
-			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_obj, nullptr, 1, oppositeSlot, false, true, true);
+	try {
+		auto pc = RE::PlayerCharacter::GetSingleton();
+		if (!pc || !pc->Is3DLoaded()) {
+			return;
 		}
-	} else { // a count bigger than 1 guarantees that the item is untempered
-		extraData = nullptr; // set extraData to nullptr, let the game handle which one to equip.
+		RE::TESObjectREFR::InventoryItemMap inv = pc->GetInventory();
+		auto itemData = this->GetItemExtraDataAndCount(inv);
+		int count = itemData.first;
+		RE::ExtraDataList* extraData = itemData.second;
+		if (count <= 0) {  // nothing to equip
+			return;
+		}
+
+		if (count < 2) {  // we have less than 2, meaning we can't dual-wield
+			Utils::Inventory::Hand hand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID());
+			if ((hand == Utils::Inventory::Hand::Right && !a_toRight) || (hand == Utils::Inventory::Hand::Left && a_toRight)) {  // in opposite hands, simply swap l/r
+			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot();                    // first, clean the slot with item
+			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_obj, nullptr, 1, oppositeSlot, false, true, true);
+			}
+		} else {                  // a count bigger than 1 guarantees that the item is untempered
+			extraData = nullptr;  // set extraData to nullptr, let the game handle which one to equip.
+		}
+		if (this->_obj->As<RE::TESObjectWEAP>()->IsCrossbow() || this->_obj->As<RE::TESObjectWEAP>()->IsBow()) {  // clean up both slots
+			Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
+			Utils::Slot::CleanSlot(pc, Utils::Slot::GetRightHandSlot());
+		}
+		auto slot = a_toRight ? Utils::Slot::GetRightHandSlot() : Utils::Slot::GetLeftHandSlot();
+		RE::ActorEquipManager::GetSingleton()->EquipObject(pc, _obj, extraData, 1, slot);
+	} catch (const std::exception& e) {
+		logger::error("Error while equipping weapon: {}", e.what());
 	}
-	if (this->_obj->As<RE::TESObjectWEAP>()->IsCrossbow() || this->_obj->As<RE::TESObjectWEAP>()->IsBow()) {  // clean up both slots
-		Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
-		Utils::Slot::CleanSlot(pc, Utils::Slot::GetRightHandSlot());
-	}
-	auto slot = a_toRight ? Utils::Slot::GetRightHandSlot() : Utils::Slot::GetLeftHandSlot();
-	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, _obj, extraData, 1, slot);
-	
 }
 
 void WheelItemWeapon::unequipItem(const RE::BGSEquipSlot* a_slot)
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc) {
-		return;
+	try {
+		auto pc = RE::PlayerCharacter::GetSingleton();
+		if (!pc) {
+			return;
+		}
+		auto aeMan = RE::ActorEquipManager::GetSingleton();
+		if (!aeMan) {
+			return;
+		}
+		aeMan->UnequipObject(pc, this->_obj, nullptr, 1, a_slot);
+	} catch (const std::exception& e) {
+		logger::error("Error while unequip item: {}", e.what());
 	}
-	auto aeMan = RE::ActorEquipManager::GetSingleton();
-	if (!aeMan) {
-		return;
-	}
-	aeMan->UnequipObject(pc, this->_obj, nullptr, 1, a_slot);
 }
 
 bool WheelItemWeapon::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	auto pc = RE::PlayerCharacter::GetSingleton();
-	if (!pc) {
+	try {
+		auto pc = RE::PlayerCharacter::GetSingleton();
+		if (!pc) {
+			return false;
+		}
+		if (this->GetItemExtraDataAndCount(a_inv).first >= 2) {
+			return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true) != Utils::Inventory::Hand::None;
+		} else {
+			return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID()) != Utils::Inventory::Hand::None;
+		}
+	} catch (const std::exception& e) {
+		logger::error("Error while checking if item is active: {}", e.what());
 		return false;
 	}
-	if (this->GetItemExtraDataAndCount(a_inv).first >= 2) {
-		return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true) != Utils::Inventory::Hand::None;
-	} else {
-		return Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID()) != Utils::Inventory::Hand::None;
-	}
+
 }
 bool WheelItemWeapon::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
