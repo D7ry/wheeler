@@ -20,6 +20,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		WheelItemMutableManager::GetSingleton()->Register();
 		Config::ReadStyleConfig();
 		Config::ReadControlConfig();
+		Config::OffsetSizingToViewport();
 		Config::UpdateHandler::Register();
 		Controls::BindAllInputsFromConfig();
 		Texture::Init();

@@ -171,7 +171,7 @@ void Config::ReadControlConfig()
 	GetFloatValue(ini, "Control.Wheel", "ToggleHoldThreshold", Config::Control::Wheel::ToggleHoldThreshold);
 }
 
-void Config::offsetSizingToViewport()
+void Config::OffsetSizingToViewport()
 {
 	float scale = ImGui::GetMainViewport()->Size.y / REFERENCE_HEIGHT;  // base scale on height
 	for (float* value :
@@ -241,10 +241,10 @@ EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_
 	if (a_event->eventName == "dmenu_updateSettings") {
 		if (a_event->strArg == "Wheeler Styles") {
 			Config::ReadStyleConfig();
-			Config::offsetSizingToViewport();
+			Config::OffsetSizingToViewport();
 		} else if (a_event->strArg == "Wheeler Controls") {
 			Config::ReadControlConfig();
-			Config::offsetSizingToViewport();
+			Config::OffsetSizingToViewport();
 			Controls::BindAllInputsFromConfig();
 		}
 	}

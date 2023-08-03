@@ -19,7 +19,7 @@ namespace Config
 	void ReadStyleConfig();
 	void ReadControlConfig();
 
-	void offsetSizingToViewport();
+	void OffsetSizingToViewport();
 
 	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
 	{
