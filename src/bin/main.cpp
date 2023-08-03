@@ -30,8 +30,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 	case SKSE::MessagingInterface::kSaveGame:
 		break;
-	case SKSE::MessagingInterface::kPostLoadGame:
 	case SKSE::MessagingInterface::kNewGame:
+		Wheeler::SetupDefaultWheels();
+	case SKSE::MessagingInterface::kPostLoadGame:
 		UniqueIDHandler::EnsureXListUniquenessInPcInventory();
 		break;
 	}

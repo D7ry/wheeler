@@ -90,8 +90,15 @@ public:
 
 	/// <summary>
 	/// Add a new empty wheel to the set of wheels.
+	/// Wheel is added only if the user is in edit mode.
 	/// </summary>
 	static void AddWheel();
+	
+	/// <summary>
+	/// Push a new empty wheel to the set of wheels.
+	/// Doesn't check for edit mode.
+	/// </summary>
+	static void PushWheel();
 
 	/// <summary>
 	/// Delete the current wheel. The deletion may be performed if and only if the current wheel is empty, and the current wheel is not the last wheel present.
@@ -126,6 +133,12 @@ public:
 
 	static void SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
 	static void SerializeIntoJsonObj(nlohmann::json& a_json);
+
+	/// <summary>
+	/// Set up 2 wheels, each with 4 empty slots.
+	/// Used to create a template when a user starts a new game.
+	/// </summary>
+	static void SetupDefaultWheels();
 
 private:
 	enum class WheelState
