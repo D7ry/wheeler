@@ -115,7 +115,7 @@ void WheelItemWeapon::ActivateItemSecondary()
 		|| this->_obj->As<RE::TESObjectWEAP>()->IsTwoHanded());
 	
 	Utils::Inventory::Hand equippedHand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true);
-	if (equippedHand == Utils::Inventory::Hand::Left || (isTwoHanded && equippedHand == Utils::Inventory::Hand::Right)) {
+	if (equippedHand == Utils::Inventory::Hand::Left || (isTwoHanded && equippedHand == Utils::Inventory::Hand::Right) || equippedHand == Utils::Inventory::Hand::Both) {
 		if (isTwoHanded) {
 			unequipItem(Utils::Slot::GetRightHandSlot());  // note: 2 handed weapons need to be unequipped from the right hand slot to be truly unequipped.
 		} else {
@@ -132,7 +132,8 @@ void WheelItemWeapon::ActivateItemPrimary()
 	if (!pc) {
 		return;
 	}
-	if (Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true) == Utils::Inventory::Hand::Right) {
+	Utils::Inventory::Hand equippedHand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true);
+	if (equippedHand == Utils::Inventory::Hand::Right || equippedHand == Utils::Inventory::Hand::Both) {
 		unequipItem(Utils::Slot::GetRightHandSlot());
 	} else {
 		equipItem(true);
