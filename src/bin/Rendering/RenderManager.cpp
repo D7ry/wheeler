@@ -119,19 +119,29 @@ void RenderManager::D3DInitHook::thunk()
 				}
 			}
 			if (foundCustomFont) {
-				if (language = "Chinese") {
+				std::string languageStr = language;
+				INFO("Loading font: {}", fontPath.string().c_str());
+				if (languageStr == "Chinese") {
+					INFO("Glyph range set to Chinese");
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesChineseFull();
-				} else if (language == "Korean") {
+				} else if (languageStr == "Korean") {
+					INFO("Glyph range set to Korean");
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesKorean();
-				} else if (language == "Japanese") {
+				} else if (languageStr == "Japanese") {
+					INFO("Glyph range set to Japanese");
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesJapanese();
-				} else if (language == "Thai") {
+				} else if (languageStr == "Thai") {
+					INFO("Glyph range set to Thai");
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesThai();
-				} else if (language == "Vietnamese") {
+				} else if (languageStr == "Vietnamese") {
+					INFO("Glyph range set to Vietnamese");
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesVietnamese();
-				} else if (language == "Cyrillic") {
+				} else if (languageStr == "Cyrillic") {
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
+					INFO("Glyph range set to Cyrillic");
 				}
+			} else {
+				INFO("No font found for language: {}", language);
 			}
 		}
 	}

@@ -169,7 +169,7 @@ void Config::ReadConfig()
 
 void Config::offsetSizingToViewport()
 {
-	float scale = ImGui::GetIO().DisplaySize.x / REFERENCE_WIDTH; // base scale on width
+	float scale = ImGui::GetIO().DisplaySize.y / REFERENCE_HEIGHT; // base scale on height
 	for (float* value :
 		{
 			&Config::Control::Wheel::CursorRadiusPerEntry,
