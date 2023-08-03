@@ -240,7 +240,7 @@ void Wheeler::OpenWheeler()
 	if (!ui) {
 		return;
 	}
-	static constexpr std::array<std::string_view, 18> conflictingMenus({
+	static constexpr std::array<std::string_view, 19> conflictingMenus({
 		RE::BookMenu::MENU_NAME,
 		RE::BarterMenu::MENU_NAME,
 		RE::CraftingMenu::MENU_NAME,
@@ -258,7 +258,8 @@ void Wheeler::OpenWheeler()
 		RE::DialogueMenu::MENU_NAME,
 		RE::GiftMenu::MENU_NAME,
 		RE::ModManagerMenu::MENU_NAME,
-		RE::ContainerMenu::MENU_NAME
+		RE::ContainerMenu::MENU_NAME,
+		"LootMenu" // quick loot
 	});
 	for (std::string_view menuName : conflictingMenus) {
 		if (ui->IsMenuOpen(menuName) 
