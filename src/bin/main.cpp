@@ -18,7 +18,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	switch (a_msg->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
 		WheelItemMutableManager::GetSingleton()->Register();
-		Config::ReadConfig();
+		Config::ReadStyleConfig();
+		Config::ReadControlConfig();
 		Config::UpdateHandler::Register();
 		Controls::BindAllInputsFromConfig();
 		Texture::Init();

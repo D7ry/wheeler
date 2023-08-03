@@ -16,7 +16,8 @@ namespace Config
 	#define REFERENCE_WIDTH 1920
 	#define REFERENCE_HEIGHT 1080
 
-	void ReadConfig();
+	void ReadStyleConfig();
+	void ReadControlConfig();
 
 	void offsetSizingToViewport();
 

@@ -2,8 +2,8 @@
 #include "UserInput/Controls.h"
 #include "imgui.h"
 
-#define SETTINGSFILE_PATH "Data\\SKSE\\Plugins\\wheeler\\Settings.ini"
-
+#define STYLESETTINGS_PATH "Data\\SKSE\\Plugins\\wheeler\\Styles.ini"
+#define CONTROLSETTINGS_PATH "Data\\SKSE\\Plugins\\wheeler\\Controls.ini"
 bool GetBoolValue(const CSimpleIniA& ini, const char* section, const char* key, bool& value)
 {
 	const char* strValue = ini.GetValue(section, key, nullptr);
@@ -44,15 +44,12 @@ bool GetFloatValue(const CSimpleIniA& ini, const char* section, const char* key,
 	}
 	return false;
 }
-void Config::ReadConfig()
+void Config::ReadStyleConfig()
 {
 	CSimpleIniA ini;
 	ini.SetUnicode();
-	ini.LoadFile(SETTINGSFILE_PATH);
+	ini.LoadFile(STYLESETTINGS_PATH);
 
-	GetFloatValue(ini, "Control.Wheel", "CursorRadiusPerEntry", Config::Control::Wheel::CursorRadiusPerEntry);
-	GetBoolValue(ini, "Control.Wheel", "DoubleActivateDisable", Config::Control::Wheel::DoubleActivateDisable);
-	GetFloatValue(ini, "Control.Wheel", "ToggleHoldThreshold", Config::Control::Wheel::ToggleHoldThreshold);
 	GetFloatValue(ini, "Styling.Wheel", "CursorIndicatorDist", Config::Styling::Wheel::CursorIndicatorDist);
 	GetFloatValue(ini, "Styling.Wheel", "CusorIndicatorArcWidth", Config::Styling::Wheel::CusorIndicatorArcWidth);
 	GetFloatValue(ini, "Styling.Wheel", "CursorIndicatorArcAngle", Config::Styling::Wheel::CursorIndicatorArcAngle);
@@ -131,6 +128,14 @@ void Config::ReadConfig()
 	GetFloatValue(ini, "Animation", "ToggleVerticalFadeDistance", Config::Animation::ToggleVerticalFadeDistance);
 	GetFloatValue(ini, "Animation", "FadeTime", Config::Animation::FadeTime);
 
+
+}
+
+void Config::ReadControlConfig()
+{
+	CSimpleIniA ini;
+	ini.SetUnicode();
+	ini.LoadFile(CONTROLSETTINGS_PATH);
 	GetUInt32Value(ini, "InputBindings.GamePad", "nextWheel", Config::InputBindings::GamePad::nextWheel);
 	GetUInt32Value(ini, "InputBindings.GamePad", "prevWheel", Config::InputBindings::GamePad::prevWheel);
 	GetUInt32Value(ini, "InputBindings.GamePad", "toggleWheel", Config::InputBindings::GamePad::toggleWheel);
@@ -161,10 +166,9 @@ void Config::ReadConfig()
 	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelForward", Config::InputBindings::MKB::moveWheelForward);
 	GetUInt32Value(ini, "InputBindings.MKB", "moveWheelBack", Config::InputBindings::MKB::moveWheelBack);
 
-
-	//GetBoolValue(ini, "Animation", "Camera Rotation", Config::Animation::CameraRotation);
-
-	Config::offsetSizingToViewport();  // Offset sizing values to the current viewport
+	GetFloatValue(ini, "Control.Wheel", "CursorRadiusPerEntry", Config::Control::Wheel::CursorRadiusPerEntry);
+	GetBoolValue(ini, "Control.Wheel", "DoubleActivateDisable", Config::Control::Wheel::DoubleActivateDisable);
+	GetFloatValue(ini, "Control.Wheel", "ToggleHoldThreshold", Config::Control::Wheel::ToggleHoldThreshold);
 }
 
 void Config::offsetSizingToViewport()
@@ -234,9 +238,15 @@ EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_
 	if (!a_event) {
 		return EventResult::kContinue;
 	}
-	if (a_event->eventName == "dmenu_updateSettings" && a_event->strArg == "Wheeler") {
-		Config::ReadConfig();
-		Controls::BindAllInputsFromConfig();
+	if (a_event->eventName == "dmenu_updateSettings") {
+		if (a_event->strArg == "Wheeler Styles") {
+			Config::ReadStyleConfig();
+			Config::offsetSizingToViewport();
+		} else if (a_event->strArg == "Wheeler Controls") {
+			Config::ReadControlConfig();
+			Config::offsetSizingToViewport();
+			Controls::BindAllInputsFromConfig();
+		}
 	}
 
 	return EventResult::kContinue;
