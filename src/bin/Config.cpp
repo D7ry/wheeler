@@ -239,10 +239,8 @@ EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_
 		return EventResult::kContinue;
 	}
 	if (a_event->eventName == "dmenu_updateSettings") {
-		if (a_event->strArg == "Wheeler Styles") {
+		if (a_event->strArg == "Wheeler Styles" || a_event->strArg == "Wheeler Controls") {
 			Config::ReadStyleConfig();
-			Config::OffsetSizingToViewport();
-		} else if (a_event->strArg == "Wheeler Controls") {
 			Config::ReadControlConfig();
 			Config::OffsetSizingToViewport();
 			Controls::BindAllInputsFromConfig();
