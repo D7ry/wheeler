@@ -18,7 +18,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	switch (a_msg->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
 		WheelItemMutableManager::GetSingleton()->Register();
-		Config::ReadConfig();
+		Config::ReadStyleConfig();
+		Config::ReadControlConfig();
+		Config::OffsetSizingToViewport();
 		Config::UpdateHandler::Register();
 		Controls::BindAllInputsFromConfig();
 		Texture::Init();
@@ -28,8 +30,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 	case SKSE::MessagingInterface::kSaveGame:
 		break;
-	case SKSE::MessagingInterface::kPostLoadGame:
 	case SKSE::MessagingInterface::kNewGame:
+		Wheeler::SetupDefaultWheels();
+	case SKSE::MessagingInterface::kPostLoadGame:
 		UniqueIDHandler::EnsureXListUniquenessInPcInventory();
 		break;
 	}

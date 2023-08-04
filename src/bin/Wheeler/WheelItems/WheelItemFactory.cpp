@@ -10,6 +10,8 @@
 #include "WheelItemLight.h"
 #include "WheelItemAmmo.h"
 #include "WheelItemAlchemy.h"
+#include "WheelItemScroll.h"
+#include "WheelItemMisc.h"
 
 std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 {
@@ -106,6 +108,26 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 				}
 				std::shared_ptr<WheelItemAlchemy> wheelItemAlchemy = std::make_shared<WheelItemAlchemy>(alchemyItem);
 				return wheelItemAlchemy;
+			}
+			break;
+			case RE::FormType::Scroll:
+			{
+				RE::ScrollItem* scrollItem = boundObj->As<RE::ScrollItem>();
+				if (!scrollItem) {
+					return nullptr;
+				}
+				std::shared_ptr<WheelItemScroll> wheelItemScroll = std::make_shared<WheelItemScroll>(scrollItem);
+				return wheelItemScroll;
+			}
+			break;
+			case RE::FormType::Misc:
+			{
+				RE::TESObjectMISC* miscItem = boundObj->As<RE::TESObjectMISC>();
+				if (!miscItem) {
+					return nullptr;
+				}
+				std::shared_ptr<WheelItemMisc> wheelItemMisc = std::make_shared<WheelItemMisc>(miscItem);
+				return wheelItemMisc;
 			}
 			break;
 			}
@@ -207,6 +229,20 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromJsonObject(nlohman
 			}
 			std::shared_ptr<WheelItemAlchemy> wheelItemAlchemy = std::make_shared<WheelItemAlchemy>(alchemyItem);
 			return wheelItemAlchemy;
+		} else if (type == WheelItemScroll::ITEM_TYPE_STR) {
+			RE::ScrollItem* scrollItem = static_cast<RE::ScrollItem*>(RE::TESForm::LookupByID(formID));
+			if (!scrollItem) {
+				return nullptr;
+			}
+			std::shared_ptr<WheelItemScroll> wheelItemScroll = std::make_shared<WheelItemScroll>(scrollItem);
+			return wheelItemScroll;
+		} else if (type == WheelItemMisc::ITEM_TYPE_STR) {
+			RE::TESObjectMISC* miscObj = static_cast<RE::TESObjectMISC*>(RE::TESForm::LookupByID(formID));
+			if (!miscObj) {
+				return nullptr;
+			}
+			std::shared_ptr<WheelItemMisc> wheelItemMisc = std::make_shared<WheelItemMisc>(miscObj);
+			return wheelItemMisc;
 		}
 	}
 	catch (std::exception exception) {

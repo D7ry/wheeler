@@ -63,38 +63,18 @@ WheelItemAlchemy::WheelItemAlchemy(RE::AlchemyItem* a_alchemyItem)
 
 void WheelItemAlchemy::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	{
-		using namespace Config::Styling::Item::Slot;
-		int itemCount = a_imap.contains(this->_alchemyItem) ? a_imap.find(this->_alchemyItem)->second.first : 0;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			fmt::format("{} ({})", _alchemyItem->GetName(), itemCount).data(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-		Drawer::draw_texture(_texture.texture,
-			ImVec2(a_center.x, a_center.y),
-			Config::Styling::Item::Slot::Texture::OffsetX,
-			Config::Styling::Item::Slot::Texture::OffsetY,
-			ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-			C_SKYRIMWHITE, a_drawArgs);
-	}
+	int itemCount = a_imap.contains(this->_alchemyItem) ? a_imap.find(this->_alchemyItem)->second.first : 0;
+	std::string text = fmt::format("{} ({})", _alchemyItem->GetName(), itemCount);
+	this->drawSlotText(a_center, text.data(), a_drawArgs);
+	this->drawSlotTexture(a_center, a_drawArgs);
 }
 
 void WheelItemAlchemy::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
-{
-	{
-		using namespace Config::Styling::Item::Highlight;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			_alchemyItem->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-	}
-
-	Drawer::draw_texture(_texture.texture,
-		ImVec2(a_center.x, a_center.y),
-		Config::Styling::Item::Highlight::Texture::OffsetX,
-		Config::Styling::Item::Highlight::Texture::OffsetY,
-		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		C_SKYRIMWHITE, a_drawArgs);
-
+{	
+	this->drawHighlightText(a_center, _alchemyItem->GetName(), a_drawArgs);
+	this->drawHighlightTexture(a_center, a_drawArgs);
 	if (!this->_description.empty()) {
-		Drawer::draw_text_block(a_center.x + Config::Styling::Item::Highlight::Desc::OffsetX, a_center.y + Config::Styling::Item::Highlight::Desc::OffsetY,
-			this->_description, C_SKYRIMWHITE, Config::Styling::Item::Highlight::Desc::Size, Config::Styling::Item::Highlight::Desc::LineSpacing, Config::Styling::Item::Highlight::Desc::LineLength, a_drawArgs);
+		this->drawHighlightDescription(a_center, this->_description.data(), a_drawArgs);
 	}
 }
 

@@ -14,33 +14,14 @@ WheelItemLight::WheelItemLight(RE::TESObjectLIGH* a_light)
 
 void WheelItemLight::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	{
-		using namespace Config::Styling::Item::Slot;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			_light->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-		Drawer::draw_texture(_texture.texture,
-			ImVec2(a_center.x, a_center.y),
-			Config::Styling::Item::Slot::Texture::OffsetX,
-			Config::Styling::Item::Slot::Texture::OffsetY,
-			ImVec2(_texture.width * Config::Styling::Item::Slot::Texture::Scale, _texture.height * Config::Styling::Item::Slot::Texture::Scale),
-			C_SKYRIMWHITE, a_drawArgs);
-	}
+	this->drawSlotText(a_center, _light->GetName(), a_drawArgs);
+	this->drawSlotTexture(a_center, a_drawArgs);
 }
 
 void WheelItemLight::DrawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	{
-		using namespace Config::Styling::Item::Highlight;
-		Drawer::draw_text(a_center.x + Text::OffsetX, a_center.y + Text::OffsetY,
-			_light->GetName(), C_SKYRIMWHITE, Text::Size, a_drawArgs);
-	}
-
-	Drawer::draw_texture(_texture.texture,
-		ImVec2(a_center.x, a_center.y),
-		Config::Styling::Item::Highlight::Texture::OffsetX,
-		Config::Styling::Item::Highlight::Texture::OffsetY,
-		ImVec2(_texture.width * Config::Styling::Item::Highlight::Texture::Scale, _texture.height * Config::Styling::Item::Highlight::Texture::Scale),
-		C_SKYRIMWHITE, a_drawArgs);
+	this->drawHighlightText(a_center, _light->GetName(), a_drawArgs);
+	this->drawHighlightTexture(a_center, a_drawArgs);
 }
 
 bool WheelItemLight::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)

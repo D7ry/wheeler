@@ -3,6 +3,7 @@
 
 static ImU32 C_SKYRIMGREY = IM_COL32(255, 255, 255, 100 );
 static ImU32 C_SKYRIMWHITE = IM_COL32(255, 255, 255, 255);
+static ImU32 C_BLACK = IM_COL32(0, 0, 0, 255);
 static ImU32 C_SKYRIMDARKGREY_MENUBACKGROUND = IM_COL32(0, 0, 0, 125);
 static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
 static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
@@ -15,9 +16,10 @@ namespace Config
 	#define REFERENCE_WIDTH 1920
 	#define REFERENCE_HEIGHT 1080
 
-	void ReadConfig();
+	void ReadStyleConfig();
+	void ReadControlConfig();
 
-	void offsetSizingToViewport();
+	void OffsetSizingToViewport();
 
 	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
 	{
@@ -113,6 +115,7 @@ namespace Config
 			inline float CursorIndicatorArcAngle = 2 * IM_PI * 1 / 12.f;  // 1/12 of a circle
 			inline float CursorIndicatorTriangleSideLength = 5.f;
 			inline ImU32 CursorIndicatorColor = C_SKYRIMWHITE;
+			inline bool CursorIndicatorInwardFacing = true;
 
 			inline float WheelIndicatorOffsetX = 260.f;
 			inline float WheelIndicatorOffsetY = 340.f;
@@ -146,6 +149,9 @@ namespace Config
 			// offset of wheel center, to which everything else is relative to
 			inline float CenterOffsetX = 450.f;
 			inline float CenterOffsetY = 0.f;
+
+			inline ImU32 TextColor = C_SKYRIMWHITE;
+			inline ImU32 TextShadowColor = C_BLACK;
 		}
 
 		namespace Entry
