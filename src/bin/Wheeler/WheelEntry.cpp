@@ -219,6 +219,13 @@ bool WheelEntry::IsEmpty()
 	return this->_items.empty();
 }
 
+uint32_t WheelEntry::GetNumItems()
+{
+	std::shared_lock<std::shared_mutex> lock(this->_lock);
+	return this->_items.size();
+}
+
+
 WheelEntry::WheelEntry()
 {
 	_selectedItem = 0;
