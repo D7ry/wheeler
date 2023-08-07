@@ -263,7 +263,6 @@ void WheelEntry::SerializeIntoJsonObj(nlohmann::json& j_entry)
 std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::json& j_entry, SKSE::SerializationInterface* a_intfc)
 {
 	std::unique_ptr<WheelEntry> entry = std::make_unique<WheelEntry>();
-	entry->SetSelectedItem(j_entry["selecteditem"]);
 
 	nlohmann::json j_items = j_entry["items"];
 	try {
@@ -277,6 +276,8 @@ std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::jso
 	catch (std::exception exception) {
 		logger::info("Exception serializing wheel entry: {}", exception.what());
 	}
+	int selectedItem = std::clamp(j_entry["selecteditem"], 0, entry->GetNumItems());
+	entry->SetSelectedItem(selectedItem);
 
 	return std::move(entry);
 }
