@@ -10,6 +10,7 @@
 
 #include "bin/Rendering/Drawer.h"
 #include "bin/Utilities/Utils.h"
+#include "bin/Texts.h"
 
 #include "WheelItems/WheelItem.h"
 #include "WheelItems/WheelItemMutable.h"
@@ -111,7 +112,7 @@ void Wheeler::Update(float a_deltaTime)
 		float cursorAngle = atan2f(_cursorPos.y, _cursorPos.x);  // where the cursor is pointing to
 
 		if (_wheels.empty()) {
-			Drawer::draw_text(wheelCenter.x, wheelCenter.y, "No Wheel Present", C_SKYRIMWHITE, 40.F, drawArgs);
+			Drawer::draw_text(wheelCenter.x, wheelCenter.y, Texts::GetText(Texts::TextType::NoWheelPresent), C_SKYRIMWHITE, 40.F, drawArgs);
 		} else {
 			bool isCursorCentered = _cursorPos.x == 0 && _cursorPos.y == 0;
 			_wheels[_activeWheelIdx]->Draw(wheelCenter, cursorAngle, isCursorCentered, inv, drawArgs);

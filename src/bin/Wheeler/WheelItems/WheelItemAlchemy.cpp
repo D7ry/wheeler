@@ -1,7 +1,7 @@
 #include "bin/Rendering/Drawer.h"
 #include "bin/Utilities/Utils.h"
 #include "bin/Wheeler/Wheeler.h"
-#include "bin/Messages.h"
+#include "bin/Texts.h"
 #include "WheelItemAlchemy.h"
 
 WheelItemAlchemy::WheelItemAlchemy(RE::AlchemyItem* a_alchemyItem)
@@ -136,6 +136,7 @@ void WheelItemAlchemy::consume()
 		return;
 	}
 	if (this->_alchemyItem->IsDynamicForm() && pc->GetInventoryItemCount(this->_alchemyItem) <= 1) {
+		Utils::NotificationMessage(Texts::GetText(Texts::TextType::AlchemyDynamicIDConsumptionWarning));
 		return;
 	}
 	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->_alchemyItem);

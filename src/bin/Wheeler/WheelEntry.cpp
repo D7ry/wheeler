@@ -219,7 +219,7 @@ bool WheelEntry::IsEmpty()
 	return this->_items.empty();
 }
 
-uint32_t WheelEntry::GetNumItems()
+int WheelEntry::GetNumItems()
 {
 	std::shared_lock<std::shared_mutex> lock(this->_lock);
 	return this->_items.size();
@@ -276,7 +276,7 @@ std::unique_ptr<WheelEntry> WheelEntry::SerializeFromJsonObj(const nlohmann::jso
 	catch (std::exception exception) {
 		logger::info("Exception serializing wheel entry: {}", exception.what());
 	}
-	int selectedItem = std::clamp(j_entry["selecteditem"], 0, entry->GetNumItems());
+	int selectedItem = std::clamp(j_entry["selecteditem"].get<int>(), 0, entry->GetNumItems());
 	entry->SetSelectedItem(selectedItem);
 
 	return std::move(entry);
