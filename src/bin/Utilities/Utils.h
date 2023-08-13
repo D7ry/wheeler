@@ -85,4 +85,6 @@ namespace Utils
 		RE::NiMatrix3 MatrixFromAxisAngle(float theta, const RE::NiPoint3& axis = HORIZONTAL_AXIS);
 	}
 
+	void NotificationMessage(std::string a_message);
+
 }

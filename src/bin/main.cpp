@@ -12,6 +12,7 @@
 #include "Serialization/SerializationEntry.h"
 
 #include "Config.h"
+#include "Texts.h"
 
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
@@ -24,6 +25,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		Config::UpdateHandler::Register();
 		Controls::BindAllInputsFromConfig();
 		Texture::Init();
+		Texts::LoadTranslations();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
 		break;

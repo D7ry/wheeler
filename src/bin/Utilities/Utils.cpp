@@ -223,6 +223,10 @@ namespace Utils
 			return nullptr;
 		}
 	}
+	void NotificationMessage(std::string a_message)
+	{
+		RE::DebugNotification(a_message.data());
+	}
 }
 
 void Utils::Magic::GetMagicItemDescription(RE::ItemCard* a_itemCard, RE::MagicItem* a_magicItem, RE::BSString& a_str)

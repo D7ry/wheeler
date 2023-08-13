@@ -73,6 +73,7 @@ public:
 	void SetSelectedItem(int a_selected);
 
 	bool IsEmpty();
+	int GetNumItems();
 
     void SerializeIntoJsonObj(nlohmann::json& a_json);
 	static std::unique_ptr<WheelEntry> SerializeFromJsonObj(const nlohmann::json& a_json, SKSE::SerializationInterface* a_intfc);
