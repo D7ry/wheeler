@@ -5,7 +5,7 @@ public:
 	enum class TextType
 	{
 		AlchemyDynamicIDConsumptionWarning,
-		NoWheelPresent
+		NoWheelPresent,
 		Total
 	};
 
