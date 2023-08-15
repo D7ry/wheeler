@@ -130,11 +130,11 @@ private:
 						&a_struct[index].texture,
 						a_struct[index].width,
 						a_struct[index].height)) {
-					logger::trace("loading texture {}, type: {}, width: {}, height: {}"sv,
-						entry.path().filename().string().c_str(),
-						entry.path().filename().extension().string().c_str(),
-						a_struct[index].width,
-						a_struct[index].height);
+					//logger::trace("loading texture {}, type: {}, width: {}, height: {}"sv,
+					//	entry.path().filename().string().c_str(),
+					//	entry.path().filename().extension().string().c_str(),
+					//	a_struct[index].width,
+					//	a_struct[index].height);
 				} else {
 					logger::error("failed to load texture {}"sv, entry.path().filename().string().c_str());
 				}
