@@ -1,6 +1,7 @@
 #include "Config.h"
 #include "UserInput/Controls.h"
 #include "imgui.h"
+#include "Wheeler/Wheeler.h"
 
 #define STYLESETTINGS_PATH "Data\\SKSE\\Plugins\\wheeler\\Styles.ini"
 #define CONTROLSETTINGS_PATH "Data\\SKSE\\Plugins\\wheeler\\Controls.ini"
@@ -244,6 +245,10 @@ EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_
 			Config::ReadControlConfig();
 			Config::OffsetSizingToViewport();
 			Controls::BindAllInputsFromConfig();
+		}
+	} else if (a_event->eventName == "dmenu_buttonCallback") {
+		if (a_event->strArg == "wheeler_reset_all_wheels") {
+			Wheeler::SetupDefaultWheels();
 		}
 	}
 
