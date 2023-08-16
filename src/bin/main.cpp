@@ -13,6 +13,7 @@
 
 #include "Config.h"
 #include "Texts.h"
+#include "ModCallbackEventHandler.h"
 
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
@@ -22,10 +23,10 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		Config::ReadStyleConfig();
 		Config::ReadControlConfig();
 		Config::OffsetSizingToViewport();
-		Config::UpdateHandler::Register();
 		Controls::BindAllInputsFromConfig();
 		Texture::Init();
 		Texts::LoadTranslations();
+		ModCallbackEventHandler::Register();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
 		break;

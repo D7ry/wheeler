@@ -9,7 +9,6 @@ static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
 static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
 static ImU32 C_TRIQUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .75));
 static ImU32 C_VOID = IM_COL32(255, 255, 255, 0);
-using EventResult = RE::BSEventNotifyControl;
 
 namespace Config
 {
@@ -21,14 +20,6 @@ namespace Config
 
 	void OffsetSizingToViewport();
 
-	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
-	{
-	public:
-
-		virtual EventResult ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>* a_eventSource);
-
-		static bool Register();
-	};
 	namespace InputBindings
 	{
 		namespace GamePad
