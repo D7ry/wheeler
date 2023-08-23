@@ -139,7 +139,7 @@ void WheelEntry::drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItem
 
 const float WheelEntry::GetRadiusMod()
 {
-	return this->_arcRadiusIncInterpolator.GetValue();
+	return this->_arcRadiusIncInterpolator.GetValue() + _arcRadiusBounceInterpolator.GetValue();
 }
 
 bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)

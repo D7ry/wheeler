@@ -171,6 +171,7 @@ void Config::ReadControlConfig()
 	GetFloatValue(ini, "Control.Wheel", "CursorRadiusPerEntry", Config::Control::Wheel::CursorRadiusPerEntry);
 	GetBoolValue(ini, "Control.Wheel", "DoubleActivateDisable", Config::Control::Wheel::DoubleActivateDisable);
 	GetFloatValue(ini, "Control.Wheel", "ToggleHoldThreshold", Config::Control::Wheel::ToggleHoldThreshold);
+	GetBoolValue(ini, "Control.Wheel", "HideGameUIInEditMode", Config::Control::Wheel::HideGameUIInEditMode);
 }
 
 void Config::OffsetSizingToViewport()

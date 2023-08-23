@@ -77,6 +77,8 @@ namespace Config
 			// if the user presses longer than this(without sending close), the wheel will close on release
 			// the the user presses shorter than this, the wheel will close on a second press.
 			inline float ToggleHoldThreshold = 0.25f;  
+
+			inline bool HideGameUIInEditMode = true;
 		}
 
 	}

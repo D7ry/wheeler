@@ -637,6 +637,9 @@ bool Wheeler::shouldBeInEditMode(RE::UI* a_ui)
 
 void Wheeler::hideEditModeVanillaMenus(RE::UI* a_ui)
 {
+	if (!Config::Control::Wheel::HideGameUIInEditMode) {
+		return; // don't hide
+	}
 	if (a_ui->IsMenuOpen(RE::InventoryMenu::MENU_NAME)) {
 		RE::GFxMovieView* uiMovie = a_ui->GetMenu<RE::InventoryMenu>()->uiMovie.get();
 		if (uiMovie) {
