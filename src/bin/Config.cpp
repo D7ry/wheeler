@@ -58,7 +58,8 @@ void Config::ReadStyleConfig()
 	GetUInt32Value(ini, "Styling.Wheel", "CursorIndicatorColor", Config::Styling::Wheel::CursorIndicatorColor);
 	GetBoolValue(ini, "Styling.Wheel", "CursorIndicatorInwardFacing", Config::Styling::Wheel::CursorIndicatorInwardFacing);
 
-	
+	GetBoolValue(ini, "Styling.Wheel", "UseGeometricPrimitiveForBackgroundTexture", Config::Styling::Wheel::UseGeometricPrimitiveForBackgroundTexture);
+
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorOffsetX", Config::Styling::Wheel::WheelIndicatorOffsetX);
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorOffsetY", Config::Styling::Wheel::WheelIndicatorOffsetY);
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorSize", Config::Styling::Wheel::WheelIndicatorSize);
@@ -118,7 +119,7 @@ void Config::ReadStyleConfig()
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "OffsetY", Config::Styling::Item::Slot::Text::OffsetY);
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "Size", Config::Styling::Item::Slot::Text::Size);
 
-	
+	GetFloatValue(ini, "Styling.Item.Slot.BackgroundTexture", "Scale", Config::Styling::Item::Slot::BackgroundTexture::Scale);
 
 	GetFloatValue(ini, "Animation", "EntryHighlightExpandTime", Config::Animation::EntryHighlightExpandTime);
 	GetFloatValue(ini, "Animation", "EntryHighlightRetractTime", Config::Animation::EntryHighlightRetractTime);
@@ -225,6 +226,8 @@ void Config::OffsetSizingToViewport()
 			&Config::Styling::Item::Slot::Text::OffsetX,
 			&Config::Styling::Item::Slot::Text::OffsetY,
 			&Config::Styling::Item::Slot::Text::Size,
+
+			&Config::Styling::Item::Slot::BackgroundTexture::Scale,
 
 			&Config::Animation::ToggleVerticalFadeDistance,
 			&Config::Animation::ToggleHorizontalFadeDistance

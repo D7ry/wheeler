@@ -101,6 +101,8 @@ namespace Config
 	{
 		namespace Wheel
 		{
+			inline bool UseGeometricPrimitiveForBackgroundTexture = false;
+
 			inline float CursorIndicatorDist = 10.f; // distance from cusor indicator to the inner circle
 			inline float CusorIndicatorArcWidth = 3.f; 
 			inline float CursorIndicatorArcAngle = 2 * IM_PI * 1 / 12.f;  // 1/12 of a circle
@@ -214,6 +216,11 @@ namespace Config
 					inline float OffsetX = 0;
 					inline float OffsetY = 10;
 					inline float Size = 30;
+				}
+
+				namespace BackgroundTexture
+				{
+					inline float Scale = .1f;
 				}
 
 			}
