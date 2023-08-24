@@ -13,13 +13,29 @@ public:
 	~WheelEntry();
 
 	/// <summary>
+	/// Feed in necessary information for the entry to update its interpolation animations;
+	/// Called before drawing the entry.
+	/// </summary>
+	/// <param name="imap"></param>
+	/// <param name="innerSpacingRad"></param>
+	/// <param name="entryInnerAngleMin"></param>
+	/// <param name="entryInnerAngleMax"></param>
+	/// <param name="entryOuterAngleMin"></param>
+	/// <param name="entryOuterAngleMax"></param>
+	/// <param name="hovered"></param>
+	void UpdateAnimation(
+		RE::TESObjectREFR::InventoryItemMap& imap,
+		float innerSpacingRad,
+		float entryInnerAngleMin, float entryInnerAngleMax,
+		float entryOuterAngleMin, float entryOuterAngleMax, bool hovered);
+	/// <summary>
 	/// Draw the background for this entry, including 2 arcs, one acting as the main background and other, much thinner
 	/// one acting as an indicator to whether the current entry is active.
 	/// The main background changes color when the entry is being hovered, and the background arc's radius linearly interpolates to an
 	/// increased value.
 	/// (GTA5-style)
 	/// </summary>
-	void DrawBackGround(const ImVec2 wheelCenter, float innerSpacing,
+	void DrawBackGround(const ImVec2 wheelCenter, const ImVec2 entryCenter, float innerSpacing,
 		float entryInnerAngleMin, float entryInnerAngleMax,
 		float entryOuterAngleMin, float entryOuterAngleMax,
 		bool hovered, int numArcSegments, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawARGS);

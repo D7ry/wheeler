@@ -99,9 +99,12 @@ public:
 		mask,
 		armor_rating,
 		weapon_damage,
+		slot_background,
+		slot_highlighted_background,
+		slot_active_background,
 		total
 	};
-	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form);
+	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form=nullptr);
 	
 private:
 	static inline std::map<uint32_t, Image> icon_struct;
@@ -130,11 +133,11 @@ private:
 						&a_struct[index].texture,
 						a_struct[index].width,
 						a_struct[index].height)) {
-					logger::trace("loading texture {}, type: {}, width: {}, height: {}"sv,
-						entry.path().filename().string().c_str(),
-						entry.path().filename().extension().string().c_str(),
-						a_struct[index].width,
-						a_struct[index].height);
+					//logger::trace("loading texture {}, type: {}, width: {}, height: {}"sv,
+					//	entry.path().filename().string().c_str(),
+					//	entry.path().filename().extension().string().c_str(),
+					//	a_struct[index].width,
+					//	a_struct[index].height);
 				} else {
 					logger::error("failed to load texture {}"sv, entry.path().filename().string().c_str());
 				}
@@ -150,8 +153,6 @@ private:
 	static inline std::string icon_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\icons)";
 	static inline std::string img_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\img)";
 	static inline std::string icon_custom_directory = R"(.\Data\SKSE\Plugins\Wheeler\resources\icons_custom)";
-
-	
 
 	inline static std::map<std::string, icon_image_type> icon_type_name_map = { { R"(potion_health.svg)",
 																					icon_image_type::potion_health },
@@ -221,8 +222,13 @@ private:
 		
 		// Item Stats
 		{ R"(armor_rating.svg)", icon_image_type::armor_rating },
-		{ R"(weapon_damage.svg)", icon_image_type::weapon_damage }
-	
+		{ R"(weapon_damage.svg)", icon_image_type::weapon_damage },
+
+		// Background textures
+		{ R"(slot_background.svg)", icon_image_type::slot_background },
+		{ R"(slot_highlighted_background.svg)", icon_image_type::slot_highlighted_background },
+		{ R"(slot_active_background.svg)", icon_image_type::slot_active_background }
+
 	};
 };
 

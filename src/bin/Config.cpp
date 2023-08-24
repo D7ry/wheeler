@@ -1,6 +1,7 @@
 #include "Config.h"
 #include "UserInput/Controls.h"
 #include "imgui.h"
+#include "Wheeler/Wheeler.h"
 
 #define STYLESETTINGS_PATH "Data\\SKSE\\Plugins\\wheeler\\Styles.ini"
 #define CONTROLSETTINGS_PATH "Data\\SKSE\\Plugins\\wheeler\\Controls.ini"
@@ -57,7 +58,8 @@ void Config::ReadStyleConfig()
 	GetUInt32Value(ini, "Styling.Wheel", "CursorIndicatorColor", Config::Styling::Wheel::CursorIndicatorColor);
 	GetBoolValue(ini, "Styling.Wheel", "CursorIndicatorInwardFacing", Config::Styling::Wheel::CursorIndicatorInwardFacing);
 
-	
+	GetBoolValue(ini, "Styling.Wheel", "UseGeometricPrimitiveForBackgroundTexture", Config::Styling::Wheel::UseGeometricPrimitiveForBackgroundTexture);
+
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorOffsetX", Config::Styling::Wheel::WheelIndicatorOffsetX);
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorOffsetY", Config::Styling::Wheel::WheelIndicatorOffsetY);
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorSize", Config::Styling::Wheel::WheelIndicatorSize);
@@ -117,7 +119,7 @@ void Config::ReadStyleConfig()
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "OffsetY", Config::Styling::Item::Slot::Text::OffsetY);
 	GetFloatValue(ini, "Styling.Item.Slot.Text", "Size", Config::Styling::Item::Slot::Text::Size);
 
-	
+	GetFloatValue(ini, "Styling.Item.Slot.BackgroundTexture", "Scale", Config::Styling::Item::Slot::BackgroundTexture::Scale);
 
 	GetFloatValue(ini, "Animation", "EntryHighlightExpandTime", Config::Animation::EntryHighlightExpandTime);
 	GetFloatValue(ini, "Animation", "EntryHighlightRetractTime", Config::Animation::EntryHighlightRetractTime);
@@ -169,6 +171,7 @@ void Config::ReadControlConfig()
 	GetFloatValue(ini, "Control.Wheel", "CursorRadiusPerEntry", Config::Control::Wheel::CursorRadiusPerEntry);
 	GetBoolValue(ini, "Control.Wheel", "DoubleActivateDisable", Config::Control::Wheel::DoubleActivateDisable);
 	GetFloatValue(ini, "Control.Wheel", "ToggleHoldThreshold", Config::Control::Wheel::ToggleHoldThreshold);
+	GetBoolValue(ini, "Control.Wheel", "HideGameUIInEditMode", Config::Control::Wheel::HideGameUIInEditMode);
 }
 
 void Config::OffsetSizingToViewport()
@@ -225,42 +228,12 @@ void Config::OffsetSizingToViewport()
 			&Config::Styling::Item::Slot::Text::OffsetY,
 			&Config::Styling::Item::Slot::Text::Size,
 
+			&Config::Styling::Item::Slot::BackgroundTexture::Scale,
+
 			&Config::Animation::ToggleVerticalFadeDistance,
 			&Config::Animation::ToggleHorizontalFadeDistance
 		} 
 		) {
 		*value = *value * scale;
 	}
-}
-
-EventResult Config::UpdateHandler::ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>* a_eventSource)
-{
-	if (!a_event) {
-		return EventResult::kContinue;
-	}
-	if (a_event->eventName == "dmenu_updateSettings") {
-		if (a_event->strArg == "Wheeler Styles" || a_event->strArg == "Wheeler Controls") {
-			Config::ReadStyleConfig();
-			Config::ReadControlConfig();
-			Config::OffsetSizingToViewport();
-			Controls::BindAllInputsFromConfig();
-		}
-	}
-
-	return EventResult::kContinue;
-}
-
-bool Config::UpdateHandler::Register()
-{
-	static UpdateHandler singleton;
-
-	auto eventSource = SKSE::GetModCallbackEventSource();
-
-	if (!eventSource) {
-		ERROR("EventSource not found!");
-		return false;
-	}
-	eventSource->AddEventSink(&singleton);
-	INFO("Register {}", typeid(singleton).name());
-	return true;
 }

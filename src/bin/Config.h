@@ -9,7 +9,6 @@ static ImU32 C_QUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .25));
 static ImU32 C_HALFTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .5f));
 static ImU32 C_TRIQUARTERTRANSPARENT = IM_COL32(255, 255, 255, (int)(255.f * .75));
 static ImU32 C_VOID = IM_COL32(255, 255, 255, 0);
-using EventResult = RE::BSEventNotifyControl;
 
 namespace Config
 {
@@ -21,14 +20,6 @@ namespace Config
 
 	void OffsetSizingToViewport();
 
-	class UpdateHandler : public RE::BSTEventSink<SKSE::ModCallbackEvent>
-	{
-	public:
-
-		virtual EventResult ProcessEvent(const SKSE::ModCallbackEvent* a_event, RE::BSTEventSource<SKSE::ModCallbackEvent>* a_eventSource);
-
-		static bool Register();
-	};
 	namespace InputBindings
 	{
 		namespace GamePad
@@ -86,6 +77,8 @@ namespace Config
 			// if the user presses longer than this(without sending close), the wheel will close on release
 			// the the user presses shorter than this, the wheel will close on a second press.
 			inline float ToggleHoldThreshold = 0.25f;  
+
+			inline bool HideGameUIInEditMode = true;
 		}
 
 	}
@@ -110,6 +103,8 @@ namespace Config
 	{
 		namespace Wheel
 		{
+			inline bool UseGeometricPrimitiveForBackgroundTexture = false;
+
 			inline float CursorIndicatorDist = 10.f; // distance from cusor indicator to the inner circle
 			inline float CusorIndicatorArcWidth = 3.f; 
 			inline float CursorIndicatorArcAngle = 2 * IM_PI * 1 / 12.f;  // 1/12 of a circle
@@ -223,6 +218,11 @@ namespace Config
 					inline float OffsetX = 0;
 					inline float OffsetY = 10;
 					inline float Size = 30;
+				}
+
+				namespace BackgroundTexture
+				{
+					inline float Scale = .1f;
 				}
 
 			}

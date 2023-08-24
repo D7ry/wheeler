@@ -5,48 +5,10 @@
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelEntry.h"
 
-void WheelEntry::DrawBackGround(
-	const ImVec2 wheelCenter, float innerSpacingRad, 
-	float entryInnerAngleMin, float entryInnerAngleMax,
-	float entryOuterAngleMin, float entryOuterAngleMax, 
-	bool hovered, 
-	int numArcSegments, RE::TESObjectREFR::InventoryItemMap& inv, DrawArgs a_drawARGS)
+void WheelEntry::UpdateAnimation(RE::TESObjectREFR::InventoryItemMap& imap, float innerSpacingRad, float entryInnerAngleMin, float entryInnerAngleMax, float entryOuterAngleMin, float entryOuterAngleMax, bool hovered)
 {
 	using namespace Config::Styling::Wheel;
-
-	float mainArcOuterBoundRadius = OuterCircleRadius;
-	mainArcOuterBoundRadius += _arcRadiusIncInterpolator.GetValue();
-	mainArcOuterBoundRadius += _arcRadiusBounceInterpolator.GetValue();
-	
-	float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue() * 2;
-	float entryInnerAngleMaxUpdated = entryInnerAngleMax + _arcInnerAngleIncInterpolator.GetValue() * 2;
-	float entryOuterAngleMinUpdated = entryOuterAngleMin - _arcOuterAngleIncInterpolator.GetValue() * 2;
-	float entryOuterAngleMaxUpdated = entryOuterAngleMax + _arcOuterAngleIncInterpolator.GetValue() * 2;
-	
-	Drawer::draw_arc_gradient(wheelCenter,
-		InnerCircleRadius,
-		mainArcOuterBoundRadius,
-		entryInnerAngleMinUpdated, entryInnerAngleMaxUpdated,
-		entryOuterAngleMinUpdated, entryOuterAngleMaxUpdated,
-		hovered ? HoveredColorBegin : UnhoveredColorBegin,
-		hovered ? HoveredColorEnd : UnhoveredColorEnd,
-		numArcSegments, a_drawARGS);
-
-	bool active = this->IsActive(inv);
-	ImU32 arcColorBegin = active ? ActiveArcColorBegin : InActiveArcColorBegin;
-	ImU32 arcColorEnd = active ? ActiveArcColorEnd : InActiveArcColorEnd;
-
-	Drawer::draw_arc_gradient(wheelCenter,
-		mainArcOuterBoundRadius,
-		mainArcOuterBoundRadius + ActiveArcWidth,
-		entryOuterAngleMinUpdated,
-		entryOuterAngleMaxUpdated,
-		entryOuterAngleMinUpdated,
-		entryOuterAngleMaxUpdated,
-		arcColorBegin,
-		arcColorEnd,
-		numArcSegments, a_drawARGS);
-
+	bool active = this->IsActive(imap);
 	if (hovered) {
 		if (!_prevHovered) {
 			float expandSize = Config::Animation::EntryHighlightExpandScale * (OuterCircleRadius - InnerCircleRadius);
@@ -63,6 +25,71 @@ void WheelEntry::DrawBackGround(
 			_arcInnerAngleIncInterpolator.InterpolateTo(0, Config::Animation::EntryHighlightRetractTime);
 		}
 	}
+}
+
+void WheelEntry::DrawBackGround(
+	const ImVec2 wheelCenter, const ImVec2 entryCenter, 
+	float innerSpacingRad, 
+	float entryInnerAngleMin, float entryInnerAngleMax,
+	float entryOuterAngleMin, float entryOuterAngleMax, 
+	bool hovered, 
+	int numArcSegments, RE::TESObjectREFR::InventoryItemMap& inv, DrawArgs a_drawARGS)
+{
+	bool active = this->IsActive(inv);
+	//TODO:
+	// 1. add separate config for background texture scaling
+	// 2. decouple this function
+
+	using namespace Config::Styling::Wheel;
+
+	if (UseGeometricPrimitiveForBackgroundTexture) {
+		float mainArcOuterBoundRadius = OuterCircleRadius;
+		mainArcOuterBoundRadius += _arcRadiusIncInterpolator.GetValue();
+		mainArcOuterBoundRadius += _arcRadiusBounceInterpolator.GetValue();
+
+		float entryInnerAngleMinUpdated = entryInnerAngleMin - _arcInnerAngleIncInterpolator.GetValue() * 2;
+		float entryInnerAngleMaxUpdated = entryInnerAngleMax + _arcInnerAngleIncInterpolator.GetValue() * 2;
+		float entryOuterAngleMinUpdated = entryOuterAngleMin - _arcOuterAngleIncInterpolator.GetValue() * 2;
+		float entryOuterAngleMaxUpdated = entryOuterAngleMax + _arcOuterAngleIncInterpolator.GetValue() * 2;
+
+		Drawer::draw_arc_gradient(wheelCenter,
+			InnerCircleRadius,
+			mainArcOuterBoundRadius,
+			entryInnerAngleMinUpdated, entryInnerAngleMaxUpdated,
+			entryOuterAngleMinUpdated, entryOuterAngleMaxUpdated,
+			hovered ? HoveredColorBegin : UnhoveredColorBegin,
+			hovered ? HoveredColorEnd : UnhoveredColorEnd,
+			numArcSegments, a_drawARGS);
+
+		ImU32 arcColorBegin = active ? ActiveArcColorBegin : InActiveArcColorBegin;
+		ImU32 arcColorEnd = active ? ActiveArcColorEnd : InActiveArcColorEnd;
+
+		Drawer::draw_arc_gradient(wheelCenter,
+			mainArcOuterBoundRadius,
+			mainArcOuterBoundRadius + ActiveArcWidth,
+			entryOuterAngleMinUpdated,
+			entryOuterAngleMaxUpdated,
+			entryOuterAngleMinUpdated,
+			entryOuterAngleMaxUpdated,
+			arcColorBegin,
+			arcColorEnd,
+			numArcSegments, a_drawARGS);
+	} else {
+		Texture::icon_image_type backgroundImageType = Texture::icon_image_type::slot_background;
+		if (active) {
+			backgroundImageType = Texture::icon_image_type::slot_active_background;
+		} else if (hovered) {
+			backgroundImageType = Texture::icon_image_type::slot_highlighted_background;
+		}
+		Texture::Image backgroundTexture = Texture::GetIconImage(backgroundImageType);
+		
+		Drawer::draw_texture(backgroundTexture.texture, entryCenter, 0, 0,
+			ImVec2(backgroundTexture.width * Config::Styling::Item::Slot::BackgroundTexture::Scale
+				, backgroundTexture.height * Config::Styling::Item::Slot::BackgroundTexture::Scale), C_SKYRIMWHITE, a_drawARGS);
+	
+	}
+
+	
 }
 
 void WheelEntry::DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
@@ -112,7 +139,7 @@ void WheelEntry::drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItem
 
 const float WheelEntry::GetRadiusMod()
 {
-	return this->_arcRadiusIncInterpolator.GetValue();
+	return this->_arcRadiusIncInterpolator.GetValue() + _arcRadiusBounceInterpolator.GetValue();
 }
 
 bool WheelEntry::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
