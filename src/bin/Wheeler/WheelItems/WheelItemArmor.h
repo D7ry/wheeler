@@ -20,7 +20,6 @@ public:
 	
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 
-
 	static inline const char* ITEM_TYPE_STR = "WheelItemArmor";
 
 private:

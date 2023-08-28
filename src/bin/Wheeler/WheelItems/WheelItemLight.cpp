@@ -71,3 +71,8 @@ void WheelItemLight::toggleEquip()
 		}
 	}
 }
+
+RE::TESForm* WheelItemLight::GetItemForm()
+{
+	return this->_light;
+}

@@ -94,3 +94,8 @@ void WheelItemScroll::SerializeIntoJsonObj(nlohmann::json& a_json)
 	a_json["type"] = WheelItemScroll::ITEM_TYPE_STR;
 	a_json["formID"] = this->_scroll->GetFormID();
 }
+
+RE::TESForm* WheelItemScroll::GetItemForm()
+{
+	return this->_scroll;
+}

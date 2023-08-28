@@ -92,3 +92,7 @@ void WheelItemShout::SerializeIntoJsonObj(nlohmann::json& a_json)
 	a_json["formID"] = this->_shout->GetFormID();
 }
 
+RE::TESForm* WheelItemShout::GetItemForm()
+{
+	return this->_shout;
+}
