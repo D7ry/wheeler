@@ -50,6 +50,8 @@ void Config::ReadStyleConfig()
 	CSimpleIniA ini;
 	ini.SetUnicode();
 	ini.LoadFile(STYLESETTINGS_PATH);
+	
+	GetFloatValue(ini, "Styling.Wheel", "WheelBackgroundTextureScale", Config::Styling::Wheel::WheelBackgroundTextureScale);
 
 	GetFloatValue(ini, "Styling.Wheel", "CursorIndicatorDist", Config::Styling::Wheel::CursorIndicatorDist);
 	GetFloatValue(ini, "Styling.Wheel", "CusorIndicatorArcWidth", Config::Styling::Wheel::CusorIndicatorArcWidth);
@@ -66,6 +68,7 @@ void Config::ReadStyleConfig()
 	GetFloatValue(ini, "Styling.Wheel", "WheelIndicatorSpacing", Config::Styling::Wheel::WheelIndicatorSpacing);
 	GetUInt32Value(ini, "Styling.Wheel", "WheelIndicatorActiveColor", Config::Styling::Wheel::WheelIndicatorActiveColor);
 	GetUInt32Value(ini, "Styling.Wheel", "WheelIndicatorInactiveColor", Config::Styling::Wheel::WheelIndicatorInactiveColor);
+	
 	GetFloatValue(ini, "Styling.Wheel", "InnerCircleRadius", Config::Styling::Wheel::InnerCircleRadius);
 	GetFloatValue(ini, "Styling.Wheel", "OuterCircleRadius", Config::Styling::Wheel::OuterCircleRadius);
 	GetFloatValue(ini, "Styling.Wheel", "InnerSpacing", Config::Styling::Wheel::InnerSpacing);
@@ -229,6 +232,7 @@ void Config::OffsetSizingToViewport()
 			&Config::Styling::Item::Slot::Text::Size,
 
 			&Config::Styling::Item::Slot::BackgroundTexture::Scale,
+			&Config::Styling::Wheel::WheelBackgroundTextureScale,
 
 			&Config::Animation::ToggleVerticalFadeDistance,
 			&Config::Animation::ToggleHorizontalFadeDistance

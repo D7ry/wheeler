@@ -121,16 +121,21 @@ void Wheeler::Update(float a_deltaTime)
 
 		// draw wheel indicator
 		for (int i = 0; i < _wheels.size(); i++) {
-			if (i == _activeWheelIdx) {
-				Drawer::draw_circle_filled(
-					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
-						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
-					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorActiveColor, 10, drawArgs);
+			bool isWheelActive = i == _activeWheelIdx;
+			ImVec2 wheelIndicatorPos = { wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
+				wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY };
+			if (!Config::Styling::Wheel::UseGeometricPrimitiveForBackgroundTexture) {
+				Texture::Image wheelIndicatorTexture = isWheelActive ? Texture::GetIconImage(Texture::icon_image_type::wheel_indicator_active) : Texture::GetIconImage(Texture::icon_image_type::wheel_indicator_inactive);
+				Drawer::draw_texture(wheelIndicatorTexture.texture, wheelIndicatorPos,
+					0, 0,
+					{ Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorSize },
+					C_SKYRIMWHITE, drawArgs);
 			} else {
 				Drawer::draw_circle_filled(
-					{ wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
-						wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY },
-					Config::Styling::Wheel::WheelIndicatorSize, Config::Styling::Wheel::WheelIndicatorInactiveColor, 10, drawArgs);
+				wheelIndicatorPos,
+				Config::Styling::Wheel::WheelIndicatorSize, 
+					isWheelActive ? Config::Styling::Wheel::WheelIndicatorActiveColor : Config::Styling::Wheel::WheelIndicatorInactiveColor,
+					10, drawArgs);
 			}
 		}
 

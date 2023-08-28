@@ -102,6 +102,9 @@ public:
 		slot_background,
 		slot_highlighted_background,
 		slot_active_background,
+		wheel_background,
+		wheel_indicator_active,
+		wheel_indicator_inactive,
 		total
 	};
 	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form=nullptr);
@@ -225,9 +228,18 @@ private:
 		{ R"(weapon_damage.svg)", icon_image_type::weapon_damage },
 
 		// Background textures
+
+		// slot background
 		{ R"(slot_background.svg)", icon_image_type::slot_background },
 		{ R"(slot_highlighted_background.svg)", icon_image_type::slot_highlighted_background },
-		{ R"(slot_active_background.svg)", icon_image_type::slot_active_background }
+		{ R"(slot_active_background.svg)", icon_image_type::slot_active_background },
+
+		// wheel background
+		{ R"(wheel_background.svg)", icon_image_type::wheel_background },
+
+		// wheel indicators
+		{ R"(wheel_indicator_active.svg)", icon_image_type::wheel_indicator_active },
+		{ R"(wheel_indicator_inactive.svg)", icon_image_type::wheel_indicator_inactive }
 
 	};
 };

@@ -103,7 +103,9 @@ namespace Config
 	{
 		namespace Wheel
 		{
-			inline bool UseGeometricPrimitiveForBackgroundTexture = false;
+			inline bool UseGeometricPrimitiveForBackgroundTexture = true;
+
+			inline float WheelBackgroundTextureScale = 1.f;
 
 			inline float CursorIndicatorDist = 10.f; // distance from cusor indicator to the inner circle
 			inline float CusorIndicatorArcWidth = 3.f; 
