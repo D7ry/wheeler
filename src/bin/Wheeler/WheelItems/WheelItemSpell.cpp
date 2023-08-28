@@ -198,3 +198,8 @@ void WheelItemSpell::SerializeIntoJsonObj(nlohmann::json& a_json)
 	a_json["type"] = WheelItemSpell::ITEM_TYPE_STR;
 	a_json["formID"] = this->_spell->GetFormID();
 }
+
+RE::TESForm* WheelItemSpell::GetItemForm()
+{
+	return this->_spell;
+}

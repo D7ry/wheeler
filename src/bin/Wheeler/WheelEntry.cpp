@@ -329,3 +329,14 @@ void WheelEntry::SetSelectedItem(int a_selected)
 	this->_selectedItem = a_selected;
 }
 
+std::vector<RE::TESForm*> WheelEntry::GetItems() {
+	std::unique_lock<std::shared_mutex> lock(this->_lock);
+
+	auto result = std::vector<RE::TESForm*>(this->_items.size());
+
+	for (auto i = 0; i < result.size(); i++) {
+		result[i] = this->_items[i]->GetItemForm();
+	}
+
+	return result;
+}

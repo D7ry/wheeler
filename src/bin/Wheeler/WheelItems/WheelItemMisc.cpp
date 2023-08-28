@@ -55,3 +55,8 @@ void WheelItemMisc::useItem()
 	}
 	aeMan->EquipObject(pc, this->_miscItem);
 }
+
+RE::TESForm* WheelItemMisc::GetItemForm()
+{
+	return this->_miscItem;
+}

@@ -86,3 +86,9 @@ void WheelItemAmmo::toggleEquip()
 		}
 	}
 }
+
+
+RE::TESForm* WheelItemAmmo::GetItemForm()
+{
+	return this->_ammo;
+}

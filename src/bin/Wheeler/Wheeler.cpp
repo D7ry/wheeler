@@ -719,3 +719,32 @@ float Wheeler::getCursorRadiusMax()
 
 // 	return true;
 // }
+
+int Wheeler::GetWheelCount()
+{
+	return _wheels.size();
+}
+
+int Wheeler::GetWheelEntryCount(int wheelIndex)
+{
+	if (wheelIndex >= _wheels.size()) {
+		return 0;
+	}
+	return _wheels[wheelIndex]->GetNumEntries();
+}
+
+int Wheeler::GetWheelEntryItemCount(int wheelIndex, int entryIndex)
+{
+	if (wheelIndex >= _wheels.size()) {
+		return 0;
+	}
+	return _wheels[wheelIndex]->GetEntryItemCount(entryIndex);
+}
+
+std::vector<RE::TESForm*> Wheeler::GetWheelEntryItems(int wheelIndex, int entryIndex)
+{
+	if (wheelIndex >= _wheels.size()) {
+		return std::vector<RE::TESForm*>();
+	}
+	return _wheels[wheelIndex]->GetEntryItems(entryIndex);
+}

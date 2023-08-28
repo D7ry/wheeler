@@ -102,3 +102,7 @@ void WheelItem::drawSlotText(ImVec2 a_center, const char* a_text, DrawArgs a_dra
 		a_text, Config::Styling::Wheel::TextColor, Text::Size, a_drawArgs);
 }
 
+RE::TESForm* WheelItem::GetItemForm()
+{
+	return nullptr;
+}
