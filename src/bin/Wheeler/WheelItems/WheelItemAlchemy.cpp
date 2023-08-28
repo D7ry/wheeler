@@ -135,7 +135,7 @@ void WheelItemAlchemy::consume()
 	if (!pc) {
 		return;
 	}
-	if (this->_alchemyItem->IsDynamicForm() && pc->GetInventoryItemCount(this->_alchemyItem) <= 1) {
+	if (this->_alchemyItem->IsDynamicForm() && pc->GetItemCount(this->_alchemyItem) <= 1) {
 		Utils::NotificationMessage(Texts::GetText(Texts::TextType::AlchemyDynamicIDConsumptionWarning));
 		return;
 	}
@@ -153,4 +153,9 @@ void WheelItemAlchemy::applyPoison()
 	}
 	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->_alchemyItem);
 	Wheeler::TryCloseWheeler(); // close wheeler for the pop-up
+}
+
+RE::TESForm* WheelItemAlchemy::GetItemForm()
+{
+	return this->_alchemyItem;
 }

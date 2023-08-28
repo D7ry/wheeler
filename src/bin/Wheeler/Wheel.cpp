@@ -283,3 +283,18 @@ int Wheel::GetNumEntries()
 {
 	return this->_entries.size();
 }
+
+int Wheel::GetEntryItemCount(int index) {
+	if (index >= this->_entries.size()) {
+		return 0;
+	}
+	return this->_entries[index]->GetNumItems();
+}
+
+
+std::vector<RE::TESForm*> Wheel::GetEntryItems(int index) {
+	if (index >= this->_entries.size()) {
+		return std::vector<RE::TESForm*>();
+	}
+	return this->_entries[index]->GetItems();
+}

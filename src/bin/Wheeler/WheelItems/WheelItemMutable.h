@@ -42,6 +42,7 @@ public:
 		return ret;
 	}
 
+	virtual RE::TESForm* GetItemForm() override;
 
 protected:
 

@@ -155,3 +155,8 @@ static bool filterMutableItems(RE::TESBoundObject& a_obj)
 	}
 	return false;
 }
+
+RE::TESForm* WheelItemMutable::GetItemForm()
+{
+	return this->_obj;
+}

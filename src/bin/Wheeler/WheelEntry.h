@@ -96,6 +96,8 @@ public:
 
 	void ResetAnimation();
 
+	std::vector<RE::TESForm*> GetItems();
+
 private:
 	void drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);
 	void drawHighlight(ImVec2 a_center, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs);

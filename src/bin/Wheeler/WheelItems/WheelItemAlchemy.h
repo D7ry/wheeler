@@ -20,6 +20,8 @@ public:
 	virtual void ActivateItemSpecial() override;
 	
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
+
+	virtual RE::TESForm* GetItemForm() override;
 	
 	static inline const char* ITEM_TYPE_STR = "WheelItemAlchemy";
 

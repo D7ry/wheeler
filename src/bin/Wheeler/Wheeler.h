@@ -140,6 +140,11 @@ public:
 	/// </summary>
 	static void SetupDefaultWheels();
 
+	static int GetWheelCount();
+	static int GetWheelEntryCount(int wheelIndex);
+	static int GetWheelEntryItemCount(int wheelIndex, int entryIndex);
+	static std::vector<RE::TESForm*> GetWheelEntryItems(int wheelIndex, int entryIndex);
+
 private:
 	enum class WheelState
 	{

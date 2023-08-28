@@ -48,6 +48,9 @@ public:
 	
 	int GetNumEntries();
 
+	int GetEntryItemCount(int index);
+	std::vector<RE::TESForm*> GetEntryItems(int index);
+
 private:
     std::vector<std::unique_ptr<WheelEntry>> _entries = {};
 	std::shared_mutex _lock;

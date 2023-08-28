@@ -14,6 +14,8 @@ public:
 	virtual void ActivateItemPrimary() override;
 	virtual void SerializeIntoJsonObj(nlohmann::json& a_json) override;
 	virtual void ActivateItemSpecial() override;
+
+	virtual RE::TESForm* GetItemForm() override;
 	
 	static inline const char* ITEM_TYPE_STR = "WheelItemShout";
 

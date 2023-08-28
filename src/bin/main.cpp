@@ -15,6 +15,8 @@
 #include "Texts.h"
 #include "ModCallbackEventHandler.h"
 
+#include "Papyrus/PapyrusInterface.h"
+
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
 	switch (a_msg->type) {
@@ -144,6 +146,11 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	
 	onSKSEInit();
 
+	const auto papyrus = SKSE::GetPapyrusInterface();
+	if (!papyrus->Register(PapyrusInterface::RegisterFuncs)) {  // register papyrus functions
+		INFO("Papyrus Register failed");
+		return false;
+	}
 
 	return true;
 }
