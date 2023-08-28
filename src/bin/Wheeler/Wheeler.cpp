@@ -133,7 +133,7 @@ void Wheeler::Update(float a_deltaTime)
 			} else {
 				Drawer::draw_circle_filled(
 				wheelIndicatorPos,
-				Config::Styling::Wheel::WheelIndicatorSize, 
+				Config::Styling::Wheel::WheelIndicatorSize / 2, 
 					isWheelActive ? Config::Styling::Wheel::WheelIndicatorActiveColor : Config::Styling::Wheel::WheelIndicatorInactiveColor,
 					10, drawArgs);
 			}
