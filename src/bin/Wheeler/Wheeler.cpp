@@ -732,7 +732,7 @@ int Wheeler::GetWheelCount()
 
 int Wheeler::GetWheelEntryCount(int wheelIndex)
 {
-	if (wheelIndex >= _wheels.size()) {
+	if (wheelIndex >= _wheels.size() || wheelIndex < 0) {
 		return 0;
 	}
 	return _wheels[wheelIndex]->GetNumEntries();
@@ -740,7 +740,7 @@ int Wheeler::GetWheelEntryCount(int wheelIndex)
 
 int Wheeler::GetWheelEntryItemCount(int wheelIndex, int entryIndex)
 {
-	if (wheelIndex >= _wheels.size()) {
+	if (wheelIndex >= _wheels.size() || wheelIndex < 0) {
 		return 0;
 	}
 	return _wheels[wheelIndex]->GetEntryItemCount(entryIndex);
@@ -748,7 +748,7 @@ int Wheeler::GetWheelEntryItemCount(int wheelIndex, int entryIndex)
 
 std::vector<RE::TESForm*> Wheeler::GetWheelEntryItems(int wheelIndex, int entryIndex)
 {
-	if (wheelIndex >= _wheels.size()) {
+	if (wheelIndex >= _wheels.size() || wheelIndex < 0) {
 		return std::vector<RE::TESForm*>();
 	}
 	return _wheels[wheelIndex]->GetEntryItems(entryIndex);
