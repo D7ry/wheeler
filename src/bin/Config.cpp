@@ -30,6 +30,22 @@ bool GetUInt32Value(const CSimpleIniA& ini, const char* section, const char* key
 	return false;
 }
 
+bool GetInt32Value(const CSimpleIniA& ini, const char* section, const char* key, int& value)
+{
+	const char* strValue = ini.GetValue(section, key, nullptr);
+	if (strValue != nullptr) {
+		try {
+			value = static_cast<int>(std::stoul(strValue));
+			return true;
+		} catch (const std::invalid_argument&) {
+			ERROR("Failed to parse {}: {} when reading int value.", section, key);
+			return false;
+		}
+	}
+	return false;
+}
+
+
 bool GetFloatValue(const CSimpleIniA& ini, const char* section, const char* key, float& value)
 {
 	const char* strValue = ini.GetValue(section, key, nullptr);
@@ -90,6 +106,11 @@ void Config::ReadStyleConfig()
 	GetUInt32Value(ini, "Styling.Wheel", "TextShadowColor", Config::Styling::Wheel::TextShadowColor);
 	GetUInt32Value(ini, "Styling.Wheel", "TextColor", Config::Styling::Wheel::TextColor);
 
+	int iWheelIndicatorAlignment = 0;
+	if (GetInt32Value(ini, "Styling.Wheel", "WheelIndicatorAlignment", iWheelIndicatorAlignment)) {
+		Config::Styling::Wheel::WheelIndicatorAlignment = static_cast<Config::WidgetAlignment>(iWheelIndicatorAlignment);
+	}
+
 
 	GetFloatValue(ini, "Styling.Entry.Highlight.Text", "OffsetX", Config::Styling::Entry::Highlight::Text::OffsetX);
 	GetFloatValue(ini, "Styling.Entry.Highlight.Text", "OffsetY", Config::Styling::Entry::Highlight::Text::OffsetY);
@@ -132,7 +153,6 @@ void Config::ReadStyleConfig()
 	GetFloatValue(ini, "Animation", "ToggleHorizontalFadeDistance", Config::Animation::ToggleHorizontalFadeDistance);
 	GetFloatValue(ini, "Animation", "ToggleVerticalFadeDistance", Config::Animation::ToggleVerticalFadeDistance);
 	GetFloatValue(ini, "Animation", "FadeTime", Config::Animation::FadeTime);
-
 
 }
 

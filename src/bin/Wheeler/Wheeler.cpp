@@ -124,6 +124,9 @@ void Wheeler::Update(float a_deltaTime)
 			bool isWheelActive = i == _activeWheelIdx;
 			ImVec2 wheelIndicatorPos = { wheelCenter.x + Config::Styling::Wheel::WheelIndicatorOffsetX + i * Config::Styling::Wheel::WheelIndicatorSpacing,
 				wheelCenter.y + Config::Styling::Wheel::WheelIndicatorOffsetY };
+			if (Config::Styling::Wheel::WheelIndicatorAlignment == Config::WidgetAlignment::kCenter) {  // offset from center
+				wheelIndicatorPos.x -= (_wheels.size() - 1) * Config::Styling::Wheel::WheelIndicatorSpacing / 2.f;
+			}
 			if (!Config::Styling::Wheel::UseGeometricPrimitiveForBackgroundTexture) {
 				Texture::Image wheelIndicatorTexture = isWheelActive ? Texture::GetIconImage(Texture::icon_image_type::wheel_indicator_active) : Texture::GetIconImage(Texture::icon_image_type::wheel_indicator_inactive);
 				Drawer::draw_texture(wheelIndicatorTexture.texture, wheelIndicatorPos,

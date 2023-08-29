@@ -20,6 +20,12 @@ namespace Config
 
 	void OffsetSizingToViewport();
 
+	enum WidgetAlignment
+	{
+		kLeft = 0,
+		kCenter = 1
+	};
+
 	namespace InputBindings
 	{
 		namespace GamePad
@@ -121,6 +127,8 @@ namespace Config
 			inline ImU32 WheelIndicatorActiveColor = C_SKYRIMWHITE;
 			inline ImU32 WheelIndicatorInactiveColor = C_SKYRIMGREY;
 
+			inline WidgetAlignment WheelIndicatorAlignment = WidgetAlignment::kLeft;
+				
 			inline float InnerCircleRadius = 220.0f;
 			inline float OuterCircleRadius = 360.0f;
 			inline float InnerSpacing = 10.f;
