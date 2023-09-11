@@ -139,6 +139,9 @@ void RenderManager::D3DInitHook::thunk()
 				} else if (languageStr == "Cyrillic") {
 					glyphRanges = ImGui::GetIO().Fonts->GetGlyphRangesCyrillic();
 					INFO("Glyph range set to Cyrillic");
+				} else if (languageStr == "Polish") {
+					static const ImWchar poliskiRanges[] = { 0x0020, 0x00FF, 0x0100, 0x017F, 0 };
+					glyphRanges == &poliskiRanges[0];
 				}
 			} else {
 				INFO("No font found for language: {}", language);
