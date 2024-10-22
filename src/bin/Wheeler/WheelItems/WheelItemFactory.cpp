@@ -34,11 +34,16 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 			if (!invEntry) {
 				return nullptr;
 			}
-			RE::TESBoundObject* boundObj = invEntry->GetObject__();
+#undef GetObject
+			RE::TESBoundObject* boundObj = invEntry->GetObject();
 			if (!boundObj) {
 				return nullptr;
 			}
-
+#ifdef UNICODE
+#	define GetObject GetObjectW
+#else
+#	define GetObject GetObjectA
+#endif  // !UNICODE
 			// if is weapon or armor, get the item's unique ID. If there's no unique id, abort.
 			uint16_t uniqueID = 0;
 			RE::FormType formType = boundObj->GetFormType();
@@ -47,6 +52,7 @@ std::shared_ptr<WheelItem> WheelItemFactory::MakeWheelItemFromMenuHovered()
 			case RE::FormType::Armor:
 			{
 				if (!invEntry->extraLists) {
+					logger::error("ExtraDataList for weapon {} is nullptr", boundObj->GetName());
 					return nullptr;
 				}
 				for (auto& extraList : *invEntry->extraLists) {

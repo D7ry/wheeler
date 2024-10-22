@@ -33,6 +33,37 @@ namespace Utils
 			aem->EquipObject(a_pc, dummy, nullptr, 1, a_slot, false, true, false);
 			aem->UnequipObject(a_pc, dummy, nullptr, 1, a_slot, false, true, false);
 		}
+
+		void UnEquipSpell(RE::PlayerCharacter* pc, RE::SpellItem* spell, int hand)
+		{
+			auto aeMan = RE::ActorEquipManager::GetSingleton();
+			if (!aeMan || !pc || !spell) {
+				return;
+			}
+
+			//
+			using func_t = void (RE::ActorEquipManager::*)(RE::Actor*, RE::SpellItem*, int);
+
+			REL::Relocation<func_t> func{ RELOCATION_ID(37947, 38903) };  
+
+		
+			return func(aeMan, pc, spell, hand);
+		}
+
+		void UnEquipShout(RE::PlayerCharacter* pc, RE::TESShout* shout)
+		{
+			auto aeMan = RE::ActorEquipManager::GetSingleton();
+			if (!aeMan || !pc || !shout) {
+				return;
+			}
+
+			using func_t = void (RE::ActorEquipManager::*)(RE::Actor*, RE::TESShout*);
+			REL::Relocation<func_t> func{ RELOCATION_ID(37948, 38904) }; 
+
+			return func(aeMan, pc, shout);
+		}
+
+
 	}
 
 	namespace Time
@@ -107,7 +138,7 @@ namespace Utils
 					continue;
 				}
 				r_ret.push_back(extraDataList);
-			}			
+			}
 		}
 
 		uint16_t GetNextUniqueID()
@@ -144,7 +175,9 @@ namespace Utils
 			bool lhsEquipped = false, rhsEquipped = false;
 			bool lhsEquippedBase = false, rhsEquippedBase = false;
 			RE::InventoryEntryData* lhs = a_actor->GetEquippedEntryData(true);
-			if (lhs && lhs->GetObject__() && lhs->GetObject__()->GetFormID() == a_weapon->GetFormID()) {
+
+			#undef GetObject
+			if (lhs && lhs->GetObject() && lhs->GetObject()->GetFormID() == a_weapon->GetFormID()) {
 				if (lhs->extraLists) {
 					for (auto* extraList : *lhs->extraLists) {
 						if (!extraList->HasType(RE::ExtraDataType::kEnchantment) 
@@ -161,7 +194,12 @@ namespace Utils
 				}
 			}
 			auto rhs = a_actor->GetEquippedEntryData(false);
-			if (rhs && rhs->GetObject__() && rhs->GetObject__()->GetFormID() == a_weapon->GetFormID()) {
+			if (rhs && rhs->GetObject() && rhs->GetObject()->GetFormID() == a_weapon->GetFormID()) {
+#ifdef UNICODE /*take windows def back*/
+#	define GetObject GetObjectW
+#else
+#	define GetObject GetObjectA
+#endif  // !UNICODE
 				if (rhs->extraLists) {
 					for (auto* extraList : *rhs->extraLists) {
 						if (!extraList->HasType(RE::ExtraDataType::kEnchantment) 

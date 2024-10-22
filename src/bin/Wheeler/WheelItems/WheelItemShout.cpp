@@ -1,7 +1,7 @@
 #include "bin/Rendering/Drawer.h"
 #include "bin/Rendering/TextureManager.h"
 #include "WheelItemShout.h"
-
+#include "bin/Utilities/Utils.h"
 WheelItemShout::WheelItemShout(RE::TESShout* a_shout)
 {
 	this->_shout = a_shout;
@@ -57,7 +57,8 @@ void WheelItemShout::ActivateItemSecondary()
 	}
 	RE::TESForm* selectedPower = pc->GetActorRuntimeData().selectedPower;
 	if (selectedPower && selectedPower->GetFormID() == this->_shout->GetFormID()) {
-		aeMan->UnEquipShout(pc, this->_shout);
+		//aeMan->UnEquipShout(pc, this->_shout);
+		Utils::Slot::UnEquipShout(pc, this->_shout);
 	} else {
 		aeMan->EquipShout(pc, this->_shout);
 	}
@@ -75,7 +76,8 @@ void WheelItemShout::ActivateItemPrimary()
 	}
 	RE::TESForm* selectedPower = pc->GetActorRuntimeData().selectedPower;
 	if (selectedPower && selectedPower->GetFormID() == this->_shout->GetFormID()) {
-		aeMan->UnEquipShout(pc, this->_shout);
+		//aeMan->UnEquipShout(pc, this->_shout);
+		Utils::Slot::UnEquipShout(pc, this->_shout);
 	} else {
 		aeMan->EquipShout(pc, this->_shout);
 	}

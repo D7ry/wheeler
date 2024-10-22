@@ -34,7 +34,7 @@ WheelItemAlchemy::WheelItemAlchemy(RE::AlchemyItem* a_alchemyItem)
 			break;
 		case RE::ActorValue::kStamina:
 		case RE::ActorValue::kStaminaRateMult:
-		case RE::ActorValue::KStaminaRate:
+		case RE::ActorValue::kStaminaRate:
 			iconType = Texture::icon_image_type::potion_stamina;
 			break;
 		case RE::ActorValue::kMagicka:
@@ -64,9 +64,42 @@ WheelItemAlchemy::WheelItemAlchemy(RE::AlchemyItem* a_alchemyItem)
 
 void WheelItemAlchemy::DrawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	int itemCount = a_imap.contains(this->_alchemyItem) ? a_imap.find(this->_alchemyItem)->second.first : 0;
-	std::string text = fmt::format("{} ({})", _alchemyItem->GetName(), itemCount);
-	this->drawSlotText(a_center, text.data(), a_drawArgs);
+	//显示物品名称和数量
+	//之前崩溃都是因为在使用了自制药水后尤其是回血回蓝的药水， itemName 会指向一个很奇怪的地址，
+	//基本上是一个很小的非法地址例如0x0000006a这种为所以空导致接下来fmt::format()函数崩溃
+	//不知道为什么会指向这个地址，其他药水都不会指向这么小的地址
+	//可能又是CE引擎的怪癖，所以这里再加了一个判断，如果地址小于0x10000就直接显示一个默认名称
+	//The crash was caused by the itemName pointing to a very strange address after using self-made potions,
+	// especially potions that restore health and magicka. The address is basically a very small illegal address such as 0x0000006a, 
+	// so the fmt::format() function crashes next. 
+	// I don't know why it points to this address, and other self-made potions don't point to such a small address. 
+	// It may be another quirk of the CE engine, so I added another judgment here. 
+	// If the address is less than 0x10000, a default name is displayed directly.
+	//第二道检查，避免崩溃
+	if (this->_alchemyItem) {
+		//提前检查 _alchemyItem 是否有名称，并避免崩溃
+		const auto fullName = this->_alchemyItem->As<RE::TESFullName>();
+		const char* itemName = nullptr;
+
+		if (fullName) {
+			itemName = fullName->GetFullName();
+		}
+
+		if (!itemName || reinterpret_cast<std::uintptr_t>(itemName) < 0x10000 || *itemName == '\0') {
+			itemName = "Consumed out Item";  //设置一个默认名称，避免非法内存访问，现在一般正常游戏内永远不会看到这个名称
+		}
+
+		//获取物品数量
+		int itemCount = a_imap.contains(this->_alchemyItem) ? a_imap.find(this->_alchemyItem)->second.first : 0;
+
+
+		std::string text = fmt::format("{} ({})", itemName, itemCount);
+		this->drawSlotText(a_center, text.data(), a_drawArgs);
+	} else {
+		//如果 _alchemyItem 为空，显示占位符
+		std::string text = "No Item";
+		this->drawSlotText(a_center, text.data(), a_drawArgs);
+	}
 	this->drawSlotTexture(a_center, a_drawArgs);
 }
 
@@ -85,8 +118,15 @@ bool WheelItemAlchemy::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 }
 
 bool WheelItemAlchemy::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
-{
-	return a_inv.contains(this->_alchemyItem);
+{ 
+	///return a_inv.contains(this->_alchemyItem);
+	//检查物品是否存在于玩家的库存中
+	auto it = a_inv.find(this->_alchemyItem);
+	if (it != a_inv.end()) {
+		//检查物品的数量是否大于 0
+		return it->second.first > 0;
+	}
+	return false;
 }
 
 void WheelItemAlchemy::ActivateItemPrimary()
@@ -134,11 +174,13 @@ void WheelItemAlchemy::consume()
 	RE::PlayerCharacter* pc = RE::PlayerCharacter::GetSingleton();
 	if (!pc) {
 		return;
-	}
-	if (this->_alchemyItem->IsDynamicForm() && pc->GetInventoryItemCount(this->_alchemyItem) <= 1) {
+	} 
+	
+	/*修复了自制药剂消耗后CTD的问题，所以也不需要检查数量了
+	if (this->_alchemyItem->IsDynamicForm() && pc->GetItemCount(this->_alchemyItem) <= 1) {
 		Utils::NotificationMessage(Texts::GetText(Texts::TextType::AlchemyDynamicIDConsumptionWarning));
 		return;
-	}
+	}*/
 	RE::ActorEquipManager::GetSingleton()->EquipObject(pc, this->_alchemyItem);
 }
 

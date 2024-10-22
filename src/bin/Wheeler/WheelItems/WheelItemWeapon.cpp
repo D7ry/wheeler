@@ -104,6 +104,14 @@ WheelItemWeapon::WheelItemWeapon(RE::TESBoundObject* a_weapon, uint16_t a_unique
 	this->_description = descriptionBuf.c_str();
 }
 
+bool IsTwoHanded(RE::TESObjectWEAP* weapon)
+{
+	if (!weapon) {
+		return false;
+	}
+	return weapon->IsTwoHandedAxe() || weapon->IsTwoHandedSword();
+}
+
 void WheelItemWeapon::ActivateItemSecondary()
 {
 	auto pc = RE::PlayerCharacter::GetSingleton();
@@ -112,7 +120,7 @@ void WheelItemWeapon::ActivateItemSecondary()
 	}
 	bool isTwoHanded = (this->_obj->As<RE::TESObjectWEAP>()->IsCrossbow() 
 		|| this->_obj->As<RE::TESObjectWEAP>()->IsBow() 
-		|| this->_obj->As<RE::TESObjectWEAP>()->IsTwoHanded());
+		|| IsTwoHanded(this->_obj->As<RE::TESObjectWEAP>()));
 	
 	Utils::Inventory::Hand equippedHand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID(), true);
 	if (equippedHand == Utils::Inventory::Hand::Left || (isTwoHanded && equippedHand == Utils::Inventory::Hand::Right) || equippedHand == Utils::Inventory::Hand::Both) {
@@ -168,7 +176,7 @@ void WheelItemWeapon::equipItem(bool a_toRight)
 			Utils::Inventory::Hand hand = Utils::Inventory::GetWeaponEquippedHand(pc, this->_obj->As<RE::TESObjectWEAP>(), this->GetUniqueID());
 			if ((hand == Utils::Inventory::Hand::Right && !a_toRight) || (hand == Utils::Inventory::Hand::Left && a_toRight)) {  // in opposite hands, simply swap l/r
 			auto oppositeSlot = a_toRight ? Utils::Slot::GetLeftHandSlot() : Utils::Slot::GetRightHandSlot();                    // first, clean the slot with item
-			RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_obj, nullptr, 1, oppositeSlot, false, true, true);
+				RE::ActorEquipManager::GetSingleton()->UnequipObject(pc, this->_obj, nullptr, 1, oppositeSlot, false, true, true);
 			}
 		} else {                  // a count bigger than 1 guarantees that the item is untempered
 			extraData = nullptr;  // set extraData to nullptr, let the game handle which one to equip.

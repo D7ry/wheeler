@@ -5,6 +5,12 @@
 
 #include "bin/Utilities/Utils.h"
 #include "bin/Config.h"
+
+inline bool isValidPointer(const void* ptr)
+{
+	return ptr != nullptr && reinterpret_cast<std::uintptr_t>(ptr) > 0x10000;  //check if the pointer is a valid memory address
+}
+
 void Drawer::draw_text(float a_x,
 		float a_y,
 		const char* a_text,
@@ -16,9 +22,15 @@ void Drawer::draw_text(float a_x,
 	auto* font = ImGui::GetDefaultFont();  // TODO: add custom font support
 
 
+	//check if the pointer is valid to avoid ctd
+	if (!isValidPointer(a_text) || !*a_text) {
+		a_text = "Already consumed out";
+	}
+
+	 /*
 	if (!a_text || !*a_text) {
 		return;
-	}
+	}*/
 
 	if (a_drawArgs.alphaMult == 0.f || a_font_size == 0) {
 		return;

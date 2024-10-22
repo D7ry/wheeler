@@ -16,7 +16,7 @@ static float get_resolution_scale_height()
 class Texture
 {
 public:
-	static inline ID3D11Device* device_ = nullptr; // Should only be set once by Renderer
+	static inline ID3D11Device* device_ = nullptr;  // Should only be set once by Renderer
 
 	/// <summary>
 	/// Load all images.
@@ -26,8 +26,8 @@ public:
 	struct Image
 	{
 		ID3D11ShaderResourceView* texture = nullptr;
-		int32_t width = 0; // native width
-		int32_t height = 0; // native height
+		int32_t width = 0;   // native width
+		int32_t height = 0;  // native height
 	};
 
 	enum class image_type
@@ -102,10 +102,13 @@ public:
 		slot_background,
 		slot_highlighted_background,
 		slot_active_background,
+		wheel_background,
+		wheel_indicator_active,
+		wheel_indicator_inactive,
 		total
 	};
-	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form=nullptr);
-	
+	static Image GetIconImage(icon_image_type a_imageType, RE::TESForm* a_form = nullptr);
+
 private:
 	static inline std::map<uint32_t, Image> icon_struct;
 
@@ -219,16 +222,24 @@ private:
 		{ R"(torch.svg)", icon_image_type::torch },
 		{ R"(lantern.svg)", icon_image_type::lantern },
 		{ R"(mask.svg)", icon_image_type::mask },
-		
+
 		// Item Stats
 		{ R"(armor_rating.svg)", icon_image_type::armor_rating },
 		{ R"(weapon_damage.svg)", icon_image_type::weapon_damage },
 
 		// Background textures
+
+		// slot background
 		{ R"(slot_background.svg)", icon_image_type::slot_background },
 		{ R"(slot_highlighted_background.svg)", icon_image_type::slot_highlighted_background },
-		{ R"(slot_active_background.svg)", icon_image_type::slot_active_background }
+		{ R"(slot_active_background.svg)", icon_image_type::slot_active_background },
+
+		// wheel background
+		{ R"(wheel_background.svg)", icon_image_type::wheel_background },
+
+		// wheel indicators
+		{ R"(wheel_indicator_active.svg)", icon_image_type::wheel_indicator_active },
+		{ R"(wheel_indicator_inactive.svg)", icon_image_type::wheel_indicator_inactive }
 
 	};
 };
-

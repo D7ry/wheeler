@@ -118,16 +118,21 @@ void WheelItemSpell::ActivateItemSecondary()
 	if (pc) {
 		if (this->isPower()) {
 			if (pc->GetActorRuntimeData().selectedPower && pc->GetActorRuntimeData().selectedPower->GetFormID() == this->_spell->GetFormID()) {
-				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 2);
+				/* RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 2);
 				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 1);
-				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 0);
+				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 0);*/
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 2);
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 1);
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 0);
+
 			} else {
 				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
 			}
 		} else {
 			if (pc->GetEquippedObject(true) && pc->GetEquippedObject(true)->GetFormID() == this->_spell->GetFormID()) {
 				//Utils::Slot::CleanSlot(pc, Utils::Slot::GetLeftHandSlot());
-				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 0);
+				//RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 0);
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 0);
 			} else {
 				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetLeftHandSlot());
 			}
@@ -142,9 +147,12 @@ void WheelItemSpell::ActivateItemPrimary()
 		// check if spell is already equiped, if it is, unequip.
 		if (this->isPower()) {
 			if (pc->GetActorRuntimeData().selectedPower && pc->GetActorRuntimeData().selectedPower->GetFormID() == this->_spell->GetFormID()) {
-				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 2);
+				/*RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 2);
 				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 1);
-				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 0);
+				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 0);*/
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 2);
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 1);
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 0);
 
 			} else {
 				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
@@ -152,7 +160,8 @@ void WheelItemSpell::ActivateItemPrimary()
 		}
 		else {
 			if (pc->GetEquippedObject(false) && pc->GetEquippedObject(false)->GetFormID() == this->_spell->GetFormID()) {
-				RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 1);
+				//RE::ActorEquipManager::GetSingleton()->UnEquipSpell(pc, this->_spell, 1);
+				Utils::Slot::UnEquipSpell(pc, this->_spell, 1);
 			} else {
 				RE::ActorEquipManager::GetSingleton()->EquipSpell(pc, this->_spell, Utils::Slot::GetRightHandSlot());
 			}

@@ -94,22 +94,95 @@ void WheelEntry::DrawBackGround(
 
 void WheelEntry::DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
-	if (a_hovered) {
-		this->drawHighlight(a_wheelCenter, a_imap, a_drawArgs);
+	try {
+		std::shared_lock<std::shared_mutex> lock(this->_lock);
+
+		if (a_hovered) {
+			this->drawHighlight(a_wheelCenter, a_imap, a_drawArgs);
+		}
+		this->drawSlot(a_entryCenter, a_hovered, a_imap, a_drawArgs);
+	} catch (std::exception& e) {
+		logger::error("Exception in WheelEntry::DrawSlotAndHighlight: {}", e.what());
 	}
-	this->drawSlot(a_entryCenter, a_hovered, a_imap, a_drawArgs);
 }
 
+/*这个也能用，但是库存数据过多可能会导致卡顿掉帧，猜的。先留着吧
 void WheelEntry::drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	try {
 		std::shared_lock<std::shared_mutex> lock(this->_lock);
-		
+
 		if (_items.size() == 0) {
 			return;  // nothing to draw
 		}
+
+		std::vector<int> indicesToDelete; 
+		for (int i = 0; i < _items.size(); ++i) {
+			auto item = _items[i];
+			if (!item->IsAvailable(a_imap)) {  
+				indicesToDelete.push_back(i);
+			}
+		}
+
+		for (auto it = indicesToDelete.rbegin(); it != indicesToDelete.rend(); ++it) {
+			_items.erase(_items.begin() + *it);
+			if (*it < _selectedItem && _selectedItem > 0) {
+				_selectedItem--;  
+			}
+		}
+
+		if (_items.size() == 0) {
+			return;
+		}
+
+		if (_selectedItem >= _items.size()) {
+			_selectedItem = _items.size() - 1; 
+		}
+
 		_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap, a_drawArgs);
-	} catch (std::exception& e) {
+	} catch (const std::exception& e) {
+		logger::error("Exception in WheelEntry::drawSlot: {}", e.what());
+	}
+}
+*/
+void WheelEntry::drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
+{
+	try {
+		std::shared_lock<std::shared_mutex> lock(this->_lock);
+
+		if (_items.empty()) {
+			return;  // nothing to draw
+		}
+
+		bool itemRemoved = false;
+
+		//遍历所有的 slot，检查物品是否还在玩家库存中
+		for (int i = 0; i < _items.size(); ++i) {
+			auto item = _items[i];
+			if (!item->IsAvailable(a_imap)) {
+				//标记删除的物品，不立即删除以防止影响遍历过程
+				_items.erase(_items.begin() + i);
+				if (i < _selectedItem && _selectedItem > 0) {
+					_selectedItem--;
+				}
+				i--;  //调整索引，防止跳过下一个元素
+				itemRemoved = true;
+			}
+		}
+
+		//如果没有可用的物品，直接返回
+		if (_items.empty()) {
+			return;
+		}
+
+		//确保 _selectedItem 在有效范围内
+		if (_selectedItem >= _items.size()) {
+			_selectedItem = _items.size() - 1;  //防止越界
+		}
+
+		//绘制slot
+		_items[_selectedItem]->DrawSlot(a_center, a_hovered, a_imap, a_drawArgs);
+	} catch (const std::exception& e) {
 		logger::error("Exception in WheelEntry::drawSlot: {}", e.what());
 	}
 }
@@ -223,7 +296,15 @@ void WheelEntry::PrevItem()
 		}
 	}
 	if (_items.size() > 1) {
-		RE::PlaySoundRE(Config::Sound::SD_ITEMSWITCH);
+#undef PlaySound
+
+		RE::PlaySound(Config::Sound::SD_ITEMSWITCH);
+
+#ifdef UNICODE
+#	define PlaySound PlaySoundW
+#else
+#	define PlaySound PlaySoundA
+#endif  // !UNICODE
 	}
 }
 
@@ -236,7 +317,15 @@ void WheelEntry::NextItem()
 		_selectedItem = 0;
 	}
 	if (_items.size() > 1) {
-		RE::PlaySoundRE(Config::Sound::SD_ITEMSWITCH);
+#undef PlaySound
+
+		RE::PlaySound(Config::Sound::SD_ITEMSWITCH);
+
+#ifdef UNICODE
+#	define PlaySound PlaySoundW
+#else
+#	define PlaySound PlaySoundA
+#endif  // !UNICODE
 	}
 }
 
