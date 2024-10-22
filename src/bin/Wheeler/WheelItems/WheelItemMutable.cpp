@@ -28,47 +28,66 @@ std::pair<int, RE::ExtraDataList*> WheelItemMutable::GetItemExtraDataAndCount(RE
 	try {
 		std::pair<int, RE::ExtraDataList*> ret = { 0, nullptr };
 
+		// 遍历Inventory寻找匹配的物品
 		std::unique_ptr<RE::InventoryEntryData>* pp = nullptr;
 		for (auto& [boundObj, data] : a_inv) {
 			if (boundObj->formID == this->_obj->GetFormID()) {
 				pp = &data.second;
 			}
 		}
-		if (pp) {
-			int cleanItemCount = 0;  // items not modified by enchantment, poison or tempering
-			uint16_t uniqueID = this->GetUniqueID();
-			// iterate through the entry, searching for extradata
-			bool targetClean = false;
-			for (auto* extraList : *pp->get()->extraLists) {
-				bool thisClean = false;
-				if (!extraList->HasType(RE::ExtraDataType::kEnchantment) && !extraList->HasType(RE::ExtraDataType::kPoison) && !extraList->HasType(RE::ExtraDataType::kHealth)) {
-					thisClean = true;  // itme is not modified
-				}
-				if (thisClean) {
-					cleanItemCount++;
-				}
-				if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
-					if (uniqueID == extraList->GetByType<RE::ExtraUniqueID>()->uniqueID) {
-						ret.second = extraList;
-						if (thisClean) {
-							targetClean = true;
-						} else {  // item with matching uniqueID isn't clean, item therefore can't stack.
-							ret.first = 1;
-							return ret;
-						}
+		/*这里处理存档数据里某个物品尤其是铁制匕首铁制剑或铁制战斧莫名其妙堆叠显示数量2，扔地上但是实际上只有一把*/
+		/*很奇怪的崩溃*/
+		// 如果没有找到pp，直接返回
+		if (!pp || !*pp || !(*pp)->extraLists) {
+			return ret;  // 没有ExtraDataList，返回空结果
+		}
+
+		int cleanItemCount = 0;  //统计没有附魔、没有中毒、没有强化的物品
+		uint16_t uniqueID = this->GetUniqueID();
+		bool targetClean = false;
+
+		//遍历 extraLists，确保不为空
+		for (auto* extraList : *(*pp)->extraLists) {
+			if (!extraList) {
+				continue;  // 如果extraList为空，跳过
+			}
+
+			bool thisClean = false;
+
+			//检查物品是否是干净的（没有附魔，没有毒，没有强化）
+			if (extraList->HasType(RE::ExtraDataType::kEnchantment) && !extraList->HasType(RE::ExtraDataType::kHealth)) {
+				thisClean = true;  // item is clean
+			}
+
+			if (thisClean) {
+				cleanItemCount++;
+			}
+
+			//检查UniqueID是否匹配
+			if (extraList->HasType(RE::ExtraDataType::kUniqueID)) {
+				if (uniqueID == extraList->GetByType<RE::ExtraUniqueID>()->uniqueID) {
+					ret.second = extraList;
+					if (thisClean) {
+						targetClean = true;
+					} else {
+						ret.first = 1;
+						return ret;  //找到匹配项，返回结果
 					}
 				}
 			}
-			if (targetClean) {
-				ret.first = cleanItemCount;
-			}
 		}
-		return ret;
-	} catch (std::exception& e) {
-		ERROR("Exception caught in WheelItemMutable::GetItemExtraDataAndCount: {}", e.what());
+
+		if (targetClean) {
+			ret.first = cleanItemCount;
+		}
+
+		return ret;  //返回最终结果
+	} catch (const std::exception& e) {
+		logger::error("Exception caught in WheelItemMutable::GetItemExtraDataAndCount: {}", e.what());
 		return { 0, nullptr };
 	}
 }
+
 
 void WheelItemMutable::GetItemEnchantment(RE::TESObjectREFR::InventoryItemMap& a_invMap, std::vector<RE::EnchantmentItem*>& r_enchantments)
 {

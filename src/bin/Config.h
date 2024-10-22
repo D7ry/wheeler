@@ -20,6 +20,12 @@ namespace Config
 
 	void OffsetSizingToViewport();
 
+	enum WidgetAlignment
+	{
+		kLeft = 0,
+		kCenter = 1
+	};
+
 	namespace InputBindings
 	{
 		namespace GamePad
@@ -105,6 +111,8 @@ namespace Config
 		{
 			inline bool UseGeometricPrimitiveForBackgroundTexture = false;
 
+			inline float WheelBackgroundTextureScale = 1.f;
+
 			inline float CursorIndicatorDist = 10.f; // distance from cusor indicator to the inner circle
 			inline float CusorIndicatorArcWidth = 3.f; 
 			inline float CursorIndicatorArcAngle = 2 * IM_PI * 1 / 12.f;  // 1/12 of a circle
@@ -118,6 +126,8 @@ namespace Config
 			inline float WheelIndicatorSpacing = 25.f;
 			inline ImU32 WheelIndicatorActiveColor = C_SKYRIMWHITE;
 			inline ImU32 WheelIndicatorInactiveColor = C_SKYRIMGREY;
+
+			inline WidgetAlignment WheelIndicatorAlignment = WidgetAlignment::kLeft;
 
 			inline float InnerCircleRadius = 220.0f;
 			inline float OuterCircleRadius = 360.0f;

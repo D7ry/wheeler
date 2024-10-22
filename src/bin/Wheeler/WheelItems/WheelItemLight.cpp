@@ -1,6 +1,7 @@
 #include "WheelItemLight.h"
 #include "bin/Rendering/TextureManager.h"
 #include "bin/Rendering/Drawer.h"
+#include "bin/Utilities/Utils.h"
 
 WheelItemLight::WheelItemLight(RE::TESObjectLIGH* a_light)
 {

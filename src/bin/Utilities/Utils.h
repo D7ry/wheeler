@@ -10,6 +10,8 @@ namespace Utils
 		RE::BGSEquipSlot* GetVoiceSlot();
 		RE::BGSEquipSlot* GetRightHandSlot();
 		void CleanSlot(RE::PlayerCharacter* a_pc, RE::BGSEquipSlot* a_slot);
+		void UnEquipSpell(RE::PlayerCharacter* pc, RE::SpellItem* spell, int hand);
+		void UnEquipShout(RE::PlayerCharacter* pc, RE::TESShout* shout);
 	}
 
 	namespace Time

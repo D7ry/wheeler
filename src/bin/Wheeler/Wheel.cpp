@@ -3,7 +3,7 @@
 #include "Wheel.h"
 #include "WheelEntry.h"
 #include "bin/Config.h"
-
+#include "bin/Rendering/TextureManager.h"
 Wheel::Wheel() {}
 Wheel::~Wheel() 
 {
@@ -14,6 +14,17 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 {
 	try {
 		using namespace Config::Styling::Wheel;
+
+				// Draw background
+		if (!UseGeometricPrimitiveForBackgroundTexture) {
+			Texture::Image backgroundTexture = Texture::GetIconImage(Texture::icon_image_type::wheel_background);
+			Drawer::draw_texture(backgroundTexture.texture,
+				a_wheelCenter,
+				0, 0,
+				ImVec2(backgroundTexture.width * WheelBackgroundTextureScale, backgroundTexture.height * WheelBackgroundTextureScale),
+				C_SKYRIMWHITE,
+				a_drawArgs);
+		}
 		if (this->IsEmpty()) {
 			Drawer::draw_text(a_wheelCenter.x, a_wheelCenter.y, "Empty Wheel", C_SKYRIMWHITE, 40.f, a_drawArgs);
 			return;  // nothing more to draw
@@ -61,7 +72,13 @@ void Wheel::Draw(ImVec2 a_wheelCenter, float a_cursorAngle, bool a_cursorCentere
 					}
 				}
 				if (updatedActiveEntry) {
-					RE::PlaySoundRE(Config::Sound::SD_ENTRYSWITCH);
+#undef PlaySound
+					RE::PlaySound(Config::Sound::SD_ENTRYSWITCH);
+#ifdef UNICODE
+#	define PlaySound PlaySoundW
+#else
+#	define PlaySound PlaySoundA
+#endif  // !UNICODE
 				}
 				hovered = _hoveredEntryIdx == entryIdx;
 			}
