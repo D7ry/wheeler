@@ -4,7 +4,7 @@
 #include "WheelItems/WheelItemFactory.h"
 #include "WheelItems/WheelItemMutable.h"
 #include "WheelEntry.h"
-
+#include "WheelItems/WheelItemShout.h"
 void WheelEntry::UpdateAnimation(RE::TESObjectREFR::InventoryItemMap& imap, float innerSpacingRad, float entryInnerAngleMin, float entryInnerAngleMax, float entryOuterAngleMin, float entryOuterAngleMax, bool hovered)
 {
 	using namespace Config::Styling::Wheel;
@@ -159,6 +159,10 @@ void WheelEntry::drawSlot(ImVec2 a_center, bool a_hovered, RE::TESObjectREFR::In
 		//遍历所有的 slot，检查物品是否还在玩家库存中
 		for (int i = 0; i < _items.size(); ++i) {
 			auto item = _items[i];
+			//如果是 shout，跳过可用性检查
+			if (auto shoutItem = std::dynamic_pointer_cast<WheelItemShout>(item)) {
+				continue;  //不要删除 shout
+			}
 			if (!item->IsAvailable(a_imap)) {
 				//标记删除的物品，不立即删除以防止影响遍历过程
 				_items.erase(_items.begin() + i);
