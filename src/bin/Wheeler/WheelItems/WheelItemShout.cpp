@@ -41,7 +41,7 @@ bool WheelItemShout::IsActive(RE::TESObjectREFR::InventoryItemMap& a_inv)
 
 bool WheelItemShout::IsAvailable(RE::TESObjectREFR::InventoryItemMap& a_inv)
 {
-	return false;
+	return true;
 }
 
 //TODO: check if shout's been unlocked, block equipment if not unlocked.
