@@ -95,7 +95,6 @@ void WheelEntry::DrawBackGround(
 void WheelEntry::DrawSlotAndHighlight(ImVec2 a_wheelCenter, ImVec2 a_entryCenter, bool a_hovered, RE::TESObjectREFR::InventoryItemMap& a_imap, DrawArgs a_drawArgs)
 {
 	try {
-		std::shared_lock<std::shared_mutex> lock(this->_lock);
 
 		if (a_hovered) {
 			this->drawHighlight(a_wheelCenter, a_imap, a_drawArgs);
