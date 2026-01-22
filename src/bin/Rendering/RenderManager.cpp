@@ -1,4 +1,5 @@
 #include "RenderManager.h"
+#include <RE/R/Renderer.h>
 #include "FontLoader.h"
 
 #include <d3d11.h>
@@ -47,35 +48,40 @@ void RenderManager::D3DInitHook::thunk()
 	func();
 
 	INFO("RenderManager: Initializing...");
-	auto render_manager = RE::BSRenderManager::GetSingleton();
-	if (!render_manager) {
-		ERROR("Cannot find render manager. Initialization failed!");
+	auto renderer = RE::BSGraphics::Renderer::GetSingleton();
+	if (!renderer) {
+		ERROR("Cannot find renderer. Initialization failed!");
 		return;
 	}
 
-	auto render_data = render_manager->GetRuntimeData();
+	auto render_data = renderer->GetRendererData();
+	if (!render_data) {
+		ERROR("Cannot find render data. Initialization failed!");
+		return;
+	}
 
 	INFO("Getting swapchain...");
-	auto swapchain = render_data.swapChain;
+	auto window = renderer->GetCurrentRenderWindow();
+	auto swapchain = window->swapChain;
 	if (!swapchain) {
 		ERROR("Cannot find swapchain. Initialization failed!");
 		return;
 	}
 
 	INFO("Getting swapchain desc...");
-	DXGI_SWAP_CHAIN_DESC sd{};
-	if (swapchain->GetDesc(std::addressof(sd)) < 0) {
+	REX::W32::DXGI_SWAP_CHAIN_DESC sd{};
+	if (swapchain->GetDesc(&sd) < 0) {
 		ERROR("IDXGISwapChain::GetDesc failed.");
 		return;
 	}
 
-	device = render_data.forwarder;
+	device = reinterpret_cast<ID3D11Device*>(render_data->forwarder);
 	Texture::device_ = device;
-	context = render_data.context;
+	context = reinterpret_cast<ID3D11DeviceContext*>(render_data->context);
 
 	INFO("Initializing ImGui...");
 	ImGui::CreateContext();
-	if (!ImGui_ImplWin32_Init(sd.OutputWindow)) {
+	if (!ImGui_ImplWin32_Init(sd.outputWindow)) {
 		ERROR("ImGui initialization failed (Win32)");
 		return;
 	}
@@ -90,7 +96,7 @@ void RenderManager::D3DInitHook::thunk()
 
 	WndProcHook::func = reinterpret_cast<WNDPROC>(
 		SetWindowLongPtrA(
-			sd.OutputWindow,
+			sd.outputWindow,
 			GWLP_WNDPROC,
 			reinterpret_cast<LONG_PTR>(WndProcHook::thunk)));
 	if (!WndProcHook::func)

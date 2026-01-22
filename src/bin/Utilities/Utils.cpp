@@ -28,7 +28,11 @@ namespace Utils
 			if (!aem) {
 				return;
 			}
-			auto* dummy = RE::TESForm::LookupByID<RE::TESForm>(0x00020163)->As<RE::TESObjectWEAP>();
+			// Use Iron Dagger as dummy weapon to clear slot
+			auto* dummy = RE::TESForm::LookupByID<RE::TESForm>(0x0001397E)->As<RE::TESObjectWEAP>();
+			if (!dummy) {
+				return;
+			}
 			//sound false, queue false, force true
 			aem->EquipObject(a_pc, dummy, nullptr, 1, a_slot, false, true, false);
 			aem->UnequipObject(a_pc, dummy, nullptr, 1, a_slot, false, true, false);

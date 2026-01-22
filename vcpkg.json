@@ -10,12 +10,13 @@
     "rapidcsv",
     "nlohmann-json",
     "freetype",
+    "directxtk",
     {
-      "name":  "imgui",
-      "features":  [
-                       "dx11-binding",
-                       "win32-binding"
-                   ]
+      "name": "imgui",
+      "features": [
+        "dx11-binding",
+        "win32-binding"
+      ]
     }
   ]
 }

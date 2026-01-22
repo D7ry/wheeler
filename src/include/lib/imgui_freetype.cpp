@@ -398,7 +398,7 @@ struct ImFontBuildDstDataFT
 
 bool ImFontAtlasBuildWithFreeTypeEx(FT_Library ft_library, ImFontAtlas* atlas, unsigned int extra_flags)
 {
-    IM_ASSERT(atlas->ConfigData.Size > 0);
+    IM_ASSERT(atlas->Sources.Size > 0);
 
     ImFontAtlasBuildInit(atlas);
 
@@ -413,16 +413,16 @@ bool ImFontAtlasBuildWithFreeTypeEx(FT_Library ft_library, ImFontAtlas* atlas, u
     bool src_load_color = false;
     ImVector<ImFontBuildSrcDataFT> src_tmp_array;
     ImVector<ImFontBuildDstDataFT> dst_tmp_array;
-    src_tmp_array.resize(atlas->ConfigData.Size);
+    src_tmp_array.resize(atlas->Sources.Size);
     dst_tmp_array.resize(atlas->Fonts.Size);
     memset((void*)src_tmp_array.Data, 0, (size_t)src_tmp_array.size_in_bytes());
     memset((void*)dst_tmp_array.Data, 0, (size_t)dst_tmp_array.size_in_bytes());
 
     // 1. Initialize font loading structure, check font data validity
-    for (int src_i = 0; src_i < atlas->ConfigData.Size; src_i++)
+    for (int src_i = 0; src_i < atlas->Sources.Size; src_i++)
     {
         ImFontBuildSrcDataFT& src_tmp = src_tmp_array[src_i];
-        ImFontConfig& cfg = atlas->ConfigData[src_i];
+        ImFontConfig& cfg = atlas->Sources[src_i];
         FreeTypeFont& font_face = src_tmp.Font;
         IM_ASSERT(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == atlas));
 
@@ -530,7 +530,7 @@ bool ImFontAtlasBuildWithFreeTypeEx(FT_Library ft_library, ImFontAtlas* atlas, u
     for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
     {
         ImFontBuildSrcDataFT& src_tmp = src_tmp_array[src_i];
-        ImFontConfig& cfg = atlas->ConfigData[src_i];
+        ImFontConfig& cfg = atlas->Sources[src_i];
         if (src_tmp.GlyphsCount == 0)
             continue;
 
@@ -642,7 +642,7 @@ bool ImFontAtlasBuildWithFreeTypeEx(FT_Library ft_library, ImFontAtlas* atlas, u
         // When merging fonts with MergeMode=true:
         // - We can have multiple input fonts writing into a same destination font.
         // - dst_font->ConfigData is != from cfg which is our source configuration.
-        ImFontConfig& cfg = atlas->ConfigData[src_i];
+        ImFontConfig& cfg = atlas->Sources[src_i];
         ImFont* dst_font = cfg.DstFont;
 
         const float ascent = src_tmp.Font.Info.Ascender;

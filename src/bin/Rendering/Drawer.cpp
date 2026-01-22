@@ -194,7 +194,7 @@ void Drawer::draw_texture(ID3D11ShaderResourceView* a_texture,
 
 	Utils::Color::MultAlpha(a_color, a_drawArgs.alphaMult);
 	ImGui::GetWindowDrawList()
-		->AddImageQuad(a_texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], a_color);
+		->AddImageQuad((ImTextureID)a_texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], a_color);
 }
 
 void Drawer::draw_arc(ImVec2 center,

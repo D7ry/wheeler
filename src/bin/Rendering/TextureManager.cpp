@@ -1,4 +1,5 @@
 #include "TextureManager.h"
+#include <RE/R/Renderer.h>
 #define NANOSVG_IMPLEMENTATION
 #define NANOSVG_ALL_COLOR_KEYWORDS
 #include "include/lib/nanosvg.h"
@@ -40,14 +41,14 @@ Texture::Image Texture::GetIconImage(icon_image_type a_imageType, RE::TESForm* a
 bool Texture::load_texture_from_file(const char* filename, ID3D11ShaderResourceView** out_srv, int& out_width, int& out_height)
 {
 	ASSERT(device_ != nullptr);
-	auto* render_manager = RE::BSRenderManager::GetSingleton();
-	if (!render_manager) {
-		logger::error("Cannot find render manager. Initialization failed."sv);
+	auto* renderer = RE::BSGraphics::Renderer::GetSingleton();
+	if (!renderer) {
+		logger::error("Cannot find renderer. Initialization failed."sv);
 		return false;
 	}
 
-	auto [forwarder, context, unk58, unk60, unk68, swapChain, unk78, unk80, renderView, resourceView] =
-		render_manager->GetRuntimeData();
+	auto render_data = renderer->GetRendererData();
+	auto forwarder = render_data->forwarder;
 
 	// Load from disk into a raw RGBA buffer
 	auto* svg = nsvgParseFromFile(filename, "px", 96.0f);
@@ -89,7 +90,10 @@ bool Texture::load_texture_from_file(const char* filename, ID3D11ShaderResourceV
 	srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srv_desc.Texture2D.MipLevels = desc.MipLevels;
 	srv_desc.Texture2D.MostDetailedMip = 0;
-	forwarder->CreateShaderResourceView(p_texture, &srv_desc, out_srv);
+	forwarder->CreateShaderResourceView(
+		reinterpret_cast<REX::W32::ID3D11Resource*>(p_texture), 
+		reinterpret_cast<const REX::W32::D3D11_SHADER_RESOURCE_VIEW_DESC*>(&srv_desc), 
+		reinterpret_cast<REX::W32::ID3D11ShaderResourceView**>(out_srv));
 	p_texture->Release();
 
 	free(image_data);

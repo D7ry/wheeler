@@ -26,6 +26,17 @@ namespace util
 	using SKSE::stl::report_and_fail;
 }
 
+#define INFO(...) logger::info(__VA_ARGS__)
+#define WARN(...) logger::warn(__VA_ARGS__)
+#define ERROR(...) logger::error(__VA_ARGS__)
+#define CRITICAL(...) logger::critical(__VA_ARGS__)
+#ifndef NDEBUG
+#include <cassert>
+#define ASSERT(x) assert(x)
+#else
+#define ASSERT(x)
+#endif
+
 namespace std
 {
 	template <class T>
